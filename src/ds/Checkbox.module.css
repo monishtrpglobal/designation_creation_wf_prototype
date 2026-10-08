@@ -1,0 +1,103 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s16);
+  padding-top: var(--space-s10);
+}
+
+.label {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  padding-left: var(--space-s8);
+}
+
+.legend {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-label-l1);
+  font-size: var(--font-size-label-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.body {
+  align-items: center;
+}
+
+.inner {
+  width: var(--space-s20);
+  height: var(--space-s20);
+}
+
+.root[data-irm-size="sm"] .inner {
+  width: calc(var(--space-s16) + var(--space-s2));
+  height: calc(var(--space-s16) + var(--space-s2));
+}
+
+.input {
+  width: var(--space-s20);
+  height: var(--space-s20);
+  border: var(--border-default) solid var(--color-border-field);
+  border-radius: var(--radius-s4);
+  background-color: var(--color-bg-surface);
+}
+
+.root[data-irm-size="sm"] .input {
+  width: calc(var(--space-s16) + var(--space-s2));
+  height: calc(var(--space-s16) + var(--space-s2));
+}
+
+.root[data-irm-shape="round"] .input {
+  border-radius: var(--radius-full);
+}
+
+.input:hover:not(:disabled):not(:checked) {
+  border-color: var(--color-border-field-hover);
+}
+
+.input:checked,
+.input:indeterminate {
+  border-color: var(--color-brand-teal);
+  background-color: var(--color-brand-teal);
+}
+
+.icon {
+  color: var(--color-pure-white);
+}
+
+.root[data-error] .input:not(:checked):not(:indeterminate) {
+  border-color: var(--color-error-border);
+}
+
+.input:disabled {
+  border-color: transparent;
+  background-color: var(--color-disabled-bg);
+  opacity: 1;
+}
+
+.input:disabled + .icon,
+.root[data-disabled] .label {
+  color: var(--color-disabled-text);
+}
+
+.input:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.error {
+  padding-top: var(--space-s4);
+  color: var(--color-error-text);
+  font-family: var(--font-family-control-sm);
+  font-size: var(--font-size-control-sm);
+  font-weight: var(--font-weight-control-sm);
+  line-height: var(--font-line-height-control-sm);
+}

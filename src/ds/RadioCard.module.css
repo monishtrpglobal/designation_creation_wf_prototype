@@ -1,0 +1,99 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s12);
+}
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-s12);
+  width: 100%;
+  padding: var(--space-s16);
+  border: var(--border-default) solid var(--color-border-input);
+  border-radius: var(--radius-s12);
+  background-color: var(--color-bg-surface);
+  cursor: pointer;
+}
+
+.card[data-checked] {
+  border-width: var(--border-emphasis);
+  border-color: var(--color-brand-primary);
+  background-color: var(--color-brand-teal-soft);
+}
+
+.card:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.card:disabled,
+.card[data-disabled] {
+  border-width: var(--border-default);
+  border-color: var(--color-border-input);
+  background-color: var(--color-disabled-bg);
+  cursor: not-allowed;
+}
+
+.indicator {
+  width: var(--space-s20);
+  height: var(--space-s20);
+  border: var(--border-emphasis) solid var(--color-neutral-border);
+  background-color: var(--color-bg-surface);
+  color: var(--color-brand-primary);
+}
+
+.card[data-checked] .indicator {
+  border-color: var(--color-brand-primary);
+  background-color: var(--color-bg-surface);
+}
+
+.card:disabled .indicator,
+.card[data-disabled] .indicator {
+  border-color: var(--color-disabled-text);
+  background-color: var(--color-disabled-bg);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-s2);
+  min-width: 0;
+}
+
+.title {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-label-l1);
+  font-size: var(--font-size-label-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.subtitle {
+  color: var(--color-text-body);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.card:disabled .title,
+.card:disabled .subtitle,
+.card[data-disabled] .title,
+.card[data-disabled] .subtitle {
+  color: var(--color-disabled-text);
+}
+
+.tag {
+  align-self: flex-start;
+  padding: var(--space-s2) var(--space-s8);
+  border: var(--border-default) solid var(--color-neutral-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+  font-family: var(--font-family-control-sm);
+  font-size: var(--font-size-control-sm);
+  font-weight: var(--font-weight-control-sm);
+  line-height: var(--font-line-height-control-sm);
+}

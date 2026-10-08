@@ -1,0 +1,91 @@
+.list {
+  display: flex;
+  gap: var(--space-s8);
+  padding: var(--space-s4);
+  border-bottom: 0;
+}
+
+.list[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.list[data-variant="underline"] {
+  gap: var(--space-s24);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s8);
+  margin: 0;
+  border: var(--border-default) solid transparent;
+  background: transparent;
+  color: var(--color-text-strong);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  cursor: pointer;
+}
+
+.tab:focus {
+  outline: none;
+}
+
+.tab:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.tab:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+.tab[data-variant="pill"] {
+  padding: var(--space-s8) var(--space-s12);
+  border-color: var(--color-gray-2);
+  border-radius: var(--radius-s16);
+  background-color: var(--color-gray-2);
+}
+
+.tab[data-variant="pill"]:hover:not(:disabled):not([data-active]) {
+  border-color: var(--color-gray-3);
+  background-color: var(--color-gray-3);
+}
+
+.tab[data-variant="pill"][data-active] {
+  border-color: var(--color-sea-5);
+  background-color: var(--color-gray-8);
+  color: var(--color-text-inverse);
+}
+
+.tab[data-variant="pill"][data-active]:hover:not(:disabled) {
+  background-color: var(--color-gray-9);
+}
+
+.tab[data-variant="underline"] {
+  padding: var(--space-s12) var(--space-s4);
+  border: 0;
+  border-bottom: var(--border-emphasis) solid transparent;
+  border-radius: var(--radius-s4);
+  color: var(--color-gray-7);
+  font-family: var(--font-family-lato-bold);
+  font-size: var(--font-size-l1);
+  font-weight: var(--font-weight-label-l1);
+}
+
+.tab[data-variant="underline"]:hover:not(:disabled):not([data-active]) {
+  border-bottom-color: var(--color-gray-4);
+  color: var(--color-gray-9);
+}
+
+.tab[data-variant="underline"][data-active] {
+  border-bottom-color: var(--color-tab-underline-active);
+  color: var(--color-tab-underline-active);
+}
+
+.panel {
+  margin-top: var(--space-s16);
+}

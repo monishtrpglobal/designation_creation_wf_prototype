@@ -1,0 +1,92 @@
+.steps {
+  align-items: center;
+  width: 100%;
+}
+
+.content {
+  display: none;
+}
+
+.separator {
+  flex: none;
+  width: var(--space-s32);
+  height: var(--border-emphasis);
+  margin-inline: var(--space-s8);
+  background-color: var(--color-border-input);
+}
+
+.step {
+  flex: none;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.step:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.step[data-irm-state="disabled"] {
+  opacity: var(--opacity-disabled);
+}
+
+.stepIcon {
+  width: var(--space-s48);
+  height: var(--space-s48);
+  min-width: var(--space-s48);
+  min-height: var(--space-s48);
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  border: none;
+  font-family: var(--font-family-lato-semibold);
+  font-size: var(--font-size-b3);
+  font-weight: var(--font-weight-body-b1);
+  line-height: var(--space-s24);
+}
+
+.step[data-irm-state="completed"] .stepIcon {
+  background-color: var(--color-brand-primary);
+  color: var(--color-text-inverse);
+}
+
+.step[data-irm-state="current"] .stepIcon {
+  background-color: var(--color-bg-surface);
+  border: var(--border-emphasis) solid var(--color-in-progress-border);
+  color: var(--color-in-progress-text);
+}
+
+.step[data-irm-state="pending"] .stepIcon,
+.step[data-irm-state="disabled"] .stepIcon {
+  background-color: var(--color-bg-surface-raised);
+  border: var(--border-emphasis) solid var(--color-border-input);
+  color: var(--color-text-muted);
+}
+
+.step[data-irm-state="error"] .stepIcon {
+  background-color: var(--color-bg-surface);
+  border: var(--border-emphasis) solid var(--color-error-border);
+  color: var(--color-error-border);
+}
+
+.stepBody {
+  margin-inline-start: var(--space-s12);
+}
+
+.stepLabel {
+  margin: 0;
+  font-family: var(--font-family-lato-semibold);
+  font-size: var(--font-size-b3);
+  font-weight: var(--font-weight-body-b1);
+  line-height: var(--space-s24);
+  color: var(--color-text-strong);
+}
+
+.step[data-irm-state="error"] .stepLabel {
+  color: var(--color-error-text);
+}
+
+.stepDescription {
+  margin-top: var(--space-s4);
+  margin-bottom: 0;
+}

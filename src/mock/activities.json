@@ -1,0 +1,762 @@
+{
+  "tcodes": [
+    {
+      "id": "VA02",
+      "code": "VA02",
+      "description": "Change sales order (sample data)",
+      "manual": false
+    },
+    {
+      "id": "VA03",
+      "code": "VA03",
+      "description": "Display sales order (sample data)",
+      "manual": false
+    },
+    {
+      "id": "VA05",
+      "code": "VA05",
+      "description": "List of sales orders (sample data)",
+      "manual": true
+    },
+    {
+      "id": "VF03",
+      "code": "VF03",
+      "description": "Display billing document (sample data)",
+      "manual": false
+    },
+    {
+      "id": "VF44",
+      "code": "VF44",
+      "description": "Revenue recognition (sample data)",
+      "manual": false
+    },
+    {
+      "id": "VF45",
+      "code": "VF45",
+      "description": "Revenue report (sample data)",
+      "manual": false
+    },
+    {
+      "id": "VF46",
+      "code": "VF46",
+      "description": "Cancel revenue recognition (sample data)",
+      "manual": true
+    },
+    {
+      "id": "FB02",
+      "code": "FB02",
+      "description": "Change document (sample data)",
+      "manual": false
+    },
+    {
+      "id": "FB03",
+      "code": "FB03",
+      "description": "Display document (sample data)",
+      "manual": false
+    },
+    {
+      "id": "FBL3N",
+      "code": "FBL3N",
+      "description": "G/L account line items (sample data)",
+      "manual": false
+    },
+    {
+      "id": "FBL5N",
+      "code": "FBL5N",
+      "description": "Customer line items (sample data)",
+      "manual": true
+    },
+    {
+      "id": "FAGLL03",
+      "code": "FAGLL03",
+      "description": "G/L line item display (sample data)",
+      "manual": false
+    }
+  ],
+  "authObjects": [
+    {
+      "id": "A_A_VIEW",
+      "name": "A_A_VIEW",
+      "class": "AAAB",
+      "description": "Asset view (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "A_B_ANLKL",
+      "name": "A_B_ANLKL",
+      "class": "AAAB",
+      "description": "Asset class (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "A_B_BWART",
+      "name": "A_B_BWART",
+      "class": "AAAB",
+      "description": "Asset movement type (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "A_S_ANLKL",
+      "name": "A_S_ANLKL",
+      "class": "AAAB",
+      "description": "Asset master class (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "A_S_WERK",
+      "name": "A_S_WERK",
+      "class": "AAAB",
+      "description": "Asset plant (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "A_IMA_GSB",
+      "name": "A_IMA_GSB",
+      "class": "AAAB",
+      "description": "Investment program (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "A_IMA_INV",
+      "name": "A_IMA_INV",
+      "class": "AAAB",
+      "description": "Investment measure (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "A_PERI_BUK",
+      "name": "A_PERI_BUK",
+      "class": "AAAB",
+      "description": "Periodic posting company (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "F_BKPF_BUK",
+      "name": "F_BKPF_BUK",
+      "class": "FI",
+      "description": "Accounting document company (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "F_BKPF_KOA",
+      "name": "F_BKPF_KOA",
+      "class": "FI",
+      "description": "Accounting document account type (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "F_BKPF_GSB",
+      "name": "F_BKPF_GSB",
+      "class": "FI",
+      "description": "Accounting document business area (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "F_FAGL_LDR",
+      "name": "F_FAGL_LDR",
+      "class": "FI",
+      "description": "General ledger ledger (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "F_LFA1_APP",
+      "name": "F_LFA1_APP",
+      "class": "FI",
+      "description": "Vendor application (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "F_LFA1_BEK",
+      "name": "F_LFA1_BEK",
+      "class": "FI",
+      "description": "Vendor account (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "F_KNA1_APP",
+      "name": "F_KNA1_APP",
+      "class": "FI",
+      "description": "Customer application (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "F_KNA1_BED",
+      "name": "F_KNA1_BED",
+      "class": "FI",
+      "description": "Customer account (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "F_SKA1_KTP",
+      "name": "F_SKA1_KTP",
+      "class": "FI",
+      "description": "G/L account type (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "F_PAYR_BUK",
+      "name": "F_PAYR_BUK",
+      "class": "FI",
+      "description": "Payment company (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "F_REGU_BUK",
+      "name": "F_REGU_BUK",
+      "class": "FI",
+      "description": "Payment program company (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "F_REGU_KOA",
+      "name": "F_REGU_KOA",
+      "class": "FI",
+      "description": "Payment program account (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "F_BNKA_MAN",
+      "name": "F_BNKA_MAN",
+      "class": "FI",
+      "description": "Bank master (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "F_ACE_PST",
+      "name": "F_ACE_PST",
+      "class": "FI",
+      "description": "Accrual posting (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "V_VBAK_AAT",
+      "name": "V_VBAK_AAT",
+      "class": "SD",
+      "description": "Sales order type (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "V_VBAK_VKO",
+      "name": "V_VBAK_VKO",
+      "class": "SD",
+      "description": "Sales order area (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "V_VBRK_VKO",
+      "name": "V_VBRK_VKO",
+      "class": "SD",
+      "description": "Billing area (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "V_KONH_VKS",
+      "name": "V_KONH_VKS",
+      "class": "SD",
+      "description": "Pricing condition (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "V_LIKP_VST",
+      "name": "V_LIKP_VST",
+      "class": "SD",
+      "description": "Delivery shipping point (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "M_MATE_WRK",
+      "name": "M_MATE_WRK",
+      "class": "SD",
+      "description": "Material plant (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "M_MSEG_BWA",
+      "name": "M_MSEG_BWA",
+      "class": "SD",
+      "description": "Material document movement (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "M_MSEG_WMB",
+      "name": "M_MSEG_WMB",
+      "class": "SD",
+      "description": "Material document storage (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "V_VTTK_SHT",
+      "name": "V_VTTK_SHT",
+      "class": "SD",
+      "description": "Shipment type (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "V_KNKK_FRE",
+      "name": "V_KNKK_FRE",
+      "class": "SD",
+      "description": "Credit management (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "K_CCA",
+      "name": "K_CCA",
+      "class": "CO",
+      "description": "Cost center (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "K_CSKS",
+      "name": "K_CSKS",
+      "class": "CO",
+      "description": "Cost center master (sample data)",
+      "status": "Manual",
+      "sample": true
+    },
+    {
+      "id": "K_ORDER",
+      "name": "K_ORDER",
+      "class": "CO",
+      "description": "Internal order (sample data)",
+      "status": "Inactive",
+      "sample": true
+    },
+    {
+      "id": "K_VRGNG",
+      "name": "K_VRGNG",
+      "class": "CO",
+      "description": "CO transaction (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "S_TCODE",
+      "name": "S_TCODE",
+      "class": "BC",
+      "description": "Transaction start (sample data)",
+      "status": "Standard",
+      "sample": true
+    },
+    {
+      "id": "S_TABU_DIS",
+      "name": "S_TABU_DIS",
+      "class": "BC",
+      "description": "Table maintenance (sample data)",
+      "status": "Maintained",
+      "sample": true
+    },
+    {
+      "id": "S_RFC",
+      "name": "S_RFC",
+      "class": "BC",
+      "description": "RFC access (sample data)",
+      "status": "Changed",
+      "sample": true
+    },
+    {
+      "id": "S_CTS_ADMI",
+      "name": "S_CTS_ADMI",
+      "class": "BC",
+      "description": "Transport administration (sample data)",
+      "status": "Manual",
+      "sample": true
+    }
+  ],
+  "orgLevels": [
+    {
+      "id": "KOKRS",
+      "name": "Controlling area",
+      "state": "open",
+      "values": [],
+      "sample": true
+    },
+    {
+      "id": "WERKS",
+      "name": "Plant",
+      "state": "open",
+      "values": [],
+      "sample": true
+    },
+    {
+      "id": "BUKRS",
+      "name": "Company code",
+      "state": "values",
+      "values": [
+        "1000",
+        "1010",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000"
+      ],
+      "sample": true
+    },
+    {
+      "id": "VKORG",
+      "name": "Sales organization",
+      "state": "range",
+      "from": "1000",
+      "to": "1999",
+      "values": [],
+      "sample": true
+    },
+    {
+      "id": "VTWEG",
+      "name": "Distribution channel",
+      "state": "values",
+      "values": [
+        "10",
+        "20"
+      ],
+      "sample": true
+    },
+    {
+      "id": "SPART",
+      "name": "Division",
+      "state": "wildcard",
+      "values": [
+        "*"
+      ],
+      "sample": true
+    },
+    {
+      "id": "LGORT",
+      "name": "Storage location",
+      "state": "values",
+      "values": [
+        "0001"
+      ],
+      "sample": true
+    },
+    {
+      "id": "VSTEL",
+      "name": "Shipping point",
+      "state": "values",
+      "values": [
+        "1000"
+      ],
+      "sample": true
+    }
+  ],
+  "plants": [
+    {
+      "value": "1000",
+      "label": "Hamburg",
+      "sample": true
+    },
+    {
+      "value": "1010",
+      "label": "Berlin",
+      "sample": true
+    },
+    {
+      "value": "2000",
+      "label": "New York",
+      "sample": true
+    },
+    {
+      "value": "3000",
+      "label": "Singapore",
+      "sample": true
+    },
+    {
+      "value": "4000",
+      "label": "Shanghai",
+      "sample": true
+    }
+  ],
+  "activities": [
+    {
+      "id": "account-payable",
+      "name": "Account Payable",
+      "description": "Vendor invoices and payments (sample data)",
+      "tcodeIds": [
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK",
+        "F_KNA1_APP",
+        "F_KNA1_BED",
+        "S_TCODE",
+        "S_TABU_DIS"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "account-receivable",
+      "name": "Account Receivable",
+      "description": "Customer items and cash application (sample data)",
+      "tcodeIds": [
+        "FBL5N",
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_LFA1_APP",
+        "F_LFA1_BEK",
+        "F_KNA1_APP",
+        "F_KNA1_BED",
+        "F_SKA1_KTP",
+        "F_PAYR_BUK",
+        "F_REGU_BUK",
+        "F_REGU_KOA",
+        "S_TCODE",
+        "S_TABU_DIS"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "general-ledger",
+      "name": "General Ledger",
+      "description": "Journal entries and G/L line items (sample data)",
+      "tcodeIds": [
+        "FBL3N",
+        "FAGLL03",
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK",
+        "K_CCA",
+        "K_CSKS",
+        "K_ORDER",
+        "K_VRGNG",
+        "S_TCODE"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "asset-accounting",
+      "name": "Asset Accounting",
+      "description": "Asset acquisition and retirement (sample data)",
+      "tcodeIds": [
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "A_A_VIEW",
+        "A_B_ANLKL",
+        "A_B_BWART",
+        "A_S_ANLKL",
+        "A_S_WERK",
+        "A_IMA_GSB",
+        "A_IMA_INV",
+        "A_PERI_BUK",
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS",
+        "WERKS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "lease-accounting",
+      "name": "Lease Accounting",
+      "description": "Lease contracts and postings (sample data)",
+      "tcodeIds": [
+        "FB02",
+        "FB03",
+        "FAGLL03"
+      ],
+      "authObjectIds": [
+        "A_A_VIEW",
+        "A_B_ANLKL",
+        "A_B_BWART",
+        "A_S_ANLKL",
+        "F_SKA1_KTP",
+        "F_PAYR_BUK",
+        "F_REGU_BUK",
+        "F_REGU_KOA",
+        "F_BNKA_MAN",
+        "F_ACE_PST"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "bank-and-cash",
+      "name": "Bank and Cash",
+      "description": "Bank statements and cash position (sample data)",
+      "tcodeIds": [
+        "FB02",
+        "FB03",
+        "FBL3N"
+      ],
+      "authObjectIds": [
+        "F_SKA1_KTP",
+        "F_PAYR_BUK",
+        "F_REGU_BUK",
+        "F_REGU_KOA",
+        "F_BNKA_MAN",
+        "F_ACE_PST",
+        "S_TABU_DIS",
+        "S_RFC"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "revenue-recognition",
+      "name": "Revenue Recognition",
+      "description": "Sales orders and revenue recognition (sample data)",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46"
+      ],
+      "authObjectIds": [
+        "V_VBAK_AAT",
+        "V_VBAK_VKO",
+        "V_VBRK_VKO",
+        "V_KONH_VKS",
+        "V_LIKP_VST",
+        "M_MATE_WRK",
+        "M_MSEG_BWA",
+        "M_MSEG_WMB",
+        "V_VTTK_SHT",
+        "V_KNKK_FRE",
+        "F_BKPF_BUK",
+        "F_BKPF_KOA"
+      ],
+      "orgLevelIds": [
+        "VKORG",
+        "VTWEG",
+        "SPART",
+        "VSTEL",
+        "WERKS",
+        "BUKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "inventory-material-ledger",
+      "name": "Inventory and Material Ledger",
+      "description": "Goods movements and material ledger (sample data)",
+      "tcodeIds": [
+        "FBL3N",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "M_MATE_WRK",
+        "M_MSEG_BWA",
+        "M_MSEG_WMB",
+        "V_VTTK_SHT",
+        "V_KNKK_FRE",
+        "K_CCA",
+        "K_CSKS",
+        "K_ORDER",
+        "K_VRGNG",
+        "S_TCODE",
+        "S_TABU_DIS"
+      ],
+      "orgLevelIds": [
+        "WERKS",
+        "LGORT",
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "tax",
+      "name": "Tax",
+      "description": "Tax reporting and postings (sample data)",
+      "tcodeIds": [
+        "FBL3N",
+        "FAGLL03",
+        "FB02"
+      ],
+      "authObjectIds": [
+        "F_KNA1_APP",
+        "F_KNA1_BED",
+        "F_SKA1_KTP",
+        "F_PAYR_BUK",
+        "F_REGU_BUK",
+        "F_REGU_KOA",
+        "F_BNKA_MAN",
+        "F_ACE_PST",
+        "S_TCODE",
+        "S_TABU_DIS",
+        "S_RFC",
+        "S_CTS_ADMI"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    }
+  ]
+}

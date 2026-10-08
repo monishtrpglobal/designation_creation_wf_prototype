@@ -1,0 +1,19 @@
+.tooltip {
+  padding: var(--space-s2) var(--space-s8);
+  border-radius: var(--radius-s6);
+  background-color: var(--color-bg-nav);
+  color: var(--color-text-inverse);
+  font-family: var(--font-family-label-l1);
+  font-size: var(--font-size-label-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.tooltip[data-irm-width="single-line"] {
+  white-space: nowrap;
+}
+
+.arrow {
+  background-color: var(--color-bg-nav);
+  border-color: var(--color-bg-nav);
+}

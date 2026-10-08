@@ -1,0 +1,175 @@
+.root {
+  box-sizing: border-box;
+}
+
+.root::before {
+  display: none;
+}
+
+.root:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.root[data-irm-size="xs"] {
+  height: var(--space-s24);
+  padding: var(--space-s4) var(--space-s6);
+  border-radius: var(--radius-s4);
+}
+
+.root[data-irm-size="sm"] {
+  height: calc(var(--space-s24) + var(--space-s6));
+  padding: var(--space-s6) var(--space-s8);
+  border-radius: var(--radius-s8);
+}
+
+.root[data-irm-size="md"] {
+  height: var(--space-s40);
+  padding: var(--space-s8) var(--space-s10);
+  border-radius: var(--radius-s10);
+}
+
+.root[data-irm-size="lg"] {
+  height: var(--space-s48);
+  padding: var(--space-s10);
+  border-radius: var(--radius-s12);
+}
+
+.inner {
+  opacity: 1;
+  transform: none;
+}
+
+.root[data-irm-size="xs"] .inner,
+.root[data-irm-size="sm"] .inner,
+.root[data-irm-size="md"] .inner {
+  gap: var(--space-s2);
+}
+
+.root[data-irm-size="lg"] .inner {
+  gap: var(--space-s4);
+}
+
+.label {
+  opacity: 1;
+}
+
+.root[data-irm-size="xs"] .label,
+.root[data-irm-size="sm"] .label {
+  font-family: var(--font-family-control-sm);
+  font-size: var(--font-size-control-sm);
+  font-weight: var(--font-weight-control-sm);
+  line-height: var(--font-line-height-control-sm);
+}
+
+.root[data-irm-size="md"] .label {
+  font-family: var(--font-family-control-md);
+  font-size: var(--font-size-control-md);
+  font-weight: var(--font-weight-control-md);
+  line-height: var(--font-line-height-control-md);
+}
+
+.root[data-irm-size="lg"] .label {
+  font-family: var(--font-family-lato-semibold);
+  font-size: var(--font-size-b1);
+  font-weight: var(--font-weight-body-b1);
+}
+
+.section {
+  margin: 0;
+}
+
+.root[data-irm-size="xs"] .section,
+.root[data-irm-size="sm"] .section {
+  width: var(--space-s16);
+  height: var(--space-s16);
+}
+
+.root[data-irm-size="md"] .section {
+  width: var(--font-size-b3);
+  height: var(--font-size-b3);
+}
+
+.root[data-irm-size="lg"] .section {
+  width: var(--space-s24);
+  height: var(--space-s24);
+}
+
+.loader {
+  display: none;
+}
+
+.root[data-irm-variant="primary"] {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-action-primary-start),
+    var(--color-action-primary-end)
+  );
+  color: var(--color-text-inverse-soft);
+  border: var(--border-default) solid var(--color-action-primary-border);
+}
+
+.root[data-irm-variant="primary"]:hover:not(:disabled):not([data-loading]) {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-action-primary-hover-start),
+    var(--color-action-primary-end)
+  );
+}
+
+.root[data-irm-variant="secondary"] {
+  background-color: var(--color-action-secondary-bg);
+  color: var(--color-action-secondary-text);
+  border: none;
+}
+
+.root[data-irm-variant="secondary"]:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--color-action-secondary-bg-hover);
+}
+
+.root[data-irm-variant="warn"] {
+  background-color: var(--color-error-solid);
+  color: var(--color-error-on-solid);
+  border: none;
+}
+
+.root[data-irm-variant="warn"]:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--color-error-solid-hover);
+}
+
+.root[data-irm-variant="ghost"] {
+  background-color: transparent;
+  color: var(--color-text-link);
+  border: none;
+}
+
+.root[data-irm-variant="ghost"]:hover:not(:disabled):not([data-loading]) {
+  background-color: var(--color-bg-canvas);
+  color: var(--color-text-link-hover);
+}
+
+.root[data-irm-variant="ghost"]:hover:not(:disabled):not([data-loading]) .label {
+  box-shadow: inset 0 calc(var(--border-default) * -1) 0 var(--color-text-link-hover);
+}
+
+.root:disabled:not([data-loading]),
+.root[data-disabled]:not([data-loading]) {
+  opacity: 1;
+  background-image: none;
+  color: var(--color-disabled-text);
+  border: none;
+}
+
+.root[data-irm-variant="ghost"]:disabled:not([data-loading]),
+.root[data-irm-variant="ghost"][data-disabled]:not([data-loading]) {
+  background-color: transparent;
+}
+
+.root:disabled:not([data-loading]):not([data-irm-variant="ghost"]),
+.root[data-disabled]:not([data-loading]):not([data-irm-variant="ghost"]) {
+  background-color: var(--color-disabled-bg);
+}
+
+.root[data-loading] {
+  opacity: var(--opacity-loading);
+}

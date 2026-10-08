@@ -1,0 +1,88 @@
+{
+  "conflicts": [
+    {
+      "id": "sod-01",
+      "designationId": "inventory-controller",
+      "roleAId": "new-33",
+      "roleBId": "existing-14",
+      "roleALabel": "Goods Movement Clerk",
+      "roleBLabel": "Physical Inventory Counter",
+      "risk": "High",
+      "justification": "",
+      "whitelisted": false,
+      "whitelistedBy": null,
+      "whitelistedAt": null,
+      "sample": true
+    },
+    {
+      "id": "sod-02",
+      "designationId": "inventory-controller",
+      "roleAId": "new-34",
+      "roleBId": "existing-13",
+      "roleALabel": "Storage Location Clerk",
+      "roleBLabel": "Goods Receipt Poster",
+      "risk": "Medium",
+      "justification": "Same warehouse team posts receipts and maintains locations (sample data).",
+      "whitelisted": true,
+      "whitelistedBy": "A. Rao (sample data)",
+      "whitelistedAt": "2026-01-15",
+      "sample": true
+    },
+    {
+      "id": "sod-03",
+      "designationId": "inventory-controller",
+      "roleAId": "new-35",
+      "roleBId": "existing-13",
+      "roleALabel": "Inventory Adjustment Clerk",
+      "roleBLabel": "Goods Receipt Poster",
+      "risk": "Medium",
+      "justification": "",
+      "whitelisted": false,
+      "whitelistedBy": null,
+      "whitelistedAt": null,
+      "sample": true
+    },
+    {
+      "id": "sod-04",
+      "designationId": "inventory-controller",
+      "roleAId": "new-36",
+      "roleBId": "existing-18",
+      "roleALabel": "Batch Status Viewer",
+      "roleBLabel": "Material Ledger Display",
+      "risk": "Low",
+      "justification": "Display-only pair used for cycle counts (sample data).",
+      "whitelisted": true,
+      "whitelistedBy": "M. Iyer (sample data)",
+      "whitelistedAt": "2026-02-20",
+      "sample": true
+    },
+    {
+      "id": "sod-05",
+      "designationId": "inventory-controller",
+      "roleAId": "new-37",
+      "roleBId": "existing-15",
+      "roleALabel": "Plant Stock Reporter",
+      "roleBLabel": "Stock Display Analyst",
+      "risk": "Low",
+      "justification": "",
+      "whitelisted": false,
+      "whitelistedBy": null,
+      "whitelistedAt": null,
+      "sample": true
+    },
+    {
+      "id": "sod-06",
+      "designationId": "inventory-controller",
+      "roleAId": "new-38",
+      "roleBId": "existing-15",
+      "roleALabel": "Bin Status Reporter",
+      "roleBLabel": "Stock Display Analyst",
+      "risk": "Low",
+      "justification": "",
+      "whitelisted": false,
+      "whitelistedBy": null,
+      "whitelistedAt": null,
+      "sample": true
+    }
+  ]
+}

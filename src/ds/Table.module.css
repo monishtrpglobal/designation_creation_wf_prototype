@@ -1,0 +1,97 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-bg-surface-white);
+}
+
+.headerCell,
+.cell {
+  box-sizing: border-box;
+  height: var(--space-s40);
+  padding: 0 var(--space-s16) 0 var(--space-s12);
+  border-bottom: var(--border-default) solid var(--color-border-subtle);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.headerCell {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-inter-display-bold);
+  font-size: var(--font-size-l3);
+  font-weight: var(--font-weight-heading-h1);
+  line-height: var(--font-line-height-control-sm);
+}
+
+.headerCell[data-sort="idle"]:hover,
+.headerCell[data-sort="asc"]:hover,
+.headerCell[data-sort="desc"]:hover {
+  background-color: var(--color-bg-surface-raised);
+}
+
+.sortButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-s6);
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sortButton:focus {
+  outline: none;
+}
+
+.sortButton:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+  border-radius: var(--radius-s4);
+}
+
+.sortLabel {
+  overflow: hidden;
+  max-width: calc(var(--space-s96) + var(--space-s48) + var(--space-s4));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sortIcon {
+  flex-shrink: 0;
+  color: var(--color-text-body);
+}
+
+.headerCell[data-sort="asc"] .sortIcon,
+.headerCell[data-sort="desc"] .sortIcon {
+  color: var(--color-text-strong);
+}
+
+.plainLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell {
+  color: var(--color-text-body);
+  font-family: var(--font-family-inter-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.row[data-clickable="true"] {
+  cursor: pointer;
+}
+
+.row[data-clickable="true"]:hover .cell {
+  background-color: var(--color-bg-surface-raised);
+}
+
+.row[data-clickable="true"]:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}

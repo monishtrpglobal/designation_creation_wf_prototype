@@ -1,0 +1,54 @@
+{
+  "analyses": [
+    {
+      "designationId": "inventory-controller",
+      "status": "completed",
+      "beforeLabel": "₹ 12.4 L",
+      "afterLabel": "₹ 9.6 L",
+      "savingLabel": "₹ 2.8 L",
+      "savingPercent": 23,
+      "beforeLakhs": 12.4,
+      "afterLakhs": 9.6,
+      "savingLakhs": 2.8,
+      "sample": true,
+      "lines": [
+        {
+          "id": "lic-professional",
+          "userType": "Professional",
+          "beforeCount": 40,
+          "afterCount": 28,
+          "beforeLakhs": 8,
+          "afterLakhs": 6.2,
+          "sample": true
+        },
+        {
+          "id": "lic-limited",
+          "userType": "Limited Professional",
+          "beforeCount": 15,
+          "afterCount": 12,
+          "beforeLakhs": 3.2,
+          "afterLakhs": 2.4,
+          "sample": true
+        },
+        {
+          "id": "lic-employee",
+          "userType": "Employee",
+          "beforeCount": 80,
+          "afterCount": 80,
+          "beforeLakhs": 0.8,
+          "afterLakhs": 0.8,
+          "sample": true
+        },
+        {
+          "id": "lic-developer",
+          "userType": "Developer",
+          "beforeCount": 2,
+          "afterCount": 1,
+          "beforeLakhs": 0.4,
+          "afterLakhs": 0.2,
+          "sample": true
+        }
+      ]
+    }
+  ]
+}

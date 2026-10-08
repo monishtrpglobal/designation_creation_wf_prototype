@@ -1,0 +1,85 @@
+[
+  {
+    "id": "draft-cash-application",
+    "name": "Cash Application Specialist",
+    "businessArea": "Finance",
+    "status": "Draft",
+    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "syncing-revenue",
+    "name": "Revenue Accountant",
+    "businessArea": "Finance",
+    "status": "Syncing to Dev",
+    "updatedAt": "2026-10-02T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "inventory-controller",
+    "name": "Inventory Controller",
+    "businessArea": "Supply Chain",
+    "status": "Awaiting TR approval",
+    "updatedAt": "2026-10-03T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 12.4 L",
+      "afterLabel": "₹ 9.6 L",
+      "savingLabel": "₹ 2.8 L",
+      "savingPercent": 23
+    },
+    "sodSummary": {
+      "high": 1,
+      "medium": 2,
+      "low": 3
+    }
+  },
+  {
+    "id": "quality-maintenance",
+    "name": "Maintenance Planner",
+    "businessArea": "Plant Maintenance",
+    "status": "Moving to Quality",
+    "updatedAt": "2026-10-04T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "license-payables",
+    "name": "Accounts Payable Lead",
+    "businessArea": "Finance",
+    "status": "License analysis running",
+    "updatedAt": "2026-10-05T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "approve-ledger",
+    "name": "General Ledger Steward",
+    "businessArea": "Finance",
+    "status": "Awaiting final approval",
+    "updatedAt": "2026-10-06T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "failed-tax",
+    "name": "Tax Compliance Lead",
+    "businessArea": "Finance",
+    "status": "Analysis failed",
+    "updatedAt": "2026-10-07T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "rejected-assets",
+    "name": "Asset Accountant",
+    "businessArea": "Finance",
+    "status": "Rejected",
+    "updatedAt": "2026-09-28T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "published-billing",
+    "name": "Billing Specialist",
+    "businessArea": "Order to Cash",
+    "status": "Published",
+    "updatedAt": "2026-09-20T09:00:00.000Z",
+    "sample": true
+  }
+]

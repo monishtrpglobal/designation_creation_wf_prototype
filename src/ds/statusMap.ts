@@ -1,0 +1,71 @@
+import type { BadgeVariant } from "./Badge";
+
+export const badgeStatuses = [
+  "Ready",
+  "Validated",
+  "Created",
+  "Creating",
+  "Linking",
+  "Syncing",
+  "ID entered",
+  "Queued",
+  "Needed",
+  "Draft",
+  "Awaiting TR approval",
+  "Awaiting final approval",
+  "Name clash",
+  "Too long",
+  "Awaiting SAP",
+  "Open",
+  "Wildcard",
+  "Higher risk",
+  "Error",
+  "Gap found",
+  "Analysis failed",
+  "Rejected",
+  "Standard",
+  "Maintained",
+  "Changed",
+  "Manual",
+  "Inactive",
+  "SAP default",
+  "Published",
+] as const;
+
+export type BadgeStatus = (typeof badgeStatuses)[number];
+
+const statusToVariant = {
+  Ready: "completed",
+  Validated: "completed",
+  Created: "completed",
+  Published: "completed",
+  Creating: "in-progress",
+  Linking: "in-progress",
+  Syncing: "in-progress",
+  "ID entered": "in-progress",
+  Queued: "pending",
+  Needed: "pending",
+  Draft: "pending",
+  "Awaiting TR approval": "pending",
+  "Awaiting final approval": "pending",
+  "Name clash": "warning",
+  "Too long": "warning",
+  "Awaiting SAP": "warning",
+  Open: "warning",
+  Wildcard: "warning",
+  "Higher risk": "warning",
+  Error: "error",
+  "Gap found": "error",
+  "Analysis failed": "error",
+  Rejected: "error",
+  Standard: "light",
+  "SAP default": "light",
+  Maintained: "completed",
+  Changed: "dot",
+  Manual: "outline",
+  Inactive: "pending",
+} as const satisfies Record<BadgeStatus, BadgeVariant>;
+
+export function statusBadge(status: BadgeStatus): BadgeVariant {
+  return statusToVariant[status];
+}

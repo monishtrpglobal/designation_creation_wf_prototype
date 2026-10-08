@@ -1,0 +1,57 @@
+.root {
+  box-sizing: border-box;
+  padding: var(--space-s4);
+  border-radius: var(--radius-mantine-md);
+  background-color: var(--color-gray-2);
+}
+
+.root:focus-within {
+  outline: none;
+}
+
+.root:has(:focus-visible) {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.root[data-irm-size="md"] {
+  min-height: calc(var(--space-s32) + var(--space-s4));
+}
+
+.indicator {
+  border-radius: var(--radius-mantine-sm);
+  background-color: var(--color-gray-0);
+  box-shadow: var(--shadow-mantine-xs);
+}
+
+.label {
+  padding-top: var(--space-s4);
+  padding-bottom: var(--space-s4);
+  color: var(--color-gray-7);
+  font-family: var(--font-family-lato-semibold);
+  font-size: var(--font-size-l3);
+  font-weight: var(--font-weight-control-sm);
+  line-height: var(--font-line-height-control-sm);
+}
+
+.root[data-irm-size="sm"] .label {
+  padding-left: var(--space-s8);
+  padding-right: var(--space-s8);
+}
+
+.root[data-irm-size="md"] .label {
+  padding-left: var(--space-s12);
+  padding-right: var(--space-s12);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.label[data-active] {
+  color: var(--color-text-strong);
+}
+
+.control::before {
+  display: none;
+}

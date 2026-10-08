@@ -1,0 +1,41 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background-color: var(--color-bg-canvas);
+  box-shadow: var(--shadow-mantine-xl);
+}
+
+.mantineBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--color-bg-canvas);
+}
+
+.header,
+.footer {
+  flex-shrink: 0;
+  padding: var(--space-s16) var(--space-s20);
+  background-color: var(--color-bg-surface-raised);
+}
+
+.header {
+  border-bottom: var(--border-default) solid var(--color-border-subtle);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background-color: var(--color-bg-canvas);
+}
+
+.footer {
+  border-top: var(--border-default) solid var(--color-border-subtle);
+}

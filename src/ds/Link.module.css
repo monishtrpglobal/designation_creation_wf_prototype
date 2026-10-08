@@ -1,0 +1,29 @@
+.root {
+  display: inline-flex;
+  padding: var(--space-s2) var(--space-s4);
+  border-radius: var(--radius-s4);
+  color: var(--color-text-link);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--border-default);
+  text-underline-offset: var(--space-s2);
+  white-space: nowrap;
+}
+
+.root:hover {
+  color: var(--color-text-link-hover);
+  text-decoration-thickness: var(--border-emphasis);
+}
+
+.root:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.root[data-disabled] {
+  color: var(--color-text-muted);
+  pointer-events: none;
+}

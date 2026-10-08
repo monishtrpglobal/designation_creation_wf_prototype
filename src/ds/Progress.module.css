@@ -1,0 +1,179 @@
+.line {
+  width: 100%;
+  background-color: var(--color-gray-2);
+  border-radius: var(--radius-mantine-md);
+}
+
+.line[data-size="xs"] {
+  --progress-size: var(--space-s4) !important;
+}
+
+.line[data-size="sm"] {
+  --progress-size: var(--space-s6) !important;
+}
+
+.line[data-size="md"] {
+  --progress-size: var(--space-s8) !important;
+}
+
+.line[data-size="lg"] {
+  --progress-size: var(--space-s12) !important;
+}
+
+.line[data-size="xl"] {
+  --progress-size: var(--space-s16) !important;
+}
+
+.section {
+  background-color: var(--color-brand-teal) !important;
+}
+
+.ring {
+  width: var(--rp-size);
+  height: var(--rp-size);
+}
+
+.ring[data-size="sm"] {
+  --rp-size: var(--space-s80) !important;
+  width: var(--space-s80) !important;
+  height: var(--space-s80) !important;
+}
+
+.ring[data-size="md"] {
+  --rp-size: calc(var(--space-s96) + var(--space-s24)) !important;
+  width: calc(var(--space-s96) + var(--space-s24)) !important;
+  height: calc(var(--space-s96) + var(--space-s24)) !important;
+}
+
+.ring[data-size="lg"] {
+  --rp-size: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
+  width: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
+  height: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
+}
+
+.ring svg {
+  width: 100%;
+  height: 100%;
+}
+
+.label {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-lato-bold);
+  font-size: var(--font-size-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.ring[data-size="lg"] .label {
+  font-family: var(--font-family-inter-display-semibold);
+  font-size: var(--font-size-heading-h2);
+  font-weight: var(--font-weight-heading-h2);
+  line-height: var(--font-line-height-heading-h2);
+}
+
+.track {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-width: calc(var(--space-s96) * 3 + var(--space-s32));
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-s8);
+  width: var(--space-s96);
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--space-s32);
+  height: var(--space-s32);
+  border: var(--border-emphasis) solid var(--color-neutral-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+  font-family: var(--font-family-lato-bold);
+  font-size: var(--font-size-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.indicator[data-state="active"] {
+  border-color: var(--color-in-progress-border);
+  background-color: var(--color-in-progress-bg);
+  color: var(--color-in-progress-text);
+}
+
+.indicator[data-state="done"] {
+  border-color: var(--color-success-border);
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.indicator[data-state="error"] {
+  border-color: var(--color-error-border);
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s2);
+  width: 100%;
+  text-align: center;
+}
+
+.nodeLabel {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-family: var(--font-family-lato-bold);
+  font-size: var(--font-size-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.status {
+  margin: 0;
+  color: var(--color-neutral-text);
+  font-family: var(--font-family-lato-semibold);
+  font-size: var(--font-size-l3);
+  font-weight: var(--font-weight-control-sm);
+  line-height: var(--font-line-height-control-sm);
+}
+
+.status[data-state="active"] {
+  color: var(--color-in-progress-text);
+}
+
+.status[data-state="done"] {
+  color: var(--color-success-text);
+}
+
+.status[data-state="error"] {
+  color: var(--color-error-text);
+}
+
+.connector {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: var(--space-s16);
+  height: var(--space-s32);
+}
+
+.connectorLine {
+  width: 100%;
+  height: var(--border-emphasis);
+  background-color: var(--color-border-input);
+}
+
+.connectorLine[data-state="done"] {
+  background-color: var(--color-success-border);
+}

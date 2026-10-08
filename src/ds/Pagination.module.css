@@ -1,0 +1,89 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s16);
+  box-sizing: border-box;
+  min-width: calc(var(--space-s96) * 7 + var(--space-s80) + var(--space-s8));
+  min-height: calc(var(--space-s48) + var(--space-s8));
+}
+
+.range {
+  padding-right: var(--space-s16);
+  color: var(--color-text-body);
+  font-family: var(--font-family-inter-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  white-space: nowrap;
+}
+
+.sizes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s8);
+}
+
+.sizesLabel {
+  color: var(--color-text-strong);
+  font-family: var(--font-family-inter-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  white-space: nowrap;
+}
+
+.chip,
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--space-s32);
+  height: var(--space-s32);
+  padding: 0;
+  border: var(--border-default) solid var(--color-gray-3);
+  border-radius: var(--radius-s8);
+  background-color: var(--color-bg-surface-white);
+  color: var(--color-gray-8);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled):not([data-active]),
+.control:hover:not(:disabled):not([data-active]) {
+  background-color: var(--color-gray-2);
+}
+
+.chip[data-active],
+.control[data-active] {
+  border-color: var(--color-gray-8);
+  background-color: var(--color-gray-8);
+  color: var(--color-text-inverse);
+}
+
+.chip:disabled,
+.control:disabled {
+  color: var(--color-gray-5);
+  cursor: not-allowed;
+}
+
+.chip:focus,
+.control:focus {
+  outline: none;
+}
+
+.chip:focus-visible,
+.control:focus-visible {
+  outline: var(--border-emphasis) solid var(--color-focus-link);
+  outline-offset: calc(var(--border-emphasis) * -1);
+}
+
+.pages {
+  display: flex;
+  gap: var(--space-s8);
+  padding: var(--space-s4);
+}

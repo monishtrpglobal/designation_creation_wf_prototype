@@ -1,0 +1,127 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-s12);
+  padding: var(--space-s16);
+  border-radius: var(--radius-s12);
+  border: var(--border-default) solid transparent;
+}
+
+.root[data-compact] {
+  align-items: center;
+  gap: var(--space-s8);
+  padding: var(--space-s8) var(--space-s12);
+}
+
+.root[data-type="info"] {
+  background-color: var(--color-info-bg);
+  color: var(--color-info-border);
+}
+
+.root[data-type="success"] {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-border);
+}
+
+.root[data-type="warning"] {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-border);
+}
+
+.root[data-type="error"] {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-border);
+}
+
+.root[data-border][data-type="info"] {
+  border-color: var(--color-info-border-subtle);
+}
+
+.root[data-border][data-type="success"] {
+  border-color: var(--color-success-border-subtle);
+}
+
+.root[data-border][data-type="warning"] {
+  border-color: var(--color-warning-border-subtle);
+}
+
+.root[data-border][data-type="error"] {
+  border-color: var(--color-error-border-subtle);
+}
+
+.wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.body,
+.message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s8);
+  width: 100%;
+}
+
+.title {
+  font-family: var(--font-family-label-l1);
+  font-size: var(--font-size-label-l1);
+  font-weight: var(--font-weight-label-l1);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.root[data-type="info"] .title {
+  color: var(--color-info-text);
+}
+
+.root[data-type="success"] .title {
+  color: var(--color-success-text);
+}
+
+.root[data-type="warning"] .title {
+  color: var(--color-warning-text);
+}
+
+.root[data-type="error"] .title {
+  color: var(--color-error-text);
+}
+
+.copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-s2);
+  min-width: 0;
+}
+
+.text {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-family: var(--font-family-lato-regular);
+  font-size: var(--font-size-l2);
+  font-weight: var(--font-weight-body-b4);
+  line-height: var(--font-line-height-label-l1);
+}
+
+.root[data-compact] .text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  display: flex;
+  flex: none;
+}
+
+.closeButton {
+  color: currentColor;
+  background: transparent;
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-s8);
+}

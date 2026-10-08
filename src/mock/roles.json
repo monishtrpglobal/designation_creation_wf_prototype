@@ -1,0 +1,636 @@
+{
+  "newRoles": [
+    {
+      "id": "new-01",
+      "kind": "new",
+      "businessLabel": "Lease Accounting",
+      "sapRoleName": "Z_FI_LEASE_ACCT",
+      "activityId": "lease-accounting",
+      "status": "Name clash",
+      "sample": true
+    },
+    {
+      "id": "new-02",
+      "kind": "new",
+      "businessLabel": "Tax Reporting Approver",
+      "sapRoleName": "Z_FI_TAX_RPT_APR",
+      "activityId": "tax",
+      "status": "Name clash",
+      "sample": true
+    },
+    {
+      "id": "new-03",
+      "kind": "new",
+      "businessLabel": "Asset Retirement Clerk",
+      "sapRoleName": "Z_AA_ASSET_RET",
+      "activityId": "asset-accounting",
+      "status": "Name clash",
+      "sample": true
+    },
+    {
+      "id": "new-04",
+      "kind": "new",
+      "businessLabel": "Corporate Treasury and Cash Positioning",
+      "sapRoleName": "CORP_TREASURY_AND_CASH_POSITIONING",
+      "activityId": "bank-and-cash",
+      "status": "Too long",
+      "sample": true
+    },
+    {
+      "id": "new-05",
+      "kind": "new",
+      "businessLabel": "Vendor Invoice Clerk",
+      "sapRoleName": "Z_VENDOR_INVOICE_CLERK_05",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-06",
+      "kind": "new",
+      "businessLabel": "Vendor Master Maintainer",
+      "sapRoleName": "Z_VENDOR_MASTER_MAINTAINER_06",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-07",
+      "kind": "new",
+      "businessLabel": "Payment Proposal Clerk",
+      "sapRoleName": "Z_PAYMENT_PROPOSAL_CLERK_07",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-08",
+      "kind": "new",
+      "businessLabel": "Down Payment Clerk",
+      "sapRoleName": "Z_DOWN_PAYMENT_CLERK_08",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-09",
+      "kind": "new",
+      "businessLabel": "Customer Invoice Clerk",
+      "sapRoleName": "Z_CUSTOMER_INVOICE_CLERK_09",
+      "activityId": "account-receivable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-10",
+      "kind": "new",
+      "businessLabel": "Dunning Clerk",
+      "sapRoleName": "Z_DUNNING_CLERK_10",
+      "activityId": "account-receivable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-11",
+      "kind": "new",
+      "businessLabel": "Credit Memo Clerk",
+      "sapRoleName": "Z_CREDIT_MEMO_CLERK_11",
+      "activityId": "account-receivable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-12",
+      "kind": "new",
+      "businessLabel": "Cash Application Specialist",
+      "sapRoleName": "Z_CASH_APPLICATION_SPECIALI_12",
+      "activityId": "account-receivable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-13",
+      "kind": "new",
+      "businessLabel": "Journal Poster",
+      "sapRoleName": "Z_JOURNAL_POSTER_13",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-14",
+      "kind": "new",
+      "businessLabel": "Recurring Entry Clerk",
+      "sapRoleName": "Z_RECURRING_ENTRY_CLERK_14",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-15",
+      "kind": "new",
+      "businessLabel": "Accrual Poster",
+      "sapRoleName": "Z_ACCRUAL_POSTER_15",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-16",
+      "kind": "new",
+      "businessLabel": "Ledger Close Support",
+      "sapRoleName": "Z_LEDGER_CLOSE_SUPPORT_16",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-17",
+      "kind": "new",
+      "businessLabel": "Intercompany Clerk",
+      "sapRoleName": "Z_INTERCOMPANY_CLERK_17",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-18",
+      "kind": "new",
+      "businessLabel": "Asset Transfer Clerk",
+      "sapRoleName": "Z_ASSET_TRANSFER_CLERK_18",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-19",
+      "kind": "new",
+      "businessLabel": "Asset Capitalization Clerk",
+      "sapRoleName": "Z_ASSET_CAPITALIZATION_CLER_19",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-20",
+      "kind": "new",
+      "businessLabel": "Depreciation Runner",
+      "sapRoleName": "Z_DEPRECIATION_RUNNER_20",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-21",
+      "kind": "new",
+      "businessLabel": "Asset Inventory Clerk",
+      "sapRoleName": "Z_ASSET_INVENTORY_CLERK_21",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-22",
+      "kind": "new",
+      "businessLabel": "Lease Contract Clerk",
+      "sapRoleName": "Z_LEASE_CONTRACT_CLERK_22",
+      "activityId": "lease-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-23",
+      "kind": "new",
+      "businessLabel": "Lease Valuation Clerk",
+      "sapRoleName": "Z_LEASE_VALUATION_CLERK_23",
+      "activityId": "lease-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-24",
+      "kind": "new",
+      "businessLabel": "Right of Use Poster",
+      "sapRoleName": "Z_RIGHT_OF_USE_POSTER_24",
+      "activityId": "lease-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-25",
+      "kind": "new",
+      "businessLabel": "Bank Statement Clerk",
+      "sapRoleName": "Z_BANK_STATEMENT_CLERK_25",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-26",
+      "kind": "new",
+      "businessLabel": "Cash Position Analyst",
+      "sapRoleName": "Z_CASH_POSITION_ANALYST_26",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-27",
+      "kind": "new",
+      "businessLabel": "Lockbox Clerk",
+      "sapRoleName": "Z_LOCKBOX_CLERK_27",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-28",
+      "kind": "new",
+      "businessLabel": "House Bank Maintainer",
+      "sapRoleName": "Z_HOUSE_BANK_MAINTAINER_28",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-29",
+      "kind": "new",
+      "businessLabel": "Sales Order Clerk",
+      "sapRoleName": "Z_SALES_ORDER_CLERK_29",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-30",
+      "kind": "new",
+      "businessLabel": "Billing Clerk",
+      "sapRoleName": "Z_BILLING_CLERK_30",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-31",
+      "kind": "new",
+      "businessLabel": "Revenue Posting Clerk",
+      "sapRoleName": "Z_REVENUE_POSTING_CLERK_31",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-32",
+      "kind": "new",
+      "businessLabel": "Deferred Revenue Clerk",
+      "sapRoleName": "Z_DEFERRED_REVENUE_CLERK_32",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-33",
+      "kind": "new",
+      "businessLabel": "Goods Movement Clerk",
+      "sapRoleName": "Z_GOODS_MOVEMENT_CLERK_33",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-34",
+      "kind": "new",
+      "businessLabel": "Storage Location Clerk",
+      "sapRoleName": "Z_STORAGE_LOCATION_CLERK_34",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-35",
+      "kind": "new",
+      "businessLabel": "Inventory Adjustment Clerk",
+      "sapRoleName": "Z_INVENTORY_ADJUSTMENT_CLER_35",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-36",
+      "kind": "new",
+      "businessLabel": "Batch Status Viewer",
+      "sapRoleName": "Z_BATCH_STATUS_VIEWER_36",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-37",
+      "kind": "new",
+      "businessLabel": "Plant Stock Reporter",
+      "sapRoleName": "Z_PLANT_STOCK_REPORTER_37",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-38",
+      "kind": "new",
+      "businessLabel": "Bin Status Reporter",
+      "sapRoleName": "Z_BIN_STATUS_REPORTER_38",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-39",
+      "kind": "new",
+      "businessLabel": "Material Price Clerk",
+      "sapRoleName": "Z_MATERIAL_PRICE_CLERK_39",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-40",
+      "kind": "new",
+      "businessLabel": "Transfer Posting Clerk",
+      "sapRoleName": "Z_TRANSFER_POSTING_CLERK_40",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-41",
+      "kind": "new",
+      "businessLabel": "Tax Code Maintainer",
+      "sapRoleName": "Z_TAX_CODE_MAINTAINER_41",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-42",
+      "kind": "new",
+      "businessLabel": "Withholding Tax Clerk",
+      "sapRoleName": "Z_WITHHOLDING_TAX_CLERK_42",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-43",
+      "kind": "new",
+      "businessLabel": "Indirect Tax Analyst",
+      "sapRoleName": "Z_INDIRECT_TAX_ANALYST_43",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-44",
+      "kind": "new",
+      "businessLabel": "Tax Return Preparer",
+      "sapRoleName": "Z_TAX_RETURN_PREPARER_44",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-45",
+      "kind": "new",
+      "businessLabel": "Output Tax Clerk",
+      "sapRoleName": "Z_OUTPUT_TAX_CLERK_45",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-46",
+      "kind": "new",
+      "businessLabel": "Input Tax Clerk",
+      "sapRoleName": "Z_INPUT_TAX_CLERK_46",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-47",
+      "kind": "new",
+      "businessLabel": "Cost Center Poster",
+      "sapRoleName": "Z_COST_CENTER_POSTER_47",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-48",
+      "kind": "new",
+      "businessLabel": "Internal Order Clerk",
+      "sapRoleName": "Z_INTERNAL_ORDER_CLERK_48",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-49",
+      "kind": "new",
+      "businessLabel": "Profit Center Reporter",
+      "sapRoleName": "Z_PROFIT_CENTER_REPORTER_49",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "new-50",
+      "kind": "new",
+      "businessLabel": "Allocation Cycle Clerk",
+      "sapRoleName": "Z_ALLOCATION_CYCLE_CLERK_50",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    }
+  ],
+  "existingRoles": [
+    {
+      "id": "existing-01",
+      "kind": "existing",
+      "businessLabel": "Revenue Recognition",
+      "sapRoleName": "Z_SD_REVREC_CHG_1000",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-02",
+      "kind": "existing",
+      "businessLabel": "Lease Accounting",
+      "sapRoleName": "Z_FI_LEASE_ACCT",
+      "activityId": "lease-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-03",
+      "kind": "existing",
+      "businessLabel": "Tax Reporting Approver",
+      "sapRoleName": "Z_FI_TAX_RPT_APR",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-04",
+      "kind": "existing",
+      "businessLabel": "Asset Retirement Clerk",
+      "sapRoleName": "Z_AA_ASSET_RET",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-05",
+      "kind": "existing",
+      "businessLabel": "Vendor Invoice Poster",
+      "sapRoleName": "Z_FI_AP_INV_POST",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-06",
+      "kind": "existing",
+      "businessLabel": "Payment Run Clerk",
+      "sapRoleName": "Z_FI_AP_PAY_RUN",
+      "activityId": "account-payable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-07",
+      "kind": "existing",
+      "businessLabel": "Cash Application Clerk",
+      "sapRoleName": "Z_FI_AR_CASH_APP",
+      "activityId": "account-receivable",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-08",
+      "kind": "existing",
+      "businessLabel": "Journal Entry Clerk",
+      "sapRoleName": "Z_FI_GL_JOURNAL",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-09",
+      "kind": "existing",
+      "businessLabel": "Period Close Analyst",
+      "sapRoleName": "Z_FI_GL_CLOSE",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-10",
+      "kind": "existing",
+      "businessLabel": "Bank Reconciliation Clerk",
+      "sapRoleName": "Z_FI_BANK_RECON",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-11",
+      "kind": "existing",
+      "businessLabel": "Asset Acquisition Clerk",
+      "sapRoleName": "Z_AA_ASSET_ACQ",
+      "activityId": "asset-accounting",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-12",
+      "kind": "existing",
+      "businessLabel": "Billing Document Display",
+      "sapRoleName": "Z_SD_BILLING_DISP",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-13",
+      "kind": "existing",
+      "businessLabel": "Goods Receipt Poster",
+      "sapRoleName": "Z_MM_GR_POST",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-14",
+      "kind": "existing",
+      "businessLabel": "Physical Inventory Counter",
+      "sapRoleName": "Z_MM_INV_COUNT",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-15",
+      "kind": "existing",
+      "businessLabel": "Stock Display Analyst",
+      "sapRoleName": "Z_MM_STOCK_DISP",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-16",
+      "kind": "existing",
+      "businessLabel": "Cost Center Reporter",
+      "sapRoleName": "Z_CO_COST_RPT",
+      "activityId": "general-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-17",
+      "kind": "existing",
+      "businessLabel": "Tax Display Analyst",
+      "sapRoleName": "Z_FI_TAX_DISP",
+      "activityId": "tax",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-18",
+      "kind": "existing",
+      "businessLabel": "Material Ledger Display",
+      "sapRoleName": "Z_MM_IML_DISP",
+      "activityId": "inventory-material-ledger",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-19",
+      "kind": "existing",
+      "businessLabel": "Billing Cancel Clerk",
+      "sapRoleName": "Z_SD_VF_CANCEL",
+      "activityId": "revenue-recognition",
+      "status": "Ready",
+      "sample": true
+    },
+    {
+      "id": "existing-20",
+      "kind": "existing",
+      "businessLabel": "Treasury Display Analyst",
+      "sapRoleName": "Z_FI_TREASURY_DISP",
+      "activityId": "bank-and-cash",
+      "status": "Ready",
+      "sample": true
+    }
+  ]
+}

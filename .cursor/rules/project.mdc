@@ -1,0 +1,75 @@
+---
+description: iRM Designation Flow prototype rules
+alwaysApply: true
+---
+
+# Stack
+- Next.js (App Router) + TypeScript (strict) + Tailwind CSS + Mantine 7.
+- Light mode only. MantineProvider uses `forceColorScheme="light"`.
+- Prototype only: no real API. All data comes from `src/mock/*.json` and local state.
+
+# Source of truth
+- Figma design system: file key `l3QZ1x8fDQEkEimzgwPInE` (iRM Design System).
+- Figma screens: file key `UVuqMleArgUwsltkPjAtRX` (Designation Flow Hi-Fi).
+- Before building any component or screen, call the Figma MCP (`get_design_context`, `get_variable_defs`, `get_screenshot`) for the given node. Never guess values.
+
+# Layering (strict)
+1. `src/styles/tokens.css`: all design tokens as CSS variables (generated from Figma variables). Only place hex values may appear.
+2. `src/theme/mantine-theme.ts`: Mantine `createTheme` that reads the tokens (`var(--...)`). No hex values.
+3. `tailwind.config.ts`: `theme.extend` maps colors, spacing, radius to the token variables. `corePlugins.preflight = false` (Mantine owns the reset).
+4. `src/ds/*`: iRM components. Each one wraps a Mantine primitive and exposes props that match the Figma variant properties.
+5. `src/features/designation/*`: screens. Build screens only from `src/ds/*`.
+
+# Rules
+- No hardcoded colours, spacing, radius or font sizes. Use token variables or Tailwind classes mapped to them.
+- Use Tailwind for layout only (flex, grid, gap, padding, width). Use Mantine `styles`/`classNames` with token variables for component skins.
+- Never use Mantine default colours (`blue.6` etc.) or the Mantine default `color` prop. Always go through the iRM wrapper.
+- If a screen needs a component that is not in `src/ds`, stop and ask. Do not inline a one-off.
+- Every status is a text label plus colour, never colour alone.
+- Meaningful text uses `--color-text-body`. Muted text only for non-essential hints.
+- Keyboard and focus: focus ring is `--color-focus-link`, 2px inside. Do not remove outlines.
+- Client components: add `'use client'` to anything using Mantine hooks or state.
+- Fonts: Inter and Lato via `next/font`.
+
+# Figma component to code map
+| Figma | Code (`src/ds`) | Mantine base |
+|---|---|---|
+| Button (Primary, Secondary, Warn, Ghost; XS SM MD LG) | `Button` | `Button` |
+| Badge (Light, Filled, Outline, Dot, Completed, In progress, Pending, Error, Warning, Info; SM, MD) | `Badge` | `Badge` |
+| Alert (Info, Success, Warning, Error; Compact) | `Alert` | `Alert` |
+| Link | `Link` | `Anchor` |
+| Text Field, Text Area (counter), Select, Multi Select, Tags Field | `TextField`, `TextArea`, `Select`, `MultiSelect`, `TagsField` | `TextInput`, `Textarea`, `Select`, `MultiSelect`, `TagsInput` |
+| Checkbox, Radio card | `Checkbox`, `RadioCard` | `Checkbox`, `Radio.Card` |
+| Tabs (Underline, Pill) | `Tabs` | `Tabs` |
+| Segmented Control | `SegmentedControl` | `SegmentedControl` |
+| Table, Table Pagination | `Table`, `Pagination` | `Table`, `Pagination` |
+| Drawer (Header, Body, Footer slots) | `Drawer` | `Drawer` |
+| Modal / dialog | `Dialog` | `Modal` |
+| Step, Stepper | `Stepper` | `Stepper` |
+| Progress (ring, line), Progress track | `ProgressRing`, `ProgressLine`, `ProgressTrack` | `RingProgress`, `Progress` |
+| Accordion | `Accordion` | `Accordion` |
+| Menu (kebab) | `RowMenu` | `Menu` |
+| Tooltip | `Tooltip` | `Tooltip` |
+| Card, Page Header, Layout Card | `Card`, `PageHeader`, `LayoutCard` | `Paper` |
+| Designation Flow Shell | `FlowShell` | custom |
+
+# Badge status mapping (always with text)
+- Ready, Validated, Created -> `completed`
+- Creating, Linking, Syncing, ID entered -> `in-progress`
+- Queued, Needed, Draft, Awaiting TR approval, Awaiting final approval -> `pending`
+- Name clash, Too long, Awaiting SAP, Open, Wildcard, Higher risk -> `warning`
+- Error, Gap found, Analysis failed, Rejected -> `error`
+- Auth objects: Standard = `light`, Maintained = `completed`, Changed = `dot`, Manual = `outline`, Inactive = `pending`, "SAP default" = `light`
+- Published -> `completed`
+
+# Domain rules for the prototype
+- SAP role names max 30 characters. Business labels have no limit.
+- Mock data is always 50+ (50 new roles, 20 existing roles, second page).
+- Method (Option A or B) locks once creation starts (A) or once the requirement is sent (B).
+- Name clash is fixed on Screen 8. Open org levels (KOKRS, WERKS) block Create.
+- Footers always say why the primary action is disabled, with a Link to the problem.
+- Sample data: Revenue Recognition `Z_SD_REVREC_CHG_1000`; plants 1000 Hamburg, 1010 Berlin, 2000 New York, 3000 Singapore, 4000 Shanghai. Mark invented names as sample data.
+
+# Working style
+- One screen or component per task. After building, run `next build` type check, then compare with `get_screenshot` of the Figma node and list differences.
+- Report anything missing or ambiguous before improvising.

@@ -34,6 +34,10 @@
   cursor: pointer;
 }
 
+.tab :global(.mantine-Tabs-tabSection) {
+  margin: 0;
+}
+
 .tab:focus {
   outline: none;
 }
@@ -49,7 +53,8 @@
 }
 
 .tab[data-variant="pill"] {
-  padding: var(--space-s8) var(--space-s12);
+  /* Figma draws the 1px border inside the 8 x 12 padding, so take it out of the padding. */
+  padding: calc(var(--space-s8) - var(--border-default)) calc(var(--space-s12) - var(--border-default));
   border-color: var(--color-gray-2);
   border-radius: var(--radius-s16);
   background-color: var(--color-gray-2);

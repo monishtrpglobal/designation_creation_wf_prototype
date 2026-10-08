@@ -1,5 +1,5 @@
-import { ScreenFrame } from "@/features/designation/ScreenFrame";
+import { NamePage } from "@/features/designation/name/NamePage";
 
 export default function NewDesignationPage() {
-  return <ScreenFrame route="name" />;
+  return <NamePage />;
 }

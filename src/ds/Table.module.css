@@ -1,6 +1,6 @@
 .table {
   width: 100%;
-  min-width: calc(var(--space-s96) * 14);
+  min-width: calc(var(--space-s96) * 13);
   border-collapse: collapse;
   background-color: var(--color-bg-surface-white);
 }
@@ -9,7 +9,7 @@
 .cell {
   box-sizing: border-box;
   padding: 0 var(--space-s16) 0 var(--space-s12);
-  border-bottom: var(--border-default) solid var(--color-border-subtle);
+  border-bottom: var(--border-default) solid var(--color-neutral-border);
   text-align: left;
   vertical-align: middle;
 }
@@ -19,8 +19,7 @@
 }
 
 .cell {
-  height: auto;
-  min-height: var(--space-s64);
+  height: var(--space-s64);
   padding-top: var(--space-s8);
   padding-bottom: var(--space-s8);
 }

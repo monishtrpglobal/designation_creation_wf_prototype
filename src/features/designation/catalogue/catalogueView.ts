@@ -3,17 +3,13 @@ import { lastAllowedRoute, pathFor } from "@/state/access";
 import type { DesignationRuntime } from "@/state/model";
 import type { LifecycleStatus } from "@/mock";
 
-export type CatalogueFilter =
-  | "all"
-  | "in-progress"
-  | "completed"
-  | LifecycleStatus;
+export type CatalogueFilter = "all" | LifecycleStatus;
 
 export const catalogueFilters: { value: CatalogueFilter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "Draft", label: "Draft" },
-  { value: "in-progress", label: "In progress" },
-  { value: "completed", label: "Completed" },
+  { value: "In progress", label: "In progress" },
+  { value: "Completed", label: "Completed" },
   { value: "Syncing to Dev", label: "Syncing to Dev" },
   { value: "Awaiting TR approval", label: "Awaiting TR approval" },
   { value: "Moving to Quality", label: "Moving to Quality" },
@@ -26,6 +22,8 @@ export const catalogueFilters: { value: CatalogueFilter; label: string }[] = [
 
 const statusVariant: Record<LifecycleStatus, BadgeVariant> = {
   Draft: "pending",
+  "In progress": "in-progress",
+  Completed: "completed",
   "Syncing to Dev": "in-progress",
   "Awaiting TR approval": "pending",
   "Moving to Quality": "in-progress",
@@ -44,18 +42,15 @@ export function matchesFilter(item: DesignationRuntime, filter: CatalogueFilter)
   if (filter === "all") {
     return true;
   }
-  if (filter === "in-progress" || filter === "completed") {
-    return false;
-  }
   return item.status === filter;
 }
 
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
+
+/** "6 Oct 2026", as on the Figma frame. */
 export function formatUpdated(iso: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
+  const date = new Date(iso);
+  return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function wizardStep(item: DesignationRuntime): number {
@@ -68,6 +63,7 @@ function wizardStep(item: DesignationRuntime): number {
 export function statusNote(item: DesignationRuntime): string | null {
   switch (item.status) {
     case "Draft":
+    case "In progress":
       return `Step ${wizardStep(item)} of 5`;
     case "Syncing to Dev":
     case "Moving to Quality":
@@ -185,6 +181,7 @@ export type RowAction = {
 export function rowAction(item: DesignationRuntime): RowAction {
   switch (item.status) {
     case "Draft":
+    case "In progress":
       return { label: "Continue", href: pathFor(lastAllowedRoute(item), item.id) };
     case "Awaiting TR approval":
       return { label: "Review TR", href: pathFor("tr", item.id) };

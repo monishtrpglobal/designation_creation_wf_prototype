@@ -442,7 +442,9 @@ export function Gallery() {
           range={`${rangeStart}-${rangeEnd} of 50`}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
-            setPageSize(size);
+            if (size === 10 || size === 25 || size === 50) {
+              setPageSize(size);
+            }
             setPage(1);
           }}
         />

@@ -23,6 +23,7 @@ type TabsProps = {
   value?: string | null;
   defaultValue?: string;
   onChange?: (value: string | null) => void;
+  showPanels?: boolean;
 };
 
 export function Tabs({
@@ -32,6 +33,7 @@ export function Tabs({
   value,
   defaultValue,
   onChange,
+  showPanels = true,
 }: TabsProps) {
   return (
     <MantineTabs
@@ -56,11 +58,13 @@ export function Tabs({
           </MantineTabs.Tab>
         ))}
       </MantineTabs.List>
-      {items.map((item) => (
-        <MantineTabs.Panel key={item.value} value={item.value} className={styles.panel}>
-          {item.panel}
-        </MantineTabs.Panel>
-      ))}
+      {showPanels
+        ? items.map((item) => (
+            <MantineTabs.Panel key={item.value} value={item.value} className={styles.panel}>
+              {item.panel}
+            </MantineTabs.Panel>
+          ))
+        : null}
     </MantineTabs>
   );
 }

@@ -579,7 +579,8 @@ export const useFlowStore = create<FlowState>()(
     }),
     {
       name: "irm-designation-flow",
-      version: 1,
+      version: 2,
+      migrate: () => ({ designations: seedDesignations(), currentDesignationId: null }),
       skipHydration: true,
       partialize: (state) => ({
         designations: state.designations,

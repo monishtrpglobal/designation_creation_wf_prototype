@@ -503,10 +503,22 @@
     {
       "id": "account-payable",
       "name": "Account Payable",
-      "description": "Vendor invoices and payments (sample data)",
+      "description": "Vendor invoices, payments and the vendor master.",
       "tcodeIds": [
         "FB02",
-        "FB03"
+        "FB03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N",
+        "FAGLL03"
       ],
       "authObjectIds": [
         "F_BKPF_BUK",
@@ -529,11 +541,19 @@
     {
       "id": "account-receivable",
       "name": "Account Receivable",
-      "description": "Customer items and cash application (sample data)",
+      "description": "Customer invoices, incoming payments and dunning.",
       "tcodeIds": [
         "FBL5N",
         "FB02",
-        "FB03"
+        "FB03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02"
       ],
       "authObjectIds": [
         "F_LFA1_APP",
@@ -556,12 +576,26 @@
     {
       "id": "general-ledger",
       "name": "General Ledger",
-      "description": "Journal entries and G/L line items (sample data)",
+      "description": "Postings, journal entries and period-end close.",
       "tcodeIds": [
         "FBL3N",
         "FAGLL03",
         "FB02",
-        "FB03"
+        "FB03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N",
+        "FAGLL03",
+        "VA02",
+        "VA03"
       ],
       "authObjectIds": [
         "F_BKPF_BUK",
@@ -585,10 +619,17 @@
     {
       "id": "asset-accounting",
       "name": "Asset Accounting",
-      "description": "Asset acquisition and retirement (sample data)",
+      "description": "Fixed assets, depreciation and retirements.",
       "tcodeIds": [
         "FB02",
-        "FB03"
+        "FB03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46"
       ],
       "authObjectIds": [
         "A_A_VIEW",
@@ -614,11 +655,17 @@
     {
       "id": "lease-accounting",
       "name": "Lease Accounting",
-      "description": "Lease contracts and postings (sample data)",
+      "description": "Lease contracts, payments and remeasurement.",
       "tcodeIds": [
         "FB02",
         "FB03",
-        "FAGLL03"
+        "FAGLL03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45"
       ],
       "authObjectIds": [
         "A_A_VIEW",
@@ -641,11 +688,20 @@
     {
       "id": "bank-and-cash",
       "name": "Bank and Cash",
-      "description": "Bank statements and cash position (sample data)",
+      "description": "Bank statements, cash positions and transfers.",
       "tcodeIds": [
         "FB02",
         "FB03",
-        "FBL3N"
+        "FBL3N",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03"
       ],
       "authObjectIds": [
         "F_SKA1_KTP",
@@ -666,7 +722,7 @@
     {
       "id": "revenue-recognition",
       "name": "Revenue Recognition",
-      "description": "Sales orders and revenue recognition (sample data)",
+      "description": "Revenue schedules and billing-based recognition.",
       "tcodeIds": [
         "VA02",
         "VA03",
@@ -674,7 +730,12 @@
         "VF03",
         "VF44",
         "VF45",
-        "VF46"
+        "VF46",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44"
       ],
       "authObjectIds": [
         "V_VBAK_AAT",
@@ -703,10 +764,24 @@
     {
       "id": "inventory-material-ledger",
       "name": "Inventory and Material Ledger",
-      "description": "Goods movements and material ledger (sample data)",
+      "description": "Stock valuation, goods movements and costing.",
       "tcodeIds": [
         "FBL3N",
-        "FB03"
+        "FB03",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N",
+        "FAGLL03",
+        "VA02",
+        "VA03"
       ],
       "authObjectIds": [
         "M_MATE_WRK",
@@ -732,11 +807,18 @@
     {
       "id": "tax",
       "name": "Tax",
-      "description": "Tax reporting and postings (sample data)",
+      "description": "Tax codes, returns and withholding reporting.",
       "tcodeIds": [
         "FBL3N",
         "FAGLL03",
-        "FB02"
+        "FB02",
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46"
       ],
       "authObjectIds": [
         "F_KNA1_APP",
@@ -751,6 +833,437 @@
         "S_TABU_DIS",
         "S_RFC",
         "S_CTS_ADMI"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "cost-center-accounting",
+      "name": "Cost Center Accounting",
+      "description": "Cost centers, allocations and variance analysis.",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N",
+        "FAGLL03",
+        "VA02"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "profit-center-accounting",
+      "name": "Profit Center Accounting",
+      "description": "Profit centers and internal profitability (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "internal-orders",
+      "name": "Internal Orders",
+      "description": "Internal order settlement and budgeting (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "product-costing",
+      "name": "Product Costing",
+      "description": "Product cost estimates and variances (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "treasury",
+      "name": "Treasury",
+      "description": "Cash pooling and financial deals (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "cash-management",
+      "name": "Cash Management",
+      "description": "Liquidity planning and cash position (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "credit-management",
+      "name": "Credit Management",
+      "description": "Credit limits and blocked orders (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "billing",
+      "name": "Billing",
+      "description": "Customer billing documents (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "sales-orders",
+      "name": "Sales Orders",
+      "description": "Sales order processing (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "purchasing",
+      "name": "Purchasing",
+      "description": "Purchase orders and goods receipts (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03",
+        "FBL3N",
+        "FBL5N",
+        "FAGLL03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "inventory-management",
+      "name": "Inventory Management",
+      "description": "Stock movements and physical inventory (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "travel-expenses",
+      "name": "Travel Expenses",
+      "description": "Trip requests and expense reports (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "fixed-asset-reporting",
+      "name": "Fixed Asset Reporting",
+      "description": "Asset history and depreciation reports (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "intercompany",
+      "name": "Intercompany Accounting",
+      "description": "Intercompany postings and reconciliation (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
+      ],
+      "orgLevelIds": [
+        "BUKRS",
+        "KOKRS"
+      ],
+      "sample": true
+    },
+    {
+      "id": "bank-accounting",
+      "name": "Bank Accounting",
+      "description": "House banks and payment media (sample data).",
+      "tcodeIds": [
+        "VA02",
+        "VA03",
+        "VA05",
+        "VF03",
+        "VF44",
+        "VF45",
+        "VF46",
+        "FB02",
+        "FB03"
+      ],
+      "authObjectIds": [
+        "F_BKPF_BUK",
+        "F_BKPF_KOA",
+        "F_BKPF_GSB",
+        "F_FAGL_LDR",
+        "F_LFA1_APP",
+        "F_LFA1_BEK"
       ],
       "orgLevelIds": [
         "BUKRS",

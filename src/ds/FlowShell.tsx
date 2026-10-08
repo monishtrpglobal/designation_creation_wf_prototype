@@ -8,7 +8,10 @@ type FlowShellBase = {
   steps: StepItem[];
   activeIndex: number;
   showSaveAsDraft?: boolean;
+  onSaveAsDraft?: () => void;
   primaryLabel: string;
+  contentSurface?: "canvas" | "white";
+  onPrimaryClick?: () => void;
   children?: ReactNode;
 };
 
@@ -29,7 +32,10 @@ export function FlowShell({
   steps,
   activeIndex,
   showSaveAsDraft = false,
+  onSaveAsDraft,
   primaryLabel,
+  contentSurface = "canvas",
+  onPrimaryClick,
   primaryDisabled,
   helperText,
   children,
@@ -40,15 +46,17 @@ export function FlowShell({
         <h1 className={styles.title}>{title}</h1>
       </header>
       <Stepper steps={steps} activeIndex={activeIndex} />
-      <div className={`${styles.content} flex-1`}>{children}</div>
-      <footer className="flex items-center gap-s16">
+      <div className={`${styles.content} flex-1`} data-surface={contentSurface}>
+        {children}
+      </div>
+      <footer className="flex w-full items-center justify-end gap-s16">
         {showSaveAsDraft ? (
-          <Button variant="secondary" size="md">
+          <Button variant="secondary" size="md" onClick={onSaveAsDraft}>
             Save as draft
           </Button>
         ) : null}
         <div className={`${styles.helper} flex-1 text-center`}>{helperText}</div>
-        <Button variant="primary" size="md" disabled={primaryDisabled}>
+        <Button variant="primary" size="md" disabled={primaryDisabled} onClick={onPrimaryClick}>
           {primaryLabel}
         </Button>
       </footer>

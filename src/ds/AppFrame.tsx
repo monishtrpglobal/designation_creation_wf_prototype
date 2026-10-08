@@ -32,7 +32,7 @@ type AppFrameProps = {
 };
 
 export function AppFrame({ children, userName = "Monish" }: AppFrameProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className={styles.frame}>
@@ -77,7 +77,13 @@ export function AppFrame({ children, userName = "Monish" }: AppFrameProps) {
               const Icon = item.icon;
               const active = item.id === "matrix";
               return (
-                <button key={item.id} type="button" className={styles.navItem} data-active={active} aria-current={active ? "page" : undefined}>
+                <button
+                  key={item.id}
+                  type="button"
+                  className={styles.navItem}
+                  data-active={active}
+                  aria-current={active ? "page" : undefined}
+                >
                   <Icon size="s20" />
                   <span>{item.label}</span>
                 </button>

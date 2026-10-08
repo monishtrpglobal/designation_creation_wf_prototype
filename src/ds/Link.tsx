@@ -1,5 +1,5 @@
 import { Anchor } from "@mantine/core";
-import type { MouseEventHandler, ReactNode } from "react";
+import type { CSSProperties, MouseEventHandler, ReactNode } from "react";
 import styles from "./Link.module.css";
 
 type LinkProps = {
@@ -7,6 +7,7 @@ type LinkProps = {
   href?: string;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
+  style?: CSSProperties;
 };
 
 export function Link({ children, disabled, href, onClick, ...rest }: LinkProps) {

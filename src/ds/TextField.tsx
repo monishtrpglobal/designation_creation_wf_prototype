@@ -25,6 +25,9 @@ type TextFieldProps = {
   disabled?: boolean;
   readOnly?: boolean;
   clearable?: boolean;
+  showCounter?: boolean;
+  showInfo?: boolean;
+  maxLength?: number;
   id?: string;
 };
 
@@ -43,18 +46,22 @@ export function TextField({
   disabled,
   readOnly,
   clearable = true,
+  showCounter = false,
+  showInfo = false,
+  maxLength,
   id,
 }: TextFieldProps) {
   const [uncontrolled, setUncontrolled] = useState(defaultValue ?? "");
   const current = value ?? uncontrolled;
   const showClear = type === "search" && clearable && current.length > 0 && !disabled && !readOnly;
+  const overLimit = maxLength !== undefined && current.length > maxLength;
 
   function update(next: string) {
     if (value === undefined) setUncontrolled(next);
     onChange?.(next);
   }
 
-  return (
+  const field = (
     <TextInput
       id={id}
       variant="unstyled"
@@ -73,6 +80,10 @@ export function TextField({
                   <IconInfo size="s16" />
                 </button>
               </Tooltip>
+            ) : showInfo ? (
+              <span className={styles.info} data-static aria-hidden>
+                <IconInfo size="s16" />
+              </span>
             ) : null}
           </span>
         ) : undefined
@@ -96,8 +107,7 @@ export function TextField({
         ) : undefined
       }
       rightSectionPointerEvents={showClear ? "all" : "none"}
-      data-irm-type={type}
-      data-irm-size={size}
+      wrapperProps={{ "data-irm-type": type, "data-irm-size": size }}
       data-error={error ? true : undefined}
       classNames={{
         root: styles.root,
@@ -109,5 +119,20 @@ export function TextField({
         error: styles.error,
       }}
     />
+  );
+
+  if (!showCounter || maxLength === undefined) {
+    return field;
+  }
+
+  return (
+    <div className={styles.stack}>
+      {field}
+      <div className={styles.counter} data-over={overLimit || undefined}>
+        <span>
+          {current.length} / {maxLength}
+        </span>
+      </div>
+    </div>
   );
 }

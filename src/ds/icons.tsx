@@ -280,6 +280,53 @@ export function IconLayoutSidebar(props: IconProps) {
   );
 }
 
+export function IconCalculator(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M8 7h8" />
+      <path d="M8 12h.01" />
+      <path d="M12 12h.01" />
+      <path d="M16 12h.01" />
+      <path d="M8 16h.01" />
+      <path d="M12 16h.01" />
+      <path d="M16 16h.01" />
+    </Glyph>
+  );
+}
+
+export function IconReceipt(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21V3z" />
+      <path d="M9 8h6" />
+      <path d="M9 12h6" />
+    </Glyph>
+  );
+}
+
+export function IconBuildingBank(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M3 10 12 4l9 6" />
+      <path d="M5 10v8" />
+      <path d="M19 10v8" />
+      <path d="M9 10v8" />
+      <path d="M15 10v8" />
+      <path d="M3 18h18" />
+    </Glyph>
+  );
+}
+
+export function IconChartPie(props: IconProps) {
+  return (
+    <Glyph {...props}>
+      <path d="M11 3.1A9 9 0 1 0 20.9 13H11V3.1z" />
+      <path d="M13 3.05A9 9 0 0 1 20.95 11H13V3.05z" />
+    </Glyph>
+  );
+}
+
 export function IconDotsVertical(props: IconProps) {
   return (
     <Glyph {...props}>

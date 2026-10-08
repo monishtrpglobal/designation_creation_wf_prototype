@@ -48,6 +48,10 @@ function stepsFor(status: LifecycleStatus): StepFlags {
       return { ...emptySteps(), name: true };
     case "Syncing to Dev":
       return { ...emptySteps(), name: true, activities: true };
+    case "In progress":
+      return { ...emptySteps(), name: true, activities: true, sync: true };
+    case "Completed":
+      return { ...done, tr: false, license: false };
     case "Awaiting TR approval":
       return { ...done, tr: false, license: false };
     case "Moving to Quality":
@@ -125,6 +129,9 @@ function syncFor(status: LifecycleStatus): SyncState {
   }
   if (status === "Syncing to Dev") {
     return { status: "running", progress: 40, message: "Syncing", live: false };
+  }
+  if (status === "In progress") {
+    return { status: "completed", progress: 100, message: "Completed", live: false };
   }
   return { status: "completed", progress: 100, message: "Completed", live: false };
 }
@@ -212,23 +219,23 @@ function activitiesFor(id: string, status: LifecycleStatus): string[] {
     return [];
   }
   const map: Record<string, readonly string[]> = {
-    "syncing-revenue": activityIds.revenue,
+    "treasury-analyst": activityIds.ledger,
+    "revenue-accountant": activityIds.revenue,
     "inventory-controller": activityIds.inventory,
-    "quality-maintenance": activityIds.maintenance,
-    "license-payables": activityIds.payables,
-    "approve-ledger": activityIds.ledger,
-    "failed-tax": activityIds.tax,
-    "rejected-assets": activityIds.assets,
-    "published-billing": activityIds.billing,
+    "sales-operations-manager": activityIds.billing,
+    "tax-compliance-officer": activityIds.tax,
+    "asset-accounting-lead": activityIds.assets,
+    "credit-controller": activityIds.payables,
+    "billing-specialist": activityIds.billing,
   };
   return [...(map[id] ?? activityIds.ledger)];
 }
 
 function methodFor(id: string, status: LifecycleStatus): { method: "A" | "B" | null; methodLocked: boolean } {
-  if (status === "Draft" || status === "Syncing to Dev") {
+  if (status === "Draft" || status === "Syncing to Dev" || status === "In progress") {
     return { method: null, methodLocked: false };
   }
-  if (id === "quality-maintenance") {
+  if (id === "revenue-accountant") {
     return { method: "B", methodLocked: true };
   }
   return { method: "A", methodLocked: true };

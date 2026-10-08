@@ -1,9 +1,11 @@
 .card {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--space-s8);
   width: 100%;
-  padding: var(--space-s16) var(--space-s20);
+  height: 100%;
+  padding: var(--space-s16);
   border-radius: var(--radius-s12);
   background-color: var(--color-bg-surface);
   overflow: hidden;
@@ -14,8 +16,57 @@
   box-shadow: var(--shadow-card-rest);
 }
 
-.card[data-irm-variant="hoverable"]:hover {
+.card[data-irm-variant="hoverable"]:hover:not([aria-disabled="true"]) {
   box-shadow: var(--shadow-card-hover);
+}
+
+button.card {
+  margin: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.card[aria-disabled="true"] {
+  cursor: default;
+}
+
+.card[data-tint="mint"] {
+  border: var(--border-default) solid var(--color-brand-teal);
+  background-color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-in-progress-bg),
+    var(--color-bg-surface-white)
+  );
+}
+
+.card[data-tint="blue"] {
+  border: var(--border-default) solid var(--color-info-border);
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, var(--color-info-bg), var(--color-bg-surface-white));
+}
+
+.card[data-tint="lavender"] {
+  border: var(--border-default) solid var(--color-border-decor-lavender);
+  background-color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-bg-decor-lavender),
+    var(--color-bg-surface-white)
+  );
+}
+
+.card[data-tint="neutral"] {
+  border: var(--border-default) solid var(--color-neutral-border);
+  background-color: var(--color-neutral-bg);
+  background-image: none;
+  box-shadow: none;
+}
+
+.card[data-selected] {
+  border: var(--border-emphasis) solid var(--color-in-progress-text);
 }
 
 .card[data-irm-variant="border"] {
@@ -50,5 +101,8 @@
 }
 
 .content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   width: 100%;
 }

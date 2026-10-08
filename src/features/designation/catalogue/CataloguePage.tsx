@@ -11,6 +11,7 @@ import { RowMenu } from "@/ds/RowMenu";
 import { Table, type SortState, type TableColumn } from "@/ds/Table";
 import { Tabs } from "@/ds/Tabs";
 import { TextField } from "@/ds/TextField";
+import { lastAllowedRoute, pathFor } from "@/state/access";
 import { useFlowStore } from "@/state/flowStore";
 import type { DesignationRuntime } from "@/state/model";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,23 @@ import {
 } from "./catalogueView";
 
 const searchWidth = "calc(var(--space-s96) * 3 + var(--space-s32))";
+const labelL2: CSSProperties = {
+  fontFamily: "var(--font-family-lato-regular)",
+  fontSize: "var(--font-size-l2)",
+  fontWeight: "var(--font-weight-body-b4)",
+  lineHeight: "var(--font-line-height-label-l1)",
+};
+
+/** Column widths from the Figma frame (1310 wide table); Department and Last updated take the rest. */
+const widths = {
+  name: "calc(var(--space-s80) * 3)",
+  status: "calc(var(--space-s96) * 2 - var(--space-s2))",
+  licence: "calc(var(--space-s96) * 2 - var(--space-s2))",
+  saving: "calc(var(--space-s96) + var(--space-s40) + var(--space-s4))",
+  sod: "calc(var(--space-s96) + var(--space-s4))",
+} as const;
+
+const emptyBodyWidth = "calc(var(--space-s96) * 3 + var(--space-s48) + var(--space-s4))";
 
 function SummaryCard({
   icon,
@@ -60,13 +78,13 @@ function SummaryCard({
       >
         {icon}
       </span>
-      <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+      <p className="m-0 text-body" style={labelL2}>
         {title}
       </p>
-      <p className="text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
+      <p className="m-0 text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
         {value}
       </p>
-      <p className="text-control-sm text-body" style={{ fontFamily: "var(--font-family-control-sm)" }}>
+      <p className="m-0 text-control-sm text-body" style={{ fontFamily: "var(--font-family-control-sm)" }}>
         {detail}
       </p>
     </article>
@@ -129,6 +147,9 @@ export function CataloguePage() {
   const awaitingFinal = designations.filter((item) => item.status === "Awaiting final approval").length;
   const failed = designations.filter((item) => item.status === "Analysis failed").length;
   const openSod = designations.filter((item) => {
+    if (item.status === "Published" || item.status === "Rejected") {
+      return false;
+    }
     const summary = item.sodSummary;
     return summary ? summary.high + summary.medium + summary.low > 0 : false;
   }).length;
@@ -147,6 +168,7 @@ export function CataloguePage() {
       key: "name",
       label: "Designation",
       sortable: true,
+      width: widths.name,
       render: (row) => row.name,
     },
     {
@@ -159,6 +181,7 @@ export function CataloguePage() {
       key: "status",
       label: "Status",
       sortable: true,
+      width: widths.status,
       render: (row) => (
         <Stack>
           <Badge variant={statusBadgeVariant(row.status)}>{row.status}</Badge>
@@ -174,6 +197,7 @@ export function CataloguePage() {
       key: "license",
       label: "License / status",
       sortable: true,
+      width: widths.licence,
       render: (row) => {
         const cell = licenceCell(row);
         if (cell.badges.length === 0) {
@@ -189,7 +213,10 @@ export function CataloguePage() {
               ))}
             </span>
             {cell.note ? (
-              <span className="text-control-sm text-body" style={{ fontFamily: "var(--font-family-control-sm)" }}>
+              <span
+                className={`text-control-sm ${cell.badges.some((badge) => badge.variant === "error") ? "text-error-text" : "text-body"}`}
+                style={{ fontFamily: "var(--font-family-control-sm)" }}
+              >
                 {cell.note}
               </span>
             ) : null}
@@ -201,13 +228,14 @@ export function CataloguePage() {
       key: "saving",
       label: "Saving",
       sortable: true,
+      width: widths.saving,
       render: (row) => {
         const saving = savingText(row);
         if (!saving) {
           return <Dash />;
         }
         return (
-          <span className="text-body-b4 text-success-text" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+          <span className="text-success-text" style={labelL2}>
             {saving}
           </span>
         );
@@ -217,6 +245,7 @@ export function CataloguePage() {
       key: "sod",
       label: "SoD risk",
       sortable: true,
+      width: widths.sod,
       render: (row) => {
         const cell = sodCell(row);
         if (!cell) {
@@ -258,6 +287,18 @@ export function CataloguePage() {
                 items={[{ label: "Delete draft", onClick: () => setPendingDelete(row) }]}
               />
             ) : null}
+            {row.status === "Awaiting final approval" ? (
+              // Secondary actions are marked "to confirm" on the Figma frame; "View designation" is a placeholder.
+              <RowMenu
+                label={`Actions for ${row.name}`}
+                items={[
+                  {
+                    label: "View designation",
+                    onClick: () => router.push(pathFor(lastAllowedRoute(row), row.id)),
+                  },
+                ]}
+              />
+            ) : null}
           </span>
         );
       },
@@ -268,7 +309,7 @@ export function CataloguePage() {
     return (
       <AppFrame>
         <main className="p-s24">
-          <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+          <p className="m-0 text-body" style={labelL2}>
             Loading
           </p>
         </main>
@@ -283,12 +324,12 @@ export function CataloguePage() {
         <header className="flex items-center justify-between gap-s16">
           <div className="flex flex-col gap-s10">
             <h1
-              className="text-heading-h2"
+              className="m-0 text-heading-h2"
               style={{ fontFamily: "var(--font-family-heading-h2)", color: "var(--color-in-progress-text)" }}
             >
               Designation catalogue
             </h1>
-            <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+            <p className="m-0 text-body" style={labelL2}>
               Create and manage the designations your organisation uses.
             </p>
           </div>
@@ -301,41 +342,34 @@ export function CataloguePage() {
 
         {designations.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center gap-s16 rounded-s12 border border-dashed px-s24 py-s48 text-center"
-            style={{
-              minHeight: "calc(var(--space-s96) * 4)",
-              borderColor: "var(--color-gray-3)",
-            }}
+            className="flex flex-col items-center justify-center gap-s16 rounded-s12 border border-dashed px-s24 py-s56 text-center"
+            style={{ borderColor: "var(--color-border-input)" }}
           >
-            <IconUserCircle size="s32" style={iconStyle("var(--color-text-body)")} />
-            <div className="flex flex-col items-center gap-s8" style={{ maxWidth: "calc(var(--space-s96) * 5)" }}>
-              <p
-                className="text-strong"
-                style={{
-                  fontFamily: "var(--font-family-body-b4)",
-                  fontSize: "var(--font-size-l2)",
-                  fontWeight: "var(--font-weight-body-b3)",
-                  lineHeight: "var(--font-line-height-label-l1)",
-                }}
-              >
-                Create your first designation
-              </p>
-              <p
-                className="text-body"
-                style={{
-                  fontFamily: "var(--font-family-body-b4)",
-                  fontSize: "var(--font-size-l2)",
-                  fontWeight: "var(--font-weight-body-b4)",
-                  lineHeight: "var(--font-line-height-label-l1)",
-                }}
-              >
-                A designation groups the business activities and roles a
-                <br />
-                position needs. Start with one and we&apos;ll guide you
-                <br />
-                through it.
-              </p>
-            </div>
+            <IconUserCircle size="s24" style={iconStyle("var(--color-text-strong)")} />
+            <p
+              className="m-0 text-body"
+              style={{
+                fontFamily: "var(--font-family-lato-bold)",
+                fontSize: "var(--font-size-l1)",
+                fontWeight: "var(--font-weight-label-l1)",
+                lineHeight: "var(--font-line-height-label-l1)",
+              }}
+            >
+              Create your first designation
+            </p>
+            <p
+              className="m-0 text-body"
+              style={{
+                width: emptyBodyWidth,
+                fontFamily: "var(--font-family-lato-regular)",
+                fontSize: "var(--font-size-l2)",
+                fontWeight: "var(--font-weight-body-b4)",
+                lineHeight: "var(--font-line-height-label-l1)",
+              }}
+            >
+              A designation groups the business activities and roles a position needs. Start with one and we&apos;ll
+              guide you through it.
+            </p>
             <Button variant="primary" size="md" onClick={() => router.push("/designation/new")}>
               Create a New Designation
             </Button>
@@ -411,7 +445,7 @@ export function CataloguePage() {
             </div>
 
             {filtered.length === 0 ? (
-              <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+              <p className="m-0 text-body" style={labelL2}>
                 No designations match your search.
               </p>
             ) : (
@@ -427,7 +461,9 @@ export function CataloguePage() {
               pageSizeLabel="Designations per page"
               onPageChange={setPage}
               onPageSizeChange={(size) => {
-                setPageSize(size);
+                if (size === 10 || size === 25 || size === 50) {
+                  setPageSize(size);
+                }
                 setPage(1);
               }}
             />
@@ -439,8 +475,9 @@ export function CataloguePage() {
         opened={pendingDelete !== null}
         onClose={() => setPendingDelete(null)}
         size="sm"
+        variant="confirm"
         header={
-          <h2 className="text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
+          <h2 className="m-0 text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
             {`Delete draft "${pendingDelete?.name ?? ""}"?`}
           </h2>
         }
@@ -464,7 +501,7 @@ export function CataloguePage() {
           </div>
         }
       >
-        <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
+        <p className="m-0 text-body" style={labelL2}>
           This removes the draft and everything you&apos;ve set up so far. It can&apos;t be undone. No roles have been
           created in SAP.
         </p>

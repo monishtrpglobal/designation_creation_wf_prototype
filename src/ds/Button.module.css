@@ -107,6 +107,12 @@
   );
   color: var(--color-text-inverse-soft);
   border: var(--border-default) solid var(--color-action-primary-border);
+  box-shadow: var(--shadow-button-primary);
+}
+
+.root[data-irm-size="md"][data-irm-variant="primary"] {
+  min-width: calc(var(--space-s80) + var(--space-s10));
+  justify-content: center;
 }
 
 .root[data-irm-variant="primary"]:hover:not(:disabled):not([data-loading]) {
@@ -168,6 +174,7 @@
 .root:disabled:not([data-loading]):not([data-irm-variant="ghost"]),
 .root[data-disabled]:not([data-loading]):not([data-irm-variant="ghost"]) {
   background-color: var(--color-disabled-bg);
+  box-shadow: none;
 }
 
 .root[data-loading] {

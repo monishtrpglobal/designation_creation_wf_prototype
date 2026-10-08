@@ -1,5 +1,7 @@
 export const lifecycleStatuses = [
   "Draft",
+  "In progress",
+  "Completed",
   "Syncing to Dev",
   "Awaiting TR approval",
   "Moving to Quality",

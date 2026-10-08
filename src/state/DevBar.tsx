@@ -19,6 +19,7 @@ export function FlowHydration() {
 
 export function DevBar() {
   const resetDemo = useFlowStore((state) => state.resetDemo);
+  const clearDesignations = useFlowStore((state) => state.clearDesignations);
   const router = useRouter();
 
   return (
@@ -33,6 +34,16 @@ export function DevBar() {
         }}
       >
         Reset demo
+      </Button>
+      <Button
+        variant="ghost"
+        size="xs"
+        onClick={() => {
+          clearDesignations();
+          router.push("/designations");
+        }}
+      >
+        Empty catalogue
       </Button>
     </div>
   );

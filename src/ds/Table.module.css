@@ -1,5 +1,6 @@
 .table {
   width: 100%;
+  min-width: calc(var(--space-s96) * 14);
   border-collapse: collapse;
   background-color: var(--color-bg-surface-white);
 }
@@ -7,7 +8,6 @@
 .headerCell,
 .cell {
   box-sizing: border-box;
-  height: var(--space-s40);
   padding: 0 var(--space-s16) 0 var(--space-s12);
   border-bottom: var(--border-default) solid var(--color-border-subtle);
   text-align: left;
@@ -15,6 +15,19 @@
 }
 
 .headerCell {
+  height: var(--space-s40);
+}
+
+.cell {
+  height: auto;
+  min-height: var(--space-s64);
+  padding-top: var(--space-s8);
+  padding-bottom: var(--space-s8);
+}
+
+.headerCell {
+  padding-top: 0;
+  padding-bottom: 0;
   color: var(--color-text-strong);
   font-family: var(--font-family-inter-display-bold);
   font-size: var(--font-size-l3);

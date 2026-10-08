@@ -46,6 +46,8 @@ type FlowActions = {
   rejectFinal: (id: string, comment: string) => boolean;
   saveDraft: (id: string) => void;
   deleteDesignation: (id: string) => void;
+  clearDesignations: () => void;
+  reopenDesignation: (id: string) => void;
 };
 
 export type FlowState = FlowData & FlowActions;
@@ -553,6 +555,26 @@ export const useFlowStore = create<FlowState>()(
         set((state) => ({
           designations: state.designations.filter((item) => item.id !== id),
           currentDesignationId: state.currentDesignationId === id ? null : state.currentDesignationId,
+        })),
+      clearDesignations: () => set({ designations: [], currentDesignationId: null }),
+      reopenDesignation: (id) =>
+        set((state) => ({
+          currentDesignationId: id,
+          designations: patch(state.designations, id, (current) => ({
+            ...current,
+            status: "Draft",
+            steps: {
+              name: true,
+              activities: false,
+              sync: false,
+              roles: false,
+              finalize: false,
+              tr: false,
+              license: false,
+            },
+            approval: { ...current.approval, final: "none", finalComment: "" },
+            updatedAt: new Date().toISOString(),
+          })),
         })),
     }),
     {

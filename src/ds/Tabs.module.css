@@ -1,8 +1,13 @@
 .list {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-s8);
   padding: var(--space-s4);
   border-bottom: 0;
+}
+
+.list::before {
+  display: none;
 }
 
 .list[data-orientation="vertical"] {

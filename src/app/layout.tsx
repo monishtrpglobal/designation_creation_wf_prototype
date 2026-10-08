@@ -37,9 +37,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body>
         <MantineProvider forceColorScheme="light" theme={theme}>
-          <FlowHydration />
-          <DevBar />
-          {children}
+          <div className="flex min-h-dvh flex-col">
+            <FlowHydration />
+            <DevBar />
+            <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          </div>
         </MantineProvider>
       </body>
     </html>

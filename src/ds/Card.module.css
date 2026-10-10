@@ -6,10 +6,14 @@
   width: 100%;
   height: 100%;
   padding: var(--space-s16);
-  border-radius: var(--radius-s12);
+  border-radius: var(--radius-s8);
   background-color: var(--color-bg-surface);
   overflow: hidden;
   box-shadow: var(--shadow-card);
+}
+
+.card[data-radius="s12"] {
+  border-radius: var(--radius-s12);
 }
 
 .card[data-irm-variant="hoverable"] {
@@ -65,7 +69,8 @@ button.card[aria-disabled="true"] {
   box-shadow: none;
 }
 
-.card[data-selected] {
+.card[data-selected],
+.card[data-selected][data-tint] {
   border: var(--border-emphasis) solid var(--color-in-progress-text);
 }
 

@@ -35,6 +35,34 @@
   border-radius: var(--radius-s12);
 }
 
+.root[data-icon-only] {
+  justify-content: center;
+}
+
+.root[data-icon-only][data-irm-size="xs"] {
+  width: var(--space-s24);
+  min-width: var(--space-s24);
+  padding: var(--space-s4);
+}
+
+.root[data-icon-only][data-irm-size="sm"] {
+  width: calc(var(--space-s24) + var(--space-s6));
+  min-width: calc(var(--space-s24) + var(--space-s6));
+  padding: var(--space-s6);
+}
+
+.root[data-icon-only][data-irm-size="md"] {
+  width: var(--space-s40);
+  min-width: var(--space-s40);
+  padding: var(--space-s10);
+}
+
+.root[data-icon-only][data-irm-size="lg"] {
+  width: var(--space-s48);
+  min-width: var(--space-s48);
+  padding: var(--space-s12);
+}
+
 .inner {
   opacity: 1;
   transform: none;

@@ -14,7 +14,7 @@ export type SortState = {
 
 export type TableColumn<Row> = {
   key: string;
-  label: string;
+  label: ReactNode;
   sortable?: boolean;
   width?: string;
   render?: (row: Row) => ReactNode;
@@ -27,6 +27,7 @@ type TableProps<Row> = {
   onRowClick?: (row: Row) => void;
   sort?: SortState | null;
   onSortChange?: (sort: SortState | null) => void;
+  minWidth?: string;
 };
 
 function nextSort(current: SortState | null, key: string): SortState | null {
@@ -59,6 +60,7 @@ export function Table<Row>({
   onRowClick,
   sort,
   onSortChange,
+  minWidth,
 }: TableProps<Row>) {
   const [uncontrolled, setUncontrolled] = useState<SortState | null>(null);
   const active = sort !== undefined ? sort : uncontrolled;
@@ -82,7 +84,7 @@ export function Table<Row>({
   }
 
   return (
-    <MantineTable className={styles.table}>
+    <MantineTable className={styles.table} style={minWidth ? { minWidth } : undefined}>
       <MantineTable.Thead>
         <MantineTable.Tr>
           {columns.map((column) => {

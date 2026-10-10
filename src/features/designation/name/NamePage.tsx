@@ -15,24 +15,17 @@ import {
   IconReceipt,
 } from "@/ds/icons";
 import { Link } from "@/ds/Link";
-import type { StepItem } from "@/ds/Stepper";
 import { TextField } from "@/ds/TextField";
+import { flowSteps } from "@/features/designation/flowSteps";
+import { pathFor } from "@/state/access";
 import { useFlowStore } from "@/state/flowStore";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { namesMatch, previewCount, suggestionTint, suggestions, type Suggestion } from "./suggestions";
 
 const nameFieldId = "designation-name";
 const nameLimit = 60;
 const openedName = "Head of Accountant";
-
-const steps: StepItem[] = [
-  { label: "Designation Name" },
-  { label: "Business Activities" },
-  { label: "Run Sync" },
-  { label: "Role Recommendation" },
-  { label: "Role Finalization" },
-];
 
 const suggestionIcons = {
   calculator: IconCalculator,
@@ -124,14 +117,33 @@ function SuggestionCard({
   );
 }
 
-export function NamePage() {
+export function NamePage({ designationId }: { designationId?: string }) {
   const router = useRouter();
   const hydrated = useFlowStore((state) => state.hydrated);
   const designations = useFlowStore((state) => state.designations);
   const createDesignation = useFlowStore((state) => state.createDesignation);
-  const [name, setName] = useState(openedName);
+  const renameDesignation = useFlowStore((state) => state.renameDesignation);
+  const setCurrentDesignation = useFlowStore((state) => state.setCurrentDesignation);
+  const designation = designationId
+    ? designations.find((item) => item.id === designationId)
+    : undefined;
+  const [name, setName] = useState(designationId ? "" : openedName);
   const [error, setError] = useState<ReactNode>(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [seeded, setSeeded] = useState(!designationId);
+
+  useEffect(() => {
+    if (!designationId || !hydrated || seeded) {
+      return;
+    }
+    if (!designation) {
+      router.replace("/designations");
+      return;
+    }
+    setName(designation.name);
+    setCurrentDesignation(designationId);
+    setSeeded(true);
+  }, [designation, designationId, hydrated, router, seeded, setCurrentDesignation]);
 
   const taken = suggestions.map((item) => item.inCatalogue === true);
 
@@ -163,7 +175,10 @@ export function NamePage() {
       return;
     }
     const listed = suggestions.some((item) => item.inCatalogue === true && namesMatch(trimmed, item.name));
-    if (listed || designations.some((designation) => namesMatch(designation.name, trimmed))) {
+    const duplicate = designations.some(
+      (item) => item.id !== designationId && namesMatch(item.name, trimmed),
+    );
+    if (listed || duplicate) {
       setError(
         fieldError(
           <>
@@ -175,13 +190,20 @@ export function NamePage() {
       focusName();
       return;
     }
+    if (designationId) {
+      renameDesignation(designationId, trimmed);
+      router.push(pathFor("activities", designationId));
+      return;
+    }
     const id = createDesignation(trimmed);
-    router.push(`/designation/${id}/activities`);
+    router.push(pathFor("activities", id));
   }
+
+  const ready = hydrated && seeded;
 
   return (
     <AppFrame>
-      {!hydrated ? (
+      {!ready ? (
         <main className="p-s24">
           <p className="text-body-b4 text-body" style={{ fontFamily: "var(--font-family-body-b4)" }}>
             Loading
@@ -190,10 +212,14 @@ export function NamePage() {
       ) : (
         <FlowShell
           title="Create a New Designation"
-          steps={steps}
+          steps={flowSteps}
           activeIndex={0}
           primaryLabel="Next"
           contentSurface="white"
+          pageSurface="white"
+          showCatalogueBack
+          onCatalogueBack={() => router.push("/designations")}
+          showFooterPrimary={false}
           onPrimaryClick={onNext}
         >
           <div className="flex flex-1 flex-col items-center justify-center gap-s32">

@@ -4,7 +4,7 @@ import { Modal } from "@mantine/core";
 import type { ReactNode } from "react";
 import styles from "./Dialog.module.css";
 
-export type DialogSize = "sm" | "md" | "lg";
+export type DialogSize = "sm" | "md" | "lg" | "xl";
 
 /**
  * default: header, body and footer bands with a blurred scrim.
@@ -16,6 +16,7 @@ const dialogSize: Record<DialogSize, string> = {
   sm: "var(--size-dialog-sm)",
   md: "var(--size-dialog-md)",
   lg: "var(--size-dialog-lg)",
+  xl: "var(--size-dialog-xl)",
 };
 
 type DialogProps = {

@@ -1,4 +1,4 @@
-import type { LicenseSummary, LifecycleStatus, SodRisk, SodSummary } from "@/mock";
+import type { AuthObjectStatus, LicenseSummary, LifecycleStatus, SodRisk, SodSummary } from "@/mock";
 
 export type FlowMethod = "A" | "B";
 
@@ -63,6 +63,22 @@ export type CreationProgress = {
   failed: number;
 };
 
+export type ActivityEdit = {
+  tcodeIds: string[];
+  authObjectIds: string[];
+  orgLevels: {
+    id: string;
+    name: string;
+    state: "open" | "values" | "range" | "wildcard";
+    values: string[];
+    from?: string;
+    to?: string;
+  }[];
+  tcodeObjects: Record<string, string[]>;
+  authActivities: Record<string, string[]>;
+  authStatus: Record<string, AuthObjectStatus>;
+};
+
 export type DesignationRuntime = {
   id: string;
   name: string;
@@ -73,6 +89,7 @@ export type DesignationRuntime = {
   licenseSummary: LicenseSummary | null;
   sodSummary: SodSummary | null;
   selectedActivityIds: string[];
+  activityEdits?: Record<string, ActivityEdit>;
   method: FlowMethod | null;
   methodLocked: boolean;
   sync: SyncState;

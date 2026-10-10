@@ -6,7 +6,6 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import type { Metadata } from "next";
 import { Inter, Lato } from "next/font/google";
 import { FlowHydration } from "@/state/DevBar";
-import { DemoBar } from "@/state/DemoBar";
 import { theme } from "@/theme/mantine-theme";
 
 const inter = Inter({
@@ -41,7 +40,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div className="flex min-h-dvh flex-col">
             <FlowHydration />
             <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-            <DemoBar />
           </div>
         </MantineProvider>
       </body>

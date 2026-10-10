@@ -4,10 +4,12 @@ import styles from "./Card.module.css";
 
 export type CardVariant = "flat" | "hoverable" | "border";
 export type CardTint = "mint" | "blue" | "lavender" | "neutral";
+export type CardRadius = "s8" | "s12";
 
 type CardProps = {
   variant?: CardVariant;
   tint?: CardTint;
+  radius?: CardRadius;
   selected?: boolean;
   disabled?: boolean;
   onClick?: () => void;
@@ -23,6 +25,7 @@ type CardProps = {
 export function Card({
   variant = "flat",
   tint,
+  radius = "s8",
   selected = false,
   disabled = false,
   onClick,
@@ -45,6 +48,7 @@ export function Card({
   const markers = {
     "data-irm-variant": variant,
     "data-tint": tint,
+    "data-radius": radius,
     "data-selected": selected || undefined,
   };
 

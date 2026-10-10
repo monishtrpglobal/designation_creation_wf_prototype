@@ -359,6 +359,8 @@
   --size-dialog-sm: 480px;
   --size-dialog-md: 600px;
   --size-dialog-lg: 720px;
+  /* Screen 4 edit-activity dialog frame is 1080 wide. No Figma size variable exists for it. */
+  --size-dialog-xl: 1080px;
 
   --color-bg-decor-lavender: var(--color-purple-0);
   --color-bg-surface-white: var(--color-pure-white);

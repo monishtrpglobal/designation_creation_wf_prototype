@@ -49,7 +49,7 @@ export function ProgressRing({ value, size = "md", indeterminate = false }: Prog
     <RingProgress
       size={100}
       thickness={10}
-      roundCaps={false}
+      roundCaps={true}
       rootColor="var(--color-border-subtle)"
       sections={[{ value: shown, color: "var(--color-brand-teal)" }]}
       label={

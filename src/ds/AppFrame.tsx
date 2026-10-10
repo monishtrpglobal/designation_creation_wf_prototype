@@ -1,10 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useDemoNav } from "@/features/designation/demoNav";
+import { useFlowStore } from "@/state/flowStore";
+import { usePathname } from "next/navigation";
+import { useState, type ComponentType, type ReactNode } from "react";
 import {
   IconAlertCircle,
   IconBell,
   IconChevronDown,
+  IconChevronUp,
   IconEye,
   IconFileSpreadsheet,
   IconInfo,
@@ -16,23 +20,60 @@ import {
 } from "./icons";
 import styles from "./AppFrame.module.css";
 
-const navItems = [
+type IconComponent = ComponentType<{ size: "s20" }>;
+
+type NavChild = {
+  id: "empty" | "complete";
+  label: string;
+};
+
+type NavItem = {
+  id: string;
+  label: string;
+  icon: IconComponent;
+  children?: NavChild[];
+};
+
+const navItems: NavItem[] = [
   { id: "imatrix", label: "iMatrix", icon: IconFileSpreadsheet },
   { id: "settings", label: "Settings", icon: IconSettings },
   { id: "itac", label: "ITAC", icon: IconAlertCircle },
   { id: "review", label: "User Access Review", icon: IconEye },
   { id: "notification", label: "Notification", icon: IconBell },
-  { id: "matrix", label: "User Auth Matrix", icon: IconUserCircle },
+  {
+    id: "matrix",
+    label: "User Auth Matrix",
+    icon: IconUserCircle,
+    children: [
+      { id: "empty", label: "Empty Catalogue" },
+      { id: "complete", label: "Complete Catalogue" },
+    ],
+  },
   { id: "audit", label: "Audit History", icon: IconInfo },
-] as const;
+];
 
 type AppFrameProps = {
   children: ReactNode;
   userName?: string;
 };
 
+let sidebarOpenMemory = true;
+
 export function AppFrame({ children, userName = "Monish" }: AppFrameProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(sidebarOpenMemory);
+
+  function toggleSidebar() {
+    setSidebarOpen((open) => {
+      sidebarOpenMemory = !open;
+      return sidebarOpenMemory;
+    });
+  }
+  const [matrixOpen, setMatrixOpen] = useState(true);
+  const pathname = usePathname();
+  const designationCount = useFlowStore((state) => state.designations.length);
+  const { onEmptyCatalogue, onResetDemo } = useDemoNav();
+  const onCatalogue = pathname === "/designations";
+  const activeChild = onCatalogue ? (designationCount === 0 ? "empty" : "complete") : null;
 
   return (
     <div className={styles.frame}>
@@ -47,7 +88,7 @@ export function AppFrame({ children, userName = "Monish" }: AppFrameProps) {
             className={styles.toggle}
             aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
             aria-expanded={sidebarOpen}
-            onClick={() => setSidebarOpen((open) => !open)}
+            onClick={toggleSidebar}
           >
             <IconLayoutSidebar size="s16" />
           </button>
@@ -75,15 +116,46 @@ export function AppFrame({ children, userName = "Monish" }: AppFrameProps) {
           <nav className={styles.sidebar} aria-label="iMatrix">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const active = item.id === "matrix";
+              if (item.children) {
+                const parentActive = activeChild !== null;
+                return (
+                  <div key={item.id} className={styles.navGroup}>
+                    <button
+                      type="button"
+                      className={styles.navItem}
+                      data-active={parentActive}
+                      aria-expanded={matrixOpen}
+                      aria-controls="nav-matrix-submenu"
+                      onClick={() => setMatrixOpen((open) => !open)}
+                    >
+                      <Icon size="s20" />
+                      <span className={styles.navLabel}>{item.label}</span>
+                      {matrixOpen ? <IconChevronUp size="s18" /> : <IconChevronDown size="s18" />}
+                    </button>
+                    {matrixOpen ? (
+                      <div id="nav-matrix-submenu" role="group" aria-label={item.label} className={styles.submenu}>
+                        {item.children.map((child) => {
+                          const current = child.id === activeChild;
+                          return (
+                            <button
+                              key={child.id}
+                              type="button"
+                              className={styles.navItem}
+                              data-active={current}
+                              aria-current={current ? "page" : undefined}
+                              onClick={child.id === "empty" ? onEmptyCatalogue : onResetDemo}
+                            >
+                              <span>{child.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              }
               return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={styles.navItem}
-                  data-active={active}
-                  aria-current={active ? "page" : undefined}
-                >
+                <button key={item.id} type="button" className={styles.navItem}>
                   <Icon size="s20" />
                   <span>{item.label}</span>
                 </button>

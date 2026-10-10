@@ -20,6 +20,7 @@ export const licenseFile = licenseJson as LicenseFile;
 export type {
   Activity,
   AuthObject,
+  AuthObjectStatus,
   DesignationSeed,
   LicenseAnalysisSeed,
   LicenseLine,

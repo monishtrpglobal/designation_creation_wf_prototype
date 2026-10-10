@@ -308,7 +308,7 @@ export function CataloguePage() {
   if (!hydrated) {
     return (
       <AppFrame>
-        <main className="p-s24">
+        <main className="min-h-full flex-1 bg-surface-white p-s24">
           <p className="m-0 text-body" style={labelL2}>
             Loading
           </p>
@@ -319,7 +319,7 @@ export function CataloguePage() {
 
   return (
     <AppFrame>
-    <main className="bg-surface-white p-s24">
+    <main className="min-h-full flex-1 bg-surface-white p-s24">
       <section className="flex flex-col gap-s24 rounded-s12 border border-solid border-subtle px-s40 py-s32">
         <header className="flex items-center justify-between gap-s16">
           <div className="flex flex-col gap-s10">

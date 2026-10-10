@@ -7,27 +7,34 @@ import { Button } from "@/ds/Button";
 import { Card, type CardTint } from "@/ds/Card";
 import { Checkbox } from "@/ds/Checkbox";
 import { FlowShell } from "@/ds/FlowShell";
+import { IconEdit, IconUserCircle } from "@/ds/icons";
 import { Link } from "@/ds/Link";
 import { Pagination } from "@/ds/Pagination";
-import type { StepItem } from "@/ds/Stepper";
 import { Tabs } from "@/ds/Tabs";
 import { TextField } from "@/ds/TextField";
-import { guardRedirect } from "@/state/access";
+import { flowSteps } from "@/features/designation/flowSteps";
+import { guardRedirect, pathFor } from "@/state/access";
 import { useFlowStore } from "@/state/flowStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
-
-const steps: StepItem[] = [
-  { label: "Designation Name" },
-  { label: "Business Activities" },
-  { label: "Run Sync" },
-  { label: "Role Recommendation" },
-  { label: "Role Finalization" },
-];
+import { EditActivityDialog } from "./EditActivityDialog";
 
 const columns = 4;
 const activityPageSizes = [10, 20, 50] as const;
 const tints = ["mint", "blue", "lavender"] as const;
+
+const activityTintMap: Record<string, CardTint> = {
+  "account-payable": "mint",
+  "account-receivable": "blue",
+  "general-ledger": "lavender",
+  "asset-accounting": "mint",
+  "lease-accounting": "blue",
+  "bank-and-cash": "lavender",
+  "revenue-recognition": "mint",
+  "inventory-material-ledger": "blue",
+  tax: "mint",
+  "cost-center-accounting": "blue",
+};
 
 const catalogue = activitiesFile.activities;
 const noSelection: string[] = [];
@@ -72,6 +79,7 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
   );
   const setCurrentDesignation = useFlowStore((state) => state.setCurrentDesignation);
   const setSelectedActivities = useFlowStore((state) => state.setSelectedActivities);
+  const saveActivityEdit = useFlowStore((state) => state.saveActivityEdit);
   const saveDraft = useFlowStore((state) => state.saveDraft);
   const redirect = hydrated ? guardRedirect(designation, "activities") : null;
 
@@ -79,6 +87,8 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(activityPageSizes[0]);
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
+  const drafts = designation?.activityEdits ?? {};
 
   const selectedIds = designation?.selectedActivityIds ?? noSelection;
 
@@ -142,7 +152,7 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
     if (selectedIds.length === 0) {
       return;
     }
-    router.push(`/designation/${designationId}/sync`);
+    router.push(pathFor("sync", designationId));
   }
 
   const noneSelected = selectedIds.length === 0;
@@ -156,43 +166,150 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
           </p>
         </main>
       ) : (
-        <FlowShell
-          title="Create a New Designation"
-          steps={steps}
-          activeIndex={1}
-          showSaveAsDraft
-          onSaveAsDraft={onSave}
-          primaryLabel="Next"
-          primaryDisabled={noneSelected}
-          onPrimaryClick={onNext}
-          helperText={
-            noneSelected ? (
-              <>
-                Next is off:{" "}
-                <Link
-                  href="#activity-selection"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    focusSelection();
-                  }}
-                >
-                  select at least one activity
-                </Link>
-              </>
-            ) : (
-              selectionLabel(selectedIds.length)
-            )
-          }
-        >
-          <div className="flex w-full flex-col gap-s16">
-            <div className="flex w-full flex-col gap-s24">
-              <div className="flex flex-col gap-s10">
-                <h2
-                  className="m-0 text-heading-h2 text-in-progress-text"
-                  style={{ fontFamily: "var(--font-family-heading-h2)" }}
-                >
-                  Select business activities
-                </h2>
+        <>
+          <FlowShell
+            title="Create a New Designation"
+            steps={flowSteps}
+            activeIndex={1}
+            contentSurface="white"
+            pageSurface="white"
+            onBack={() => router.push(pathFor("name", designationId))}
+            stepPrevVariant="primary"
+            helperAlign="start"
+            showFooterPrimary={false}
+            primaryLabel="Next"
+            primaryDisabled={noneSelected}
+            onPrimaryClick={onNext}
+            helperText={
+              noneSelected ? (
+                <>
+                  Next is off:{" "}
+                  <Link
+                    href="#activity-selection"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      focusSelection();
+                    }}
+                  >
+                    select at least one activity
+                  </Link>
+                </>
+              ) : (
+                selectionLabel(selectedIds.length)
+              )
+            }
+          >
+            <div className="flex w-full flex-col gap-s16">
+              <div className="flex w-full flex-col gap-s24">
+                <div className="flex w-full flex-col gap-s10">
+                  <div className="flex w-full flex-col gap-s4">
+                    <div className="flex w-full items-center justify-between gap-s16">
+                      <div className="flex min-w-0 items-center gap-s8">
+                        <span className="inline-flex shrink-0 text-body">
+                          <IconUserCircle size="s16" />
+                        </span>
+                        <span
+                          className="shrink-0 text-l2 text-body"
+                          style={{
+                            fontFamily: "var(--font-family-lato-regular)",
+                            lineHeight: "var(--font-line-height-label-l1)",
+                          }}
+                        >
+                          Designation:
+                        </span>
+                        <span
+                          className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-l2 text-body"
+                          style={{
+                            maxWidth: "calc(var(--space-s80) * 7 + var(--space-s40))",
+                            fontFamily: "var(--font-family-label-l1)",
+                            fontWeight: "var(--font-weight-label-l1)",
+                            lineHeight: "var(--font-line-height-label-l1)",
+                          }}
+                        >
+                          {designation.name}
+                        </span>
+                      </div>
+                      <Button variant="secondary" size="sm" onClick={onSave}>
+                        Save as draft
+                      </Button>
+                    </div>
+                    <h2
+                      className="m-0 text-heading-h2 text-in-progress-text"
+                      style={{ fontFamily: "var(--font-family-heading-h2)" }}
+                    >
+                      Select business activities
+                    </h2>
+                  </div>
+                  <p
+                    className="m-0 text-l2 text-body"
+                    style={{
+                      fontFamily: "var(--font-family-lato-regular)",
+                      lineHeight: "var(--font-line-height-label-l1)",
+                    }}
+                  >
+                    Select the activities this designation performs. Use Edit to review the T-codes and
+                    auth values of an activity.
+                  </p>
+                </div>
+                <div className="flex w-full items-center justify-between gap-s16">
+                  <div style={{ width: "calc(var(--space-s80) * 4)" }}>
+                    <TextField
+                      type="search"
+                      placeholder="Search activities"
+                      value={query}
+                      clearable
+                      onChange={(value) => {
+                        setQuery(value);
+                        setPage(1);
+                      }}
+                    />
+                  </div>
+                  <Tabs
+                    variant="pill"
+                    showPanels={false}
+                    value={filter}
+                    onChange={(value) => {
+                      setFilter(value ?? "all");
+                      setPage(1);
+                    }}
+                    items={[
+                      {
+                        value: "all",
+                        label: "All",
+                        count: (
+                          <Badge size="sm" variant="light">
+                            {catalogue.length}
+                          </Badge>
+                        ),
+                      },
+                      {
+                        value: "selected",
+                        label: "Selected",
+                        count: (
+                          <Badge size="sm" variant="light">
+                            {selectedIds.length}
+                          </Badge>
+                        ),
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
+
+              <div id="activity-selection" className="grid w-full grid-cols-4 gap-s16">
+                {visible.map((activity, index) => (
+                  <ActivityCard
+                    key={activity.id}
+                    activity={activity}
+                    tcodeCount={drafts[activity.id]?.tcodeIds.length}
+                    tint={activityTintMap[activity.id] ?? cardTints[index] ?? "mint"}
+                    selected={selectedIds.includes(activity.id)}
+                    onToggle={() => toggle(activity.id)}
+                    onEdit={() => setEditingActivity(activity)}
+                  />
+                ))}
+              </div>
+              {visible.length === 0 ? (
                 <p
                   className="m-0 text-l2 text-body"
                   style={{
@@ -200,92 +317,32 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
                     lineHeight: "var(--font-line-height-label-l1)",
                   }}
                 >
-                  Select the activities this designation performs. Use Edit to review the T-codes and
-                  auth values of an activity.
+                  No activities match your search.
                 </p>
-              </div>
-              <div className="flex w-full items-center justify-between gap-s16">
-                <div style={{ width: "calc(var(--space-s80) * 4)" }}>
-                  <TextField
-                    type="search"
-                    placeholder="Search activities"
-                    value={query}
-                    clearable
-                    onChange={(value) => {
-                      setQuery(value);
-                      setPage(1);
-                    }}
-                  />
-                </div>
-                <Tabs
-                  variant="pill"
-                  showPanels={false}
-                  value={filter}
-                  onChange={(value) => {
-                    setFilter(value ?? "all");
-                    setPage(1);
-                  }}
-                  items={[
-                    {
-                      value: "all",
-                      label: "All",
-                      count: (
-                        <Badge size="sm" variant="light">
-                          {catalogue.length}
-                        </Badge>
-                      ),
-                    },
-                    {
-                      value: "selected",
-                      label: "Selected",
-                      count: (
-                        <Badge size="sm" variant="light">
-                          {selectedIds.length}
-                        </Badge>
-                      ),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
+              ) : null}
 
-            <div id="activity-selection" className="grid w-full grid-cols-4 gap-s16">
-              {visible.map((activity, index) => (
-                <ActivityCard
-                  key={activity.id}
-                  activity={activity}
-                  tint={cardTints[index] ?? "mint"}
-                  selected={selectedIds.includes(activity.id)}
-                  onToggle={() => toggle(activity.id)}
-                />
-              ))}
-            </div>
-            {visible.length === 0 ? (
-              <p
-                className="m-0 text-l2 text-body"
-                style={{
-                  fontFamily: "var(--font-family-lato-regular)",
-                  lineHeight: "var(--font-line-height-label-l1)",
+              <Pagination
+                page={safePage}
+                total={filtered.length}
+                pageSize={pageSize}
+                sizes={activityPageSizes}
+                pageSizeLabel="Activities per page"
+                onPageChange={setPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPage(1);
                 }}
-              >
-                No activities match your search.
-              </p>
-            ) : null}
-
-            <Pagination
-              page={safePage}
-              total={filtered.length}
-              pageSize={pageSize}
-              sizes={activityPageSizes}
-              pageSizeLabel="Activities per page"
-              onPageChange={setPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setPage(1);
-              }}
-            />
-          </div>
-        </FlowShell>
+              />
+            </div>
+          </FlowShell>
+          <EditActivityDialog
+            opened={editingActivity !== null}
+            onClose={() => setEditingActivity(null)}
+            activity={editingActivity}
+            saved={editingActivity ? drafts[editingActivity.id] : undefined}
+            onSave={(activityId, draft) => saveActivityEdit(designationId, activityId, draft)}
+          />
+        </>
       )}
     </AppFrame>
   );
@@ -293,14 +350,18 @@ export function ActivitiesPage({ designationId }: { designationId: string }) {
 
 function ActivityCard({
   activity,
+  tcodeCount,
   tint,
   selected,
   onToggle,
+  onEdit,
 }: {
   activity: Activity;
+  tcodeCount?: number;
   tint: CardTint;
   selected: boolean;
   onToggle: () => void;
+  onEdit: () => void;
 }) {
   function keepSelection(event: MouseEvent) {
     event.stopPropagation();
@@ -308,7 +369,7 @@ function ActivityCard({
 
   return (
     <div className="flex cursor-pointer" onClick={onToggle}>
-      <Card variant="hoverable" tint={tint} selected={selected}>
+      <Card variant="hoverable" tint={tint} radius="s12" selected={selected}>
         <span className="flex w-full flex-col gap-s8">
           <span className="flex w-full items-center justify-between">
             <span onClick={keepSelection}>
@@ -321,12 +382,12 @@ function ActivityCard({
               />
             </span>
             <span onClick={keepSelection}>
-              {/* Screen 4 (edit activity dialog) is not built yet. */}
               <Button
                 variant="secondary"
                 size="xs"
+                leftIcon={<IconEdit size="s16" />}
                 aria-label={`Edit ${activity.name}`}
-                onClick={() => undefined}
+                onClick={onEdit}
               >
                 Edit
               </Button>
@@ -339,7 +400,7 @@ function ActivityCard({
             {activity.name}
           </span>
           <span
-            className="min-h-s40 text-l2 text-body"
+            className="min-h-s40 text-l2 text-body line-clamp-2"
             style={{
               fontFamily: "var(--font-family-lato-regular)",
               lineHeight: "var(--font-line-height-label-l1)",
@@ -348,10 +409,10 @@ function ActivityCard({
             {activity.description}
           </span>
           <span
-            className="text-control-sm text-body"
+            className="text-control-sm font-semibold text-body"
             style={{ fontFamily: "var(--font-family-control-sm)" }}
           >
-            {activity.tcodeIds.length} T-codes
+            {tcodeCount ?? activity.tcodeIds.length} T-codes
           </span>
         </span>
       </Card>

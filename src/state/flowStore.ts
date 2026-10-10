@@ -2,7 +2,7 @@ import { rolesFile } from "@/mock";
 import { createRole, runLicenseAnalysis, runSync } from "@/lib/fakeApi";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { DesignationRuntime, FlowMethod, OrgValue, RoleRuntimeStatus } from "./model";
+import type { ActivityEdit, DesignationRuntime, FlowMethod, OrgValue, RoleRuntimeStatus } from "./model";
 import { buildDraft, seedDesignations, settleInterrupted } from "./seed";
 
 const taxRoleId =
@@ -22,6 +22,7 @@ type FlowActions = {
   createDesignation: (name: string) => string;
   renameDesignation: (id: string, name: string) => void;
   setSelectedActivities: (id: string, activityIds: string[]) => void;
+  saveActivityEdit: (id: string, activityId: string, edit: ActivityEdit) => void;
   startSync: (id: string, options?: { fail?: boolean }) => Promise<void>;
   chooseMethod: (id: string, method: FlowMethod) => void;
   sendRequirement: (id: string) => void;
@@ -191,6 +192,14 @@ export const useFlowStore = create<FlowState>()(
             ...current,
             selectedActivityIds: activityIds,
             steps: { ...current.steps, activities: activityIds.length > 0 },
+            updatedAt: new Date().toISOString(),
+          })),
+        })),
+      saveActivityEdit: (id, activityId, edit) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => ({
+            ...current,
+            activityEdits: { ...current.activityEdits, [activityId]: edit },
             updatedAt: new Date().toISOString(),
           })),
         })),

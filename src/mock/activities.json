@@ -71,6 +71,78 @@
       "code": "FAGLL03",
       "description": "G/L line item display (sample data)",
       "manual": false
+    },
+    {
+      "id": "FB60",
+      "code": "FB60",
+      "description": "Enter vendor invoice",
+      "manual": false
+    },
+    {
+      "id": "FB65",
+      "code": "FB65",
+      "description": "Enter vendor credit memo",
+      "manual": false
+    },
+    {
+      "id": "FBL1N",
+      "code": "FBL1N",
+      "description": "Display vendor line items",
+      "manual": false
+    },
+    {
+      "id": "F110",
+      "code": "F110",
+      "description": "Automatic payment run",
+      "manual": false
+    },
+    {
+      "id": "FK01",
+      "code": "FK01",
+      "description": "Create vendor master",
+      "manual": true
+    },
+    {
+      "id": "FK02",
+      "code": "FK02",
+      "description": "Change vendor master",
+      "manual": false
+    },
+    {
+      "id": "FK03",
+      "code": "FK03",
+      "description": "Display vendor master",
+      "manual": false
+    },
+    {
+      "id": "MIRO",
+      "code": "MIRO",
+      "description": "Enter incoming invoice",
+      "manual": false
+    },
+    {
+      "id": "MIR4",
+      "code": "MIR4",
+      "description": "Display invoice document",
+      "manual": false
+    },
+    {
+      "id": "F-53",
+      "code": "F-53",
+      "description": "Post outgoing payment",
+      "manual": false
+    },
+    {
+      "id": "FB01",
+      "code": "FB01",
+      "description": "Post document",
+      "manual": false
+    },
+    {
+      "id": "F-43",
+      "code": "F-43",
+      "description": "Enter vendor invoice",
+      "manual": false
     }
   ],
   "authObjects": [
@@ -505,20 +577,20 @@
       "name": "Account Payable",
       "description": "Vendor invoices, payments and the vendor master.",
       "tcodeIds": [
+        "FB60",
+        "FB65",
+        "FBL1N",
+        "F110",
+        "FK01",
+        "FK02",
+        "FK03",
+        "MIRO",
+        "MIR4",
+        "F-53",
+        "FB01",
         "FB02",
         "FB03",
-        "VA02",
-        "VA03",
-        "VA05",
-        "VF03",
-        "VF44",
-        "VF45",
-        "VF46",
-        "FB02",
-        "FB03",
-        "FBL3N",
-        "FBL5N",
-        "FAGLL03"
+        "F-43"
       ],
       "authObjectIds": [
         "F_BKPF_BUK",

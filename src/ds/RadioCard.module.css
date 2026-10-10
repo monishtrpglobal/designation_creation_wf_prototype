@@ -4,6 +4,15 @@
   gap: var(--space-s12);
 }
 
+.row {
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.row .card {
+  flex: 1 1 0;
+}
+
 .card {
   display: flex;
   align-items: flex-start;

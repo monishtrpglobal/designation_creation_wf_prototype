@@ -5,8 +5,7 @@ import { persist } from "zustand/middleware";
 import type { ActivityEdit, DesignationRuntime, FlowMethod, OrgValue, RoleRuntimeStatus } from "./model";
 import { buildDraft, seedDesignations, settleInterrupted } from "./seed";
 
-const taxRoleId =
-  rolesFile.newRoles.find((role) => role.businessLabel === "Tax Return Preparer")?.id ?? "";
+const taxRoleId = "new-40";
 
 type FlowData = {
   designations: DesignationRuntime[];
@@ -74,6 +73,10 @@ function statusForSapName(
   roleId: string,
   sapRoleName: string,
 ): RoleRuntimeStatus {
+  const seed = rolesFile.newRoles.find((role) => role.id === roleId);
+  if (seed?.status === "Error" && sapRoleName === seed.sapRoleName) {
+    return "Error";
+  }
   if (sapRoleName.length > 30) {
     return "Too long";
   }
@@ -89,7 +92,7 @@ function orgLevelsBlockCreate(designation: DesignationRuntime) {
 
 function rolesNeedAttention(designation: DesignationRuntime) {
   return Object.values(designation.roleStatuses).some(
-    (status) => status === "Name clash" || status === "Too long",
+    (status) => status === "Name clash" || status === "Too long" || status === "Error",
   );
 }
 
@@ -588,7 +591,7 @@ export const useFlowStore = create<FlowState>()(
     }),
     {
       name: "irm-designation-flow",
-      version: 2,
+      version: 4,
       migrate: () => ({ designations: seedDesignations(), currentDesignationId: null }),
       skipHydration: true,
       partialize: (state) => ({

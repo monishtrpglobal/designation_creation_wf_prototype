@@ -29,34 +29,36 @@
 }
 
 .ring {
-  width: var(--rp-size);
-  height: var(--rp-size);
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
 }
 
 .ring[data-size="sm"] {
-  --rp-size: var(--space-s80) !important;
-  width: var(--space-s80) !important;
-  height: var(--space-s80) !important;
+  width: var(--space-s80);
+  height: var(--space-s80);
 }
 
 .ring[data-size="md"] {
-  --rp-size: calc(var(--space-s96) + var(--space-s24)) !important;
-  width: calc(var(--space-s96) + var(--space-s24)) !important;
-  height: calc(var(--space-s96) + var(--space-s24)) !important;
+  width: calc(var(--space-s96) + var(--space-s24));
+  height: calc(var(--space-s96) + var(--space-s24));
 }
 
 .ring[data-size="lg"] {
-  --rp-size: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
-  width: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
-  height: calc(var(--space-s96) * 2 + var(--space-s8)) !important;
+  width: calc(var(--space-s96) * 2 + var(--space-s8));
+  height: calc(var(--space-s96) * 2 + var(--space-s8));
 }
 
 .ring svg {
+  display: block;
   width: 100%;
   height: 100%;
 }
 
 .label {
+  position: absolute;
   color: var(--color-text-strong);
   font-family: var(--font-family-lato-bold);
   font-size: var(--font-size-l1);

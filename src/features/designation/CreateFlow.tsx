@@ -2,6 +2,7 @@
 
 import { ActivitiesPage } from "@/features/designation/activities/ActivitiesPage";
 import { NamePage } from "@/features/designation/name/NamePage";
+import { RolesPage } from "@/features/designation/roles/RolesPage";
 import { SyncPage } from "@/features/designation/sync/SyncPage";
 import { isWizardStep } from "@/state/access";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -52,6 +53,10 @@ export function CreateFlow() {
 
   if (step === "sync") {
     return <SyncPage designationId={id} />;
+  }
+
+  if (step === "roles") {
+    return <RolesPage designationId={id} />;
   }
 
   return <ScreenFrame route={step} designationId={id} />;

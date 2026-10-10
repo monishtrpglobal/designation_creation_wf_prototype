@@ -13,6 +13,7 @@ export type RoleRuntimeStatus =
   | "Ready"
   | "Name clash"
   | "Too long"
+  | "Error"
   | "Queued"
   | "Creating"
   | "Created"

@@ -96,7 +96,7 @@ export type ActivitiesFile = {
 
 export type RoleKind = "new" | "existing";
 
-export type RoleCatalogueStatus = "Ready" | "Name clash" | "Too long";
+export type RoleCatalogueStatus = "Ready" | "Name clash" | "Too long" | "Error";
 
 export type RoleSeed = {
   id: string;
@@ -106,6 +106,8 @@ export type RoleSeed = {
   activityId: string;
   status: RoleCatalogueStatus;
   sample: boolean;
+  match?: number;
+  included?: boolean;
 };
 
 export type RolesFile = {

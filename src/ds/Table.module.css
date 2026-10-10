@@ -19,7 +19,8 @@
 }
 
 .cell {
-  height: var(--space-s64);
+  height: auto;
+  min-height: var(--space-s64);
   padding-top: var(--space-s8);
   padding-bottom: var(--space-s8);
 }

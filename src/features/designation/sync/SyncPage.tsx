@@ -154,7 +154,7 @@ export function SyncPage({ designationId }: { designationId: string }) {
           )
         }
       >
-        <div className="flex w-full flex-1 flex-col gap-s16">
+        <div className="flex w-full flex-col gap-s16">
           <div className="flex w-full flex-col gap-s10">
             <div className="flex w-full flex-col gap-s4">
               <div className="flex w-full items-center justify-between gap-s16">
@@ -221,11 +221,15 @@ export function SyncPage({ designationId }: { designationId: string }) {
             </Alert>
           ) : null}
 
-          <div className="flex w-full flex-1 items-start gap-s16">
-            <section
-              className="flex shrink-0 flex-col gap-s16 self-start rounded-s12 border border-solid border-subtle bg-surface-white p-s24"
-              style={{ width: "calc(var(--space-s96) * 5 + var(--space-s80))" }}
-            >
+          <div
+            className="grid w-full items-stretch gap-s16"
+            style={{
+              gridTemplateColumns:
+                "minmax(0, calc(var(--space-s96) * 5 + var(--space-s80))) minmax(calc(var(--space-s96) * 3 + var(--space-s32) + var(--space-s24) * 2), 1fr)",
+            }}
+          >
+            <section className="relative min-h-0">
+              <div className="absolute inset-0 flex flex-col gap-s16 overflow-hidden rounded-s12 border border-solid border-subtle bg-surface-white p-s24">
               <div className="flex w-full items-center gap-s8">
                 <h3
                   className="m-0 min-w-0 flex-1 text-label-l1 text-strong"
@@ -237,14 +241,17 @@ export function SyncPage({ designationId }: { designationId: string }) {
                   {syncedCount} of {selected.length} synced
                 </Badge>
               </div>
-              <ul className="m-0 flex w-full list-none flex-col p-0">
+              <ul className="m-0 flex min-h-0 w-full flex-1 list-none flex-col overflow-y-auto p-0">
                 {selected.map((activity, index) => {
                   const phase = phases[index] ?? "queued";
                   return (
                     <li
                       key={activity.id}
-                      className="flex w-full items-center self-stretch gap-s12 border-b border-solid border-subtle px-s0 py-s8"
-                      style={{ minHeight: "var(--space-s96)" }}
+                      className="flex w-full items-center self-stretch gap-s12 px-s0 py-s8"
+                      style={{
+                        minHeight: "var(--space-s96)",
+                        borderBottom: "var(--border-default) solid var(--color-border-subtle)",
+                      }}
                     >
                       <span className="flex min-w-0 flex-1 flex-col gap-s2">
                         <span className="text-label-l1 text-strong" style={{ fontFamily: "var(--font-family-label-l1)" }}>
@@ -306,9 +313,13 @@ export function SyncPage({ designationId }: { designationId: string }) {
                   during sync
                 </span>
               </p>
+              </div>
             </section>
 
-            <section className="flex h-full min-w-0 flex-1 flex-col items-center gap-s16 rounded-s12 border border-solid border-subtle bg-surface-white p-s24">
+            <section
+              className="flex min-w-0 flex-col items-center gap-s16 rounded-s12 bg-surface-white p-s24"
+              style={{ border: "var(--border-default) solid var(--color-border-subtle)" }}
+            >
               <h3
                 className="m-0 w-full text-label-l1 text-strong"
                 style={{ fontFamily: "var(--font-family-label-l1)" }}
@@ -317,14 +328,19 @@ export function SyncPage({ designationId }: { designationId: string }) {
               </h3>
               <ProgressRing value={failed ? progress : completed ? 100 : progress} size="lg" />
               <p
-                className="m-0 text-center text-body-b3 text-strong"
-                style={{ fontFamily: "var(--font-family-lato-semibold)" }}
+                className="m-0 text-center text-strong"
+                style={{
+                  fontFamily: "var(--font-family-lato-semibold)",
+                  fontSize: "var(--font-size-b3)",
+                  fontWeight: "var(--font-weight-body-b3)",
+                  lineHeight: "var(--space-s24)",
+                }}
               >
                 {completed ? "Synchronization completed" : failed ? "Synchronization failed" : "Running synchronization…"}
               </p>
               <p
                 className="m-0 text-center text-l2 text-body"
-                style={{ fontFamily: "var(--font-family-lato-regular)", lineHeight: "var(--font-line-height-label-l1)" }}
+                style={{ fontFamily: "var(--font-family-lato-regular)", fontWeight: "var(--font-weight-body-b4)", lineHeight: "var(--font-line-height-label-l1)" }}
               >
                 {syncedCount} of {selected.length} {selected.length === 1 ? "activity" : "activities"} synced
               </p>
@@ -337,23 +353,25 @@ export function SyncPage({ designationId }: { designationId: string }) {
                   <div key={label} className="flex min-w-0 flex-1 flex-col gap-s4 rounded-s8 bg-surface p-s12">
                     <span
                       className="text-control-sm text-body"
-                      style={{ fontFamily: "var(--font-family-lato-semibold)" }}
+                      style={{ fontFamily: "var(--font-family-control-sm)", fontWeight: "var(--font-weight-control-sm)" }}
                     >
                       {label}
                     </span>
                     <span
-                      className="text-body-b3 text-strong"
-                      style={{ fontFamily: "var(--font-family-lato-semibold)" }}
+                      className="whitespace-nowrap text-strong"
+                      style={{
+                        fontFamily: "var(--font-family-lato-semibold)",
+                        fontSize: "var(--font-size-b3)",
+                        fontWeight: "var(--font-weight-body-b3)",
+                        lineHeight: "var(--space-s24)",
+                      }}
                     >
                       {value}
                     </span>
                   </div>
                 ))}
               </div>
-              <div
-                className="flex items-start"
-                style={{ width: "calc(var(--space-s96) * 5)" }}
-              >
+              <div className="flex w-full items-start">
                 <ProgressTrackNode label="Starting" number="1" state={track[0]} />
                 <ProgressTrackConnector state={track[0] === "done" ? "done" : "pending"} />
                 <ProgressTrackNode label="Syncing" number="2" state={track[1]} />

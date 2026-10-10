@@ -1,6 +1,6 @@
 "use client";
 
-import { Progress, RingProgress } from "@mantine/core";
+import { Progress } from "@mantine/core";
 import { IconAlertCircle, IconCheck } from "./icons";
 import styles from "./Progress.module.css";
 
@@ -42,25 +42,45 @@ export function ProgressLine({ value, size = "md", indeterminate = false, label 
   );
 }
 
+const ringBox = { sm: 80, md: 120, lg: 200 } as const;
+const ringThickness = { sm: 8, md: 12, lg: 20 } as const;
+
 export function ProgressRing({ value, size = "md", indeterminate = false }: ProgressRingProps) {
   const shown = indeterminate ? 25 : stepped(value);
   const text = indeterminate ? "Loading" : `${shown}%`;
+  const box = ringBox[size];
+  const thickness = ringThickness[size];
+  const radius = (box - thickness) / 2;
+  const center = box / 2;
+  const circumference = 2 * Math.PI * radius;
+  const dash = (shown / 100) * circumference;
   return (
-    <RingProgress
-      size={100}
-      thickness={10}
-      roundCaps={true}
-      rootColor="var(--color-border-subtle)"
-      sections={[{ value: shown, color: "var(--color-brand-teal)" }]}
-      label={
-        <span className={styles.label}>
-          {text}
-        </span>
-      }
-      className={styles.ring}
-      data-size={size}
-      aria-label={text}
-    />
+    <div className={styles.ring} data-size={size} role="img" aria-label={text}>
+      <svg width={box} height={box} viewBox={`0 0 ${box} ${box}`} aria-hidden>
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          fill="none"
+          stroke="var(--color-border-subtle)"
+          strokeWidth={thickness}
+        />
+        {shown > 0 ? (
+          <circle
+            cx={center}
+            cy={center}
+            r={radius}
+            fill="none"
+            stroke="var(--color-brand-teal)"
+            strokeWidth={thickness}
+            strokeLinecap={shown >= 100 ? "butt" : "round"}
+            strokeDasharray={`${dash} ${circumference - dash}`}
+            transform={`rotate(-90 ${center} ${center})`}
+          />
+        ) : null}
+      </svg>
+      <span className={styles.label}>{text}</span>
+    </div>
   );
 }
 

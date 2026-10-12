@@ -1,0 +1,755 @@
+{
+  "sample": true,
+  "knownTcodes": [
+    {
+      "code": "MM03",
+      "description": "Display material"
+    },
+    {
+      "code": "XK01",
+      "description": "Create vendor"
+    },
+    {
+      "code": "XK02",
+      "description": "Change vendor"
+    }
+  ],
+  "fieldCounts": {
+    "KOKRS": 5,
+    "WERKS": 9,
+    "BUKRS": 12,
+    "VKORG": 7,
+    "VTWEG": 4,
+    "SPART": 6,
+    "LGORT": 3,
+    "VSTEL": 3
+  },
+  "orgOrder": [
+    "KOKRS",
+    "WERKS",
+    "BUKRS",
+    "VKORG",
+    "VTWEG",
+    "SPART",
+    "LGORT",
+    "VSTEL"
+  ],
+  "revenue": {
+    "roleId": "new-05",
+    "changes": 5,
+    "tcodeIds": [
+      "VA02",
+      "VA03",
+      "VA05",
+      "VF03",
+      "VF44",
+      "VF45",
+      "VF46",
+      "FB02",
+      "FB03",
+      "FBL3N",
+      "FBL5N",
+      "FAGLL03"
+    ],
+    "authObjects": [
+      {
+        "id": "F_BKPF_BUK",
+        "name": "F_BKPF_BUK",
+        "class": "FI",
+        "description": "Accounting document: company code",
+        "status": "Changed",
+        "isNew": true,
+        "fields": "ACTVT 02 · BUKRS F001",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_BKPF_GSB",
+        "name": "F_BKPF_GSB",
+        "class": "FI",
+        "description": "Accounting document: business area",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 02 · GSBER 3000",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_BKPF_KOA",
+        "name": "F_BKPF_KOA",
+        "class": "FI",
+        "description": "Accounting document: account type",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 02 · KOART D, K, S",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_BKPF_BLA",
+        "name": "F_BKPF_BLA",
+        "class": "FI",
+        "description": "Accounting document: authorization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 02 · BRGRU blank",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_KNA1_APP",
+        "name": "F_KNA1_APP",
+        "class": "FI",
+        "description": "Customer: application authorization",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 03 · APPKZ F",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_KNA1_BUK",
+        "name": "F_KNA1_BUK",
+        "class": "FI",
+        "description": "Customer: company code",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 03 · BUKRS org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_KNA1_GRP",
+        "name": "F_KNA1_GRP",
+        "class": "FI",
+        "description": "Customer master: account group",
+        "status": "Maintained",
+        "isNew": true,
+        "fields": "ACTVT 02 · KTOKD 0001-0005",
+        "sample": true,
+        "editor": "range"
+      },
+      {
+        "id": "F_KNB1_APP",
+        "name": "F_KNB1_APP",
+        "class": "FI",
+        "description": "Customer company code: application",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03 · APPKZ F",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_LFA1_APP",
+        "name": "F_LFA1_APP",
+        "class": "FI",
+        "description": "Vendor: application authorization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_LFA1_BUK",
+        "name": "F_LFA1_BUK",
+        "class": "FI",
+        "description": "Vendor: company code",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 03 · BUKRS org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_SKA1_BUK",
+        "name": "F_SKA1_BUK",
+        "class": "FI",
+        "description": "G/L account: company code",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03 · BUKRS org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_SKA1_KTP",
+        "name": "F_SKA1_KTP",
+        "class": "FI",
+        "description": "G/L account: chart of accounts",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 03 · KTOPL, VCOA",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_T012_BUK",
+        "name": "F_T012_BUK",
+        "class": "FI",
+        "description": "House bank: company code",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03 · BUKRS org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "F_FAGL_SEG",
+        "name": "F_FAGL_SEG",
+        "class": "FI",
+        "description": "G/L segment",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBAK_AAT",
+        "name": "V_VBAK_AAT",
+        "class": "SD",
+        "description": "Sales document: order type",
+        "status": "Changed",
+        "isNew": true,
+        "fields": "ACTVT 02",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBAK_VKO",
+        "name": "V_VBAK_VKO",
+        "class": "SD",
+        "description": "Sales document: sales organization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 02 · VKORG org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_KNA1_VKO",
+        "name": "V_KNA1_VKO",
+        "class": "SD",
+        "description": "Customer: sales organization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03 · VKORG org level",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_KONH_VKO",
+        "name": "V_KONH_VKO",
+        "class": "SD",
+        "description": "Conditions: sales organization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBAK_VKB",
+        "name": "V_VBAK_VKB",
+        "class": "SD",
+        "description": "Sales document: sales office",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 02",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBRK_VKO",
+        "name": "V_VBRK_VKO",
+        "class": "SD",
+        "description": "Billing: sales organization",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBRK_FKA",
+        "name": "V_VBRK_FKA",
+        "class": "SD",
+        "description": "Billing: billing type",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_KONH_KOT",
+        "name": "V_KONH_KOT",
+        "class": "SD",
+        "description": "Conditions: condition type",
+        "status": "Changed",
+        "isNew": false,
+        "fields": "ACTVT 02",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_VBAK_AUA",
+        "name": "V_VBAK_AUA",
+        "class": "SD",
+        "description": "Sales document: sales area",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 02",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "V_KNA1_BRG",
+        "name": "V_KNA1_BRG",
+        "class": "SD",
+        "description": "Customer: authorization group",
+        "status": "Manual",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "K_CCA",
+        "name": "K_CCA",
+        "class": "CO",
+        "description": "Cost center authorization",
+        "status": "Open",
+        "isNew": false,
+        "fields": "ACTVT 03 · KOKRS open",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "K_CSKB",
+        "name": "K_CSKB",
+        "class": "CO",
+        "description": "Cost element authorization",
+        "status": "Open",
+        "isNew": false,
+        "fields": "ACTVT 03 · KOKRS open",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "K_ORDER",
+        "name": "K_ORDER",
+        "class": "CO",
+        "description": "Internal order authorization",
+        "status": "Manual",
+        "isNew": true,
+        "fields": "ACTVT 02 · AUFART 0100",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "K_REPO_CCA",
+        "name": "K_REPO_CCA",
+        "class": "CO",
+        "description": "Cost center reporting",
+        "status": "Open",
+        "isNew": true,
+        "fields": "ACTVT 03 · KOKRS open",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_BTCH_ADM",
+        "name": "S_BTCH_ADM",
+        "class": "BC",
+        "description": "Background administrator",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "BTCADMIN Y",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_BTCH_JOB",
+        "name": "S_BTCH_JOB",
+        "class": "BC",
+        "description": "Background job scheduling",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "JOBACTION RELE",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_DATASET",
+        "name": "S_DATASET",
+        "class": "AAAB",
+        "description": "File access",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 33 · FILENAME /IRB_OUT",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_GUI",
+        "name": "S_GUI",
+        "class": "AAAB",
+        "description": "SAP GUI activities",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 61",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_PROGRAM",
+        "name": "S_PROGRAM",
+        "class": "AAAB",
+        "description": "ABAP program execution",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "P_ACTION SUBMIT",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_RFC",
+        "name": "S_RFC",
+        "class": "AAAB",
+        "description": "RFC access",
+        "status": "Changed",
+        "isNew": false,
+        "fields": "RFC_TYPE FUGR",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "A_A_ANL",
+        "name": "A_A_ANL",
+        "class": "AAAB",
+        "description": "Asset master",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "A_A_ANLKL",
+        "name": "A_A_ANLKL",
+        "class": "AAAB",
+        "description": "Asset class",
+        "status": "Maintained",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "A_A_VIEW",
+        "name": "A_A_VIEW",
+        "class": "AAAB",
+        "description": "Asset view",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "A_A_ANLGRP",
+        "name": "A_A_ANLGRP",
+        "class": "AAAB",
+        "description": "Asset group",
+        "status": "Inactive",
+        "isNew": false,
+        "fields": "ACTVT 03",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_BDC",
+        "name": "S_BDC",
+        "class": "BC",
+        "description": "Batch input",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "BDCGROUPIN NEUE",
+        "sample": true,
+        "editor": "checklist"
+      },
+      {
+        "id": "S_SPO_ACT",
+        "name": "S_SPO_ACT",
+        "class": "BC",
+        "description": "Spool actions",
+        "status": "Standard",
+        "isNew": false,
+        "fields": "SPOACTION BASE",
+        "sample": true,
+        "editor": "checklist"
+      }
+    ]
+  },
+  "lease": {
+    "roleId": "new-01",
+    "changes": 0,
+    "tcodeIds": [
+      "VA02",
+      "VA03",
+      "VA05",
+      "VF03",
+      "VF44",
+      "VF45",
+      "VF46",
+      "FB02",
+      "FB03"
+    ],
+    "authIds": [
+      "F_BKPF_BUK",
+      "F_BKPF_GSB",
+      "F_BKPF_KOA",
+      "F_BKPF_BLA",
+      "F_KNA1_APP",
+      "F_KNA1_BUK",
+      "F_KNA1_GRP",
+      "F_KNB1_APP",
+      "F_LFA1_APP",
+      "F_LFA1_BUK",
+      "F_SKA1_BUK",
+      "F_SKA1_KTP",
+      "F_T012_BUK",
+      "F_FAGL_SEG",
+      "V_VBAK_AAT",
+      "V_VBAK_VKO",
+      "V_KNA1_VKO",
+      "V_KONH_VKO",
+      "V_VBAK_VKB",
+      "V_VBRK_VKO",
+      "V_VBRK_FKA",
+      "V_KONH_KOT"
+    ],
+    "orgLevelIds": [
+      "BUKRS",
+      "VKORG",
+      "VTWEG",
+      "LGORT",
+      "VSTEL"
+    ]
+  },
+  "tcodes": [
+    {
+      "id": "VA02",
+      "code": "VA02",
+      "description": "Change sales order",
+      "manual": false,
+      "authCount": 6,
+      "sample": true
+    },
+    {
+      "id": "VA03",
+      "code": "VA03",
+      "description": "Display sales order",
+      "manual": false,
+      "authCount": 5,
+      "sample": true
+    },
+    {
+      "id": "VA05",
+      "code": "VA05",
+      "description": "List of sales orders",
+      "manual": true,
+      "authCount": 4,
+      "sample": true
+    },
+    {
+      "id": "VF03",
+      "code": "VF03",
+      "description": "Display billing document",
+      "manual": false,
+      "authCount": 4,
+      "sample": true
+    },
+    {
+      "id": "VF44",
+      "code": "VF44",
+      "description": "Revenue recognition: change contract",
+      "manual": false,
+      "authCount": 5,
+      "sample": true
+    },
+    {
+      "id": "VF45",
+      "code": "VF45",
+      "description": "Revenue recognition: list of accounts",
+      "manual": false,
+      "authCount": 3,
+      "sample": true
+    },
+    {
+      "id": "VF46",
+      "code": "VF46",
+      "description": "Revenue recognition: display accounts",
+      "manual": true,
+      "authCount": 7,
+      "sample": true
+    },
+    {
+      "id": "FB02",
+      "code": "FB02",
+      "description": "Change accounting document",
+      "manual": false,
+      "authCount": 6,
+      "sample": true
+    },
+    {
+      "id": "FB03",
+      "code": "FB03",
+      "description": "Display accounting document",
+      "manual": false,
+      "authCount": 6,
+      "sample": true
+    },
+    {
+      "id": "FBL3N",
+      "code": "FBL3N",
+      "description": "G/L account line items",
+      "manual": false,
+      "authCount": 5,
+      "sample": true
+    },
+    {
+      "id": "FBL5N",
+      "code": "FBL5N",
+      "description": "Customer line items",
+      "manual": true,
+      "authCount": 4,
+      "sample": true
+    },
+    {
+      "id": "FAGLL03",
+      "code": "FAGLL03",
+      "description": "G/L account line items (new)",
+      "manual": false,
+      "authCount": 5,
+      "sample": true
+    }
+  ],
+  "activities": {
+    "F_BKPF_BUK": [
+      {
+        "id": "01",
+        "label": "Create",
+        "detail": "Create new accounting documents"
+      },
+      {
+        "id": "02",
+        "label": "Change",
+        "detail": "Change existing documents",
+        "badge": "SAP default"
+      },
+      {
+        "id": "03",
+        "label": "Display",
+        "detail": "View documents",
+        "badge": "SAP default"
+      },
+      {
+        "id": "06",
+        "label": "Delete",
+        "detail": "Delete documents",
+        "badge": "Higher risk"
+      },
+      {
+        "id": "10",
+        "label": "Post",
+        "detail": "Post documents"
+      },
+      {
+        "id": "85",
+        "label": "Reverse",
+        "detail": "Reverse posted documents",
+        "badge": "Higher risk"
+      },
+      {
+        "id": "*",
+        "label": "All activities",
+        "detail": "Every activity, including delete",
+        "badge": "Wildcard"
+      }
+    ]
+  },
+  "va02Objects": [
+    {
+      "id": "S_TCODE",
+      "label": "Start the transaction",
+      "detail": "S_TCODE",
+      "required": true,
+      "shared": ""
+    },
+    {
+      "id": "V_VBAK_VKO",
+      "label": "Sales document: sales organization",
+      "detail": "V_VBAK_VKO",
+      "required": false,
+      "shared": "Shared with VA03, VA05"
+    },
+    {
+      "id": "V_VBAK_AAT",
+      "label": "Sales document: order type",
+      "detail": "V_VBAK_AAT",
+      "required": false,
+      "shared": "Shared with VA03, VA05"
+    },
+    {
+      "id": "V_KNA1_VKO",
+      "label": "Customer: sales organization",
+      "detail": "V_KNA1_VKO",
+      "required": false,
+      "shared": ""
+    },
+    {
+      "id": "V_KONH_VKO",
+      "label": "Conditions: sales organization",
+      "detail": "V_KONH_VKO",
+      "required": false,
+      "shared": ""
+    },
+    {
+      "id": "V_VBAK_VKB",
+      "label": "Sales document: sales office",
+      "detail": "V_VBAK_VKB",
+      "required": false,
+      "shared": ""
+    }
+  ],
+  "defaultActivities": {
+    "F_BKPF_BUK": [
+      "02",
+      "03",
+      "06",
+      "10"
+    ],
+    "F_KNA1_GRP": [
+      "02",
+      "03"
+    ]
+  },
+  "defaultRange": {
+    "mode": "range",
+    "from": "0001",
+    "to": "0005"
+  },
+  "bukrsOverride": [
+    "1000",
+    "1010",
+    "2000",
+    "3000",
+    "4000",
+    "5000",
+    "6000"
+  ]
+}

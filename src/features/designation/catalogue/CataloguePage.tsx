@@ -4,19 +4,31 @@ import { AppFrame } from "@/ds/AppFrame";
 import { Badge } from "@/ds/Badge";
 import { Button } from "@/ds/Button";
 import { Dialog } from "@/ds/Dialog";
-import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconClock, IconUserCircle } from "@/ds/icons";
+import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconClock, IconSearch, IconUserCircle } from "@/ds/icons";
 import { Link } from "@/ds/Link";
 import { Pagination, type PageSize } from "@/ds/Pagination";
 import { RowMenu } from "@/ds/RowMenu";
 import { Table, type SortState, type TableColumn } from "@/ds/Table";
 import { Tabs } from "@/ds/Tabs";
 import { TextField } from "@/ds/TextField";
-import { lastAllowedRoute, pathFor } from "@/state/access";
+import { Tooltip } from "@/ds/Tooltip";
+import { guardRedirect } from "@/state/access";
 import { useFlowStore } from "@/state/flowStore";
 import type { DesignationRuntime } from "@/state/model";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { ApprovalResultDialog } from "@/features/designation/approve/ApprovalResultDialog";
+import { LicenseReportDrawer } from "@/features/designation/license/LicenseReportDrawer";
+import { showsLicenseReport } from "@/features/designation/license/licenseReportView";
+import { TrDialog } from "@/features/designation/tr/TrDialog";
 import {
+  catalogueActionId,
+  queueCatalogueFocus,
+  showsTrDialog,
+  takeCatalogueFocus,
+} from "@/features/designation/tr/trView";
+import {
+  canRerunLicense,
   catalogueFilters,
   formatLakhs,
   formatUpdated,
@@ -26,6 +38,7 @@ import {
   rowAction,
   savingLakhs,
   savingText,
+  savingTooltip,
   sodCell,
   sodRank,
   statusBadgeVariant,
@@ -51,6 +64,13 @@ const widths = {
 } as const;
 
 const emptyBodyWidth = "calc(var(--space-s96) * 3 + var(--space-s48) + var(--space-s4))";
+const noResultsBodyWidth = "calc(var(--space-s96) * 4 + var(--space-s48) + var(--space-s8))";
+const labelL1: CSSProperties = {
+  fontFamily: "var(--font-family-lato-bold)",
+  fontSize: "var(--font-size-l1)",
+  fontWeight: "var(--font-weight-label-l1)",
+  lineHeight: "var(--font-line-height-label-l1)",
+};
 
 function SummaryCard({
   icon,
@@ -99,18 +119,36 @@ function Dash() {
   return <span aria-label="None">—</span>;
 }
 
-export function CataloguePage() {
+export function CataloguePage({
+  trDesignationId,
+  reportDesignationId,
+}: {
+  trDesignationId?: string;
+  reportDesignationId?: string;
+}) {
   const router = useRouter();
   const hydrated = useFlowStore((state) => state.hydrated);
   const designations = useFlowStore((state) => state.designations);
   const deleteDesignation = useFlowStore((state) => state.deleteDesignation);
   const reopenDesignation = useFlowStore((state) => state.reopenDesignation);
+  const startLicenseAnalysis = useFlowStore((state) => state.startLicenseAnalysis);
   const [filter, setFilter] = useState<CatalogueFilter>("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortState | null>({ key: "updatedAt", direction: "desc" });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [pendingDelete, setPendingDelete] = useState<DesignationRuntime | null>(null);
+  const [trOpen, setTrOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [approvalResult, setApprovalResult] = useState<"published" | "rejected" | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const kebabRefs = useRef(new Map<string, HTMLButtonElement>());
+  const focusId = useRef<string | null>(null);
+  const focusScheduled = useRef<string | null>(null);
+  const trGate = useRef(false);
+  const reportGate = useRef(false);
+  const trDesignation = designations.find((item) => item.id === trDesignationId);
+  const reportDesignation = designations.find((item) => item.id === reportDesignationId);
 
   const counts = useMemo(() => {
     const tally = new Map<CatalogueFilter, number>();
@@ -143,6 +181,8 @@ export function CataloguePage() {
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, pageCount);
   const visible = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const rangeStart = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(safePage * pageSize, filtered.length);
 
   const awaitingFinal = designations.filter((item) => item.status === "Awaiting final approval").length;
   const failed = designations.filter((item) => item.status === "Analysis failed").length;
@@ -156,6 +196,137 @@ export function CataloguePage() {
   const pendingSaving = designations
     .filter((item) => item.status !== "Published" && item.status !== "Rejected")
     .reduce((sum, item) => sum + savingLakhs(item), 0);
+
+  useEffect(() => {
+    if (!hydrated || !trDesignationId || trGate.current) {
+      return;
+    }
+    trGate.current = true;
+    if (!trDesignation) {
+      router.replace(guardRedirect(undefined, "tr") ?? "/designations");
+      return;
+    }
+    const redirect = guardRedirect(trDesignation, "tr");
+    if (redirect) {
+      router.replace(redirect);
+      return;
+    }
+    if (!showsTrDialog(trDesignation.status)) {
+      router.replace("/designations");
+      return;
+    }
+    setTrOpen(true);
+  }, [hydrated, trDesignationId, trDesignation, router]);
+
+  useEffect(() => {
+    if (!hydrated || !reportDesignationId || reportGate.current) {
+      return;
+    }
+    reportGate.current = true;
+    if (!reportDesignation || !showsLicenseReport(reportDesignation)) {
+      router.replace("/designations");
+      return;
+    }
+    setReportOpen(true);
+  }, [hydrated, reportDesignationId, reportDesignation, router]);
+
+  useEffect(() => {
+    if (!trDesignationId) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === trDesignationId);
+    if (index < 0) {
+      return;
+    }
+    const nextPage = Math.floor(index / pageSize) + 1;
+    setPage((current) => (current === nextPage ? current : nextPage));
+  }, [trDesignationId, filtered, pageSize]);
+
+  useEffect(() => {
+    if (!reportDesignationId) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === reportDesignationId);
+    if (index < 0) {
+      return;
+    }
+    const nextPage = Math.floor(index / pageSize) + 1;
+    setPage((current) => (current === nextPage ? current : nextPage));
+  }, [reportDesignationId, filtered, pageSize]);
+
+  useEffect(() => {
+    if (!hydrated || trDesignationId || reportDesignationId) {
+      return;
+    }
+    if (!focusId.current) {
+      focusId.current = takeCatalogueFocus();
+    }
+    const id = focusId.current;
+    if (!id) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === id);
+    if (index >= 0) {
+      const nextPage = Math.floor(index / pageSize) + 1;
+      if (nextPage !== page) {
+        setPage(nextPage);
+        return;
+      }
+    }
+    const node = document.getElementById(catalogueActionId(id));
+    if (!node || focusScheduled.current === id) {
+      return;
+    }
+    focusScheduled.current = id;
+    focusId.current = null;
+    window.setTimeout(() => {
+      document.getElementById(catalogueActionId(id))?.focus();
+    }, 50);
+  }, [hydrated, trDesignationId, reportDesignationId, filtered, page, pageSize]);
+
+  function closeTr() {
+    if (!trDesignationId) {
+      return;
+    }
+    queueCatalogueFocus(trDesignationId);
+    router.push("/designations");
+  }
+
+  function closeReport() {
+    if (!reportDesignationId) {
+      return;
+    }
+    queueCatalogueFocus(reportDesignationId);
+    router.push("/designations");
+  }
+
+  function openRow(row: DesignationRuntime) {
+    const action = rowAction(row);
+    if (action.label === "Re-run analysis") {
+      void startLicenseAnalysis(row.id);
+      return;
+    }
+    if (action.label === "Reopen") {
+      reopenDesignation(row.id);
+    }
+    router.push(action.href);
+  }
+
+  function dismissDelete() {
+    const id = pendingDelete?.id;
+    setPendingDelete(null);
+    window.setTimeout(() => {
+      if (id) {
+        kebabRefs.current.get(id)?.focus();
+      }
+    }, 0);
+  }
+
+  function clearSearch() {
+    setQuery("");
+    setPage(1);
+    searchRef.current?.focus();
+  }
 
   const columns: TableColumn<DesignationRuntime>[] = [
     {
@@ -231,13 +402,25 @@ export function CataloguePage() {
       width: widths.saving,
       render: (row) => {
         const saving = savingText(row);
-        if (!saving) {
+        const tip = savingTooltip(row);
+        if (!saving || !tip) {
           return <Dash />;
         }
         return (
-          <span className="text-success-text" style={labelL2}>
-            {saving}
-          </span>
+          <Tooltip
+            width="wide"
+            label={
+              <span className="flex flex-col gap-s2">
+                <span>{`Current cost ${tip.currentCost}`}</span>
+                <span>{`Projected cost ${tip.projectedCost}`}</span>
+                <span>{`Last run ${tip.lastRun}`}</span>
+              </span>
+            }
+          >
+            <span className="text-success-text" style={labelL2} tabIndex={0}>
+              {saving}
+            </span>
+          </Tooltip>
         );
       },
     },
@@ -269,34 +452,38 @@ export function CataloguePage() {
         return (
           <span className="flex items-center gap-s8" onClick={(event) => event.stopPropagation()}>
             <Link
+              id={catalogueActionId(row.id)}
               href={action.href}
               onClick={(event) => {
+                if (action.label === "Re-run analysis") {
+                  event.preventDefault();
+                  void startLicenseAnalysis(row.id);
+                  return;
+                }
                 if (action.label !== "Reopen") {
                   return;
                 }
                 event.preventDefault();
-                reopenDesignation(row.id);
-                router.push(action.href);
+                openRow(row);
               }}
             >
               {action.label}
             </Link>
-            {row.status === "Draft" ? (
+            {row.status === "Draft" || (canRerunLicense(row) && row.status !== "Analysis failed") ? (
               <RowMenu
                 label={`Actions for ${row.name}`}
-                items={[{ label: "Delete draft", onClick: () => setPendingDelete(row) }]}
-              />
-            ) : null}
-            {row.status === "Awaiting final approval" ? (
-              // Secondary actions are marked "to confirm" on the Figma frame; "View designation" is a placeholder.
-              <RowMenu
-                label={`Actions for ${row.name}`}
-                items={[
-                  {
-                    label: "View designation",
-                    onClick: () => router.push(pathFor(lastAllowedRoute(row), row.id)),
-                  },
-                ]}
+                triggerRef={(node) => {
+                  if (node) {
+                    kebabRefs.current.set(row.id, node);
+                  } else {
+                    kebabRefs.current.delete(row.id);
+                  }
+                }}
+                items={
+                  row.status === "Draft"
+                    ? [{ label: "Delete draft", onClick: () => setPendingDelete(row) }]
+                    : [{ label: "Re-run analysis", onClick: () => void startLicenseAnalysis(row.id) }]
+                }
               />
             ) : null}
           </span>
@@ -435,6 +622,8 @@ export function CataloguePage() {
                 <TextField
                   type="search"
                   placeholder="Search designations"
+                  ariaLabel="Search designations"
+                  inputRef={searchRef}
                   value={query}
                   onChange={(value) => {
                     setQuery(value);
@@ -444,36 +633,59 @@ export function CataloguePage() {
               </div>
             </div>
 
+            <div className="w-full overflow-x-auto">
+              <Table
+                columns={columns}
+                rows={visible}
+                getRowKey={(row) => row.id}
+                highlightedKey={trDesignationId ?? reportDesignationId}
+                sort={sort}
+                onSortChange={setSort}
+                onRowClick={openRow}
+              />
+            </div>
             {filtered.length === 0 ? (
-              <p className="m-0 text-body" style={labelL2}>
-                No designations match your search.
-              </p>
-            ) : (
-              <div className="w-full overflow-x-auto">
-                <Table columns={columns} rows={visible} getRowKey={(row) => row.id} sort={sort} onSortChange={setSort} />
+              <div className="flex flex-col items-center justify-center gap-s16 px-s24 py-s56 text-center">
+                <IconSearch size="s24" style={iconStyle("var(--color-text-strong)")} />
+                <p className="m-0 text-body" style={labelL1}>
+                  {`No designations match "${query.trim() || catalogueFilters.find((item) => item.value === filter)?.label || "All"}"`}
+                </p>
+                <p className="m-0 text-body" style={{ ...labelL2, width: noResultsBodyWidth }}>
+                  {`Check the spelling or clear the search to see all ${designations.length} designations.`}
+                </p>
+                <Link
+                  href="#designation-catalogue-search"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    clearSearch();
+                  }}
+                >
+                  Clear search
+                </Link>
               </div>
+            ) : (
+              <Pagination
+                page={safePage}
+                total={filtered.length}
+                pageSize={pageSize}
+                pageSizeLabel="Designations per page"
+                range={`Showing ${rangeStart} to ${rangeEnd} of ${filtered.length}`}
+                onPageChange={setPage}
+                onPageSizeChange={(size) => {
+                  if (size === 10 || size === 25 || size === 50) {
+                    setPageSize(size);
+                  }
+                  setPage(1);
+                }}
+              />
             )}
-
-            <Pagination
-              page={safePage}
-              total={filtered.length}
-              pageSize={pageSize}
-              pageSizeLabel="Designations per page"
-              onPageChange={setPage}
-              onPageSizeChange={(size) => {
-                if (size === 10 || size === 25 || size === 50) {
-                  setPageSize(size);
-                }
-                setPage(1);
-              }}
-            />
           </>
         )}
       </section>
 
       <Dialog
         opened={pendingDelete !== null}
-        onClose={() => setPendingDelete(null)}
+        onClose={dismissDelete}
         size="sm"
         variant="confirm"
         header={
@@ -483,7 +695,7 @@ export function CataloguePage() {
         }
         footer={
           <div className="flex items-center justify-end gap-s12">
-            <Button variant="secondary" size="md" onClick={() => setPendingDelete(null)}>
+            <Button variant="secondary" size="md" onClick={dismissDelete}>
               Cancel
             </Button>
             <Button
@@ -506,6 +718,18 @@ export function CataloguePage() {
           created in SAP.
         </p>
       </Dialog>
+      {trOpen && trDesignation ? <TrDialog designation={trDesignation} onClose={closeTr} /> : null}
+      {reportOpen && reportDesignation ? (
+        <LicenseReportDrawer
+          designation={reportDesignation}
+          onClose={closeReport}
+          onFinished={(result) => {
+            setReportOpen(false);
+            setApprovalResult(result);
+          }}
+        />
+      ) : null}
+      <ApprovalResultDialog result={approvalResult} onClose={() => setApprovalResult(null)} />
     </main>
     </AppFrame>
   );

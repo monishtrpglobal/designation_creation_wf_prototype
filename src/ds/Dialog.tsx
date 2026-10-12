@@ -23,6 +23,10 @@ type DialogProps = {
   opened: boolean;
   onClose: () => void;
   size?: DialogSize;
+  /** CSS length that overrides `size`. Pass an existing token, such as a drawer width. */
+  width?: string;
+  /** Stack above another overlay. Use a token such as the dropdown layer. */
+  zIndex?: number;
   variant?: DialogVariant;
   header?: ReactNode;
   footer?: ReactNode;
@@ -33,6 +37,8 @@ export function Dialog({
   opened,
   onClose,
   size = "md",
+  width,
+  zIndex,
   variant = "default",
   header,
   footer,
@@ -51,7 +57,8 @@ export function Dialog({
       withCloseButton={false}
       lockScroll
       trapFocus
-      size={dialogSize[size]}
+      zIndex={zIndex}
+      size={width ?? dialogSize[size]}
       styles={{
         overlay: confirm
           ? {

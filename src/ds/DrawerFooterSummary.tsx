@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Button } from "./Button";
+import { Button, type ButtonVariant } from "./Button";
 import { IconAlertTriangle, IconCircleCheck, IconInfo } from "./icons";
 import { Link } from "./Link";
 import styles from "./DrawerFooterSummary.module.css";
@@ -18,6 +18,7 @@ type DrawerFooterSummaryProps = {
   secondaryLabel?: string;
   onSecondaryClick?: () => void;
   secondaryDisabled?: boolean;
+  secondaryVariant?: Extract<ButtonVariant, "secondary" | "warn">;
   primaryLabel?: string;
   onPrimaryClick?: () => void;
   primaryDisabled?: boolean;
@@ -41,6 +42,7 @@ export function DrawerFooterSummary({
   secondaryLabel,
   onSecondaryClick,
   secondaryDisabled,
+  secondaryVariant = "secondary",
   primaryLabel,
   onPrimaryClick,
   primaryDisabled,
@@ -61,13 +63,21 @@ export function DrawerFooterSummary({
       <hr className={styles.divider} />
       <div className={styles.actions}>
         {linkLabel ? (
-          <Link href={linkHref} onClick={onLinkClick}>
+          <Link
+            href={linkHref}
+            onClick={(event) => {
+              if (!linkHref) {
+                event.preventDefault();
+              }
+              onLinkClick?.();
+            }}
+          >
             {linkLabel}
           </Link>
         ) : null}
         <span className={styles.spacer} />
         {secondaryLabel ? (
-          <Button variant="secondary" size="md" disabled={secondaryDisabled} onClick={onSecondaryClick}>
+          <Button variant={secondaryVariant} size="md" disabled={secondaryDisabled} onClick={onSecondaryClick}>
             {secondaryLabel}
           </Button>
         ) : null}

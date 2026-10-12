@@ -22,6 +22,11 @@ type FlowShellBase = {
   showFooterPrimary?: boolean;
   helperAlign?: "start" | "center";
   onPrimaryClick?: () => void;
+  stepNextDisabled?: boolean;
+  onStepNext?: () => void;
+  footerPrimaryLabel?: string;
+  onFooterPrimaryClick?: () => void;
+  footerPrimaryDisabled?: boolean;
   children?: ReactNode;
 };
 
@@ -55,10 +60,18 @@ export function FlowShell({
   showFooterPrimary = true,
   helperAlign = "center",
   onPrimaryClick,
+  stepNextDisabled,
+  onStepNext,
+  footerPrimaryLabel,
+  onFooterPrimaryClick,
+  footerPrimaryDisabled,
   primaryDisabled,
   helperText,
   children,
 }: FlowShellProps) {
+  const nextDisabled = stepNextDisabled ?? Boolean(primaryDisabled);
+  const footerDisabled = footerPrimaryDisabled ?? Boolean(primaryDisabled);
+  const footerLabel = footerPrimaryLabel ?? primaryLabel;
   const showFooter = showBack || showSaveAsDraft || Boolean(helperText) || showFooterPrimary;
   return (
     <section className={styles.shell} data-page-surface={pageSurface}>
@@ -91,9 +104,9 @@ export function FlowShell({
         <Button
           variant="primary"
           size="sm"
-          disabled={primaryDisabled}
+          disabled={nextDisabled}
           rightIcon={<IconChevronRight size="s16" />}
-          onClick={onPrimaryClick}
+          onClick={onStepNext ?? onPrimaryClick}
         >
           Next
         </Button>
@@ -119,8 +132,8 @@ export function FlowShell({
             {helperText}
           </div>
           {showFooterPrimary ? (
-            <Button variant="primary" size="md" disabled={primaryDisabled} onClick={onPrimaryClick}>
-              {primaryLabel}
+            <Button variant="primary" size="md" disabled={footerDisabled} onClick={onFooterPrimaryClick ?? onPrimaryClick}>
+              {footerLabel}
             </Button>
           ) : null}
         </footer>

@@ -8,12 +8,20 @@
   background-color: var(--color-bg-surface-white);
 }
 
+.card[data-state="required"] {
+  border-color: var(--color-info-border);
+}
+
 .card[data-state="waiting"] {
   border-color: var(--color-warning-border);
 }
 
 .card[data-state="error"] {
   border-color: var(--color-error-border);
+}
+
+.card[data-neutral-border] {
+  border-color: var(--color-border-subtle);
 }
 
 .header {
@@ -38,6 +46,11 @@
   line-height: var(--font-line-height-control-sm);
 }
 
+.card[data-state="done"] .circle {
+  background-color: var(--color-success-solid);
+  color: var(--color-success-on-solid);
+}
+
 .card[data-state="locked"] .circle {
   background-color: var(--color-disabled-bg);
   color: var(--color-disabled-text);
@@ -50,6 +63,17 @@
   font-size: var(--font-size-label-l1);
   font-weight: var(--font-weight-label-l1);
   line-height: var(--font-line-height-label-l1);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s12);
+  margin-left: auto;
+}
+
+.header:has(.actions) .state {
+  margin-left: var(--space-s12);
 }
 
 .state {
@@ -81,6 +105,10 @@
 
 .state[data-state="error"] {
   color: var(--color-error-text);
+}
+
+.state[data-state="plain"] {
+  color: var(--color-text-body);
 }
 
 .body {

@@ -5,6 +5,7 @@ import styles from "./Link.module.css";
 type LinkProps = {
   children: ReactNode;
   href?: string;
+  id?: string;
   disabled?: boolean;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   style?: CSSProperties;

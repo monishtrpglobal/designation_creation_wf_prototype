@@ -15,7 +15,7 @@ type RadioCardProps = {
 export function RadioCard({ value, title, subtitle, unavailable = false, disabled }: RadioCardProps) {
   return (
     <Radio.Card value={value} disabled={disabled} classNames={{ card: styles.card }}>
-      <Radio.Indicator classNames={{ indicator: styles.indicator }} />
+      <Radio.Indicator classNames={{ indicator: styles.indicator, icon: styles.icon }} />
       <span className={styles.body}>
         <span className={styles.title}>{title}</span>
         {subtitle ? <span className={styles.subtitle}>{subtitle}</span> : null}

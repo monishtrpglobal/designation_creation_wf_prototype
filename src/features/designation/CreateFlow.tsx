@@ -2,6 +2,9 @@
 
 import { ActivitiesPage } from "@/features/designation/activities/ActivitiesPage";
 import { NamePage } from "@/features/designation/name/NamePage";
+import { FinalizePage } from "@/features/designation/finalize/FinalizePage";
+import { LinkPage } from "@/features/designation/link/LinkPage";
+import { ReviewPage } from "@/features/designation/review/ReviewPage";
 import { RolesPage } from "@/features/designation/roles/RolesPage";
 import { SyncPage } from "@/features/designation/sync/SyncPage";
 import { isWizardStep } from "@/state/access";
@@ -57,6 +60,18 @@ export function CreateFlow() {
 
   if (step === "roles") {
     return <RolesPage designationId={id} />;
+  }
+
+  if (step === "review") {
+    return <ReviewPage designationId={id} />;
+  }
+
+  if (step === "link") {
+    return <LinkPage designationId={id} />;
+  }
+
+  if (step === "finalize") {
+    return <FinalizePage designationId={id} />;
   }
 
   return <ScreenFrame route={step} designationId={id} />;

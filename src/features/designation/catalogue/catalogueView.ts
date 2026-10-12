@@ -114,19 +114,54 @@ export function licenceCell(item: DesignationRuntime): LicenceCell {
   return { badges: [], note: null };
 }
 
-export function savingText(item: DesignationRuntime): string | null {
-  if (!item.licenseSummary) {
+function completedSummary(item: DesignationRuntime) {
+  if (item.approval.license !== "completed" || !item.licenseSummary) {
     return null;
   }
-  return `${item.licenseSummary.savingLabel} (${item.licenseSummary.savingPercent}%)`;
+  return item.licenseSummary;
+}
+
+export function savingText(item: DesignationRuntime): string | null {
+  const summary = completedSummary(item);
+  if (!summary) {
+    return null;
+  }
+  return `${summary.savingLabel} (${summary.savingPercent}%)`;
+}
+
+export type SavingTooltip = {
+  currentCost: string;
+  projectedCost: string;
+  lastRun: string;
+};
+
+export function savingTooltip(item: DesignationRuntime): SavingTooltip | null {
+  const summary = completedSummary(item);
+  if (!summary) {
+    return null;
+  }
+  return {
+    currentCost: summary.beforeLabel,
+    projectedCost: summary.afterLabel,
+    lastRun: formatUpdated(summary.lastRunAt ?? item.updatedAt),
+  };
 }
 
 export function savingLakhs(item: DesignationRuntime): number {
-  if (!item.licenseSummary) {
+  const summary = completedSummary(item);
+  if (!summary) {
     return 0;
   }
-  const match = item.licenseSummary.savingLabel.match(/([\d.]+)/);
+  const match = summary.savingLabel.match(/([\d.]+)/);
   return match ? Number(match[1]) : 0;
+}
+
+/** Technical user control. TODO(confirm): the Admin sees the result, not this action. */
+export function canRerunLicense(item: DesignationRuntime): boolean {
+  if (item.approval.licenseLive || item.status === "Moving to Quality" || item.status === "License analysis running") {
+    return false;
+  }
+  return item.approval.license === "failed" || item.approval.license === "completed";
 }
 
 export type SodCell = { label: string; variant: BadgeVariant } | null;
@@ -184,9 +219,13 @@ export function rowAction(item: DesignationRuntime): RowAction {
     case "In progress":
       return { label: "Continue", href: pathFor(lastAllowedRoute(item), item.id) };
     case "Awaiting TR approval":
+      // TODO(confirm): other personas see View only. This prototype has no persona switch.
       return { label: "Review TR", href: pathFor("tr", item.id) };
+    case "Moving to Quality":
+      return { label: "View", href: pathFor("tr", item.id) };
     case "Analysis failed":
-      return { label: "Re-run analysis", href: pathFor("license", item.id) };
+      // TODO(confirm): Admin sees the result, not Re-run. Prototype has no persona switch.
+      return { label: "Re-run analysis", href: "/designations" };
     case "Awaiting final approval":
       return { label: "Approve", href: pathFor("approve", item.id) };
     case "Rejected":

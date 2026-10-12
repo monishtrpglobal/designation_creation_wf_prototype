@@ -4,6 +4,24 @@
   width: 100%;
 }
 
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.wrapper {
+  order: 1;
+}
+
+.description {
+  order: 2;
+}
+
+.error {
+  order: 3;
+}
+
 .label,
 .labelRow {
   display: inline-flex;
@@ -200,6 +218,17 @@
 }
 
 .counter[data-over] {
+  color: var(--color-error-text);
+}
+
+.counterLead {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.counterLead[data-over] {
   color: var(--color-error-text);
 }
 

@@ -27,14 +27,20 @@ import {
   badgeVariant,
   compareStatus,
   countLabel,
+  displayedRoleStatus,
   isCreated,
   isInProgress,
   isIssue,
+  optionBDetail,
+  optionBPhase,
+  optionBShowsActions,
   roleDetail,
+  type OptionBFilter,
+  type OptionBPhase,
 } from "./rolesView";
 
 type TabId = "new" | "existing";
-type NewFilter = "all" | "issues" | "ready" | "progress" | "created";
+type NewFilter = "all" | "issues" | "ready" | "progress" | "created" | OptionBFilter;
 
 type NewRow = {
   id: string;
@@ -42,6 +48,7 @@ type NewRow = {
   sapName: string;
   status: RoleRuntimeStatus;
   retried: boolean;
+  enteredId: string;
 };
 
 type ExistingRow = RoleSeed & { included: boolean };
@@ -52,10 +59,10 @@ const labelL2 = {
   lineHeight: "var(--font-line-height-label-l1)",
 } as const;
 
-function truncate(name: string) {
+function truncate(name: string, className = "") {
   return (
     <Tooltip label={name} position="bottom" width="single-line">
-      <span className="block max-w-full overflow-hidden text-ellipsis whitespace-nowrap">{name}</span>
+      <span className={`block max-w-full overflow-hidden text-ellipsis whitespace-nowrap ${className}`}>{name}</span>
     </Tooltip>
   );
 }
@@ -69,6 +76,7 @@ export function RolesPage({ designationId }: { designationId: string }) {
   const chooseMethod = useFlowStore((state) => state.chooseMethod);
   const retryRole = useFlowStore((state) => state.retryRole);
   const retryFailedRoles = useFlowStore((state) => state.retryFailedRoles);
+  const completeLinkedRoles = useFlowStore((state) => state.completeLinkedRoles);
   const redirect = hydrated ? guardRedirect(designation, "roles") : null;
 
   const [tab, setTab] = useState<TabId>("new");
@@ -81,7 +89,6 @@ export function RolesPage({ designationId }: { designationId: string }) {
   const [included, setIncluded] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(rolesFile.existingRoles.map((role) => [role.id, role.included !== false])),
   );
-  const [retried, setRetried] = useState<Record<string, boolean>>({});
   const [drawer, setDrawer] = useState<RoleDrawerTarget | null>(null);
 
   useEffect(() => {
@@ -100,7 +107,15 @@ export function RolesPage({ designationId }: { designationId: string }) {
 
   const statuses = designation?.roleStatuses;
   const sapNames = designation?.roleSapNames;
+  const enteredIds = designation?.optionBRoleIds;
   const method = designation?.method ?? null;
+  const phase = optionBPhase(method, designation?.methodLocked === true, Object.values(statuses ?? {}));
+
+  useEffect(() => {
+    setFilter("all");
+    setPage(1);
+  }, [phase]);
+
   const started =
     designation?.methodLocked === true &&
     designation.method === "A" &&
@@ -108,6 +123,7 @@ export function RolesPage({ designationId }: { designationId: string }) {
   const allCreated =
     started && Object.values(statuses ?? {}).length > 0 && Object.values(statuses ?? {}).every((status) => status === "Created");
 
+  const retriedRoles = designation?.roleRetried ?? {};
   const newRows = useMemo<NewRow[]>(() => {
     if (!statuses || !sapNames) {
       return [];
@@ -116,16 +132,22 @@ export function RolesPage({ designationId }: { designationId: string }) {
       id: role.id,
       label: role.businessLabel,
       sapName: sapNames[role.id] ?? role.sapRoleName,
-      status: statuses[role.id] ?? role.status,
-      retried: retried[role.id] === true,
+      status: displayedRoleStatus(statuses[role.id] ?? role.status, phase),
+      retried: retriedRoles[role.id] === true,
+      enteredId: enteredIds?.[role.id] ?? "",
     }));
-  }, [retried, sapNames, statuses]);
+  }, [enteredIds, phase, retriedRoles, sapNames, statuses]);
 
   const issueCount = newRows.filter((row) => isIssue(row.status)).length;
   const readyCount = newRows.filter((row) => row.status === "Ready").length;
   const progressCount = newRows.filter((row) => isInProgress(row.status)).length;
   const createdCount = newRows.filter((row) => row.status === "Created").length;
   const failedCount = newRows.filter((row) => row.status === "Failed").length;
+  const neededCount = newRows.filter((row) => row.status === "Needed").length;
+  const awaitingCount = newRows.filter((row) => row.status === "Awaiting SAP").length;
+  const enteredCount = newRows.filter((row) => row.status === "ID entered").length;
+  const gapCount = newRows.filter((row) => row.status === "Gap found").length;
+  const validatedCount = newRows.filter((row) => row.status === "Validated").length;
   const notCreatedCount = newRows.filter((row) => !isIssue(row.status) && row.status !== "Created").length;
   const includedCount = rolesFile.existingRoles.filter((role) => included[role.id]).length;
 
@@ -144,6 +166,21 @@ export function RolesPage({ designationId }: { designationId: string }) {
       if (filter === "created" && row.status !== "Created") {
         return false;
       }
+      if (filter === "needed" && row.status !== "Needed") {
+        return false;
+      }
+      if (filter === "awaiting" && row.status !== "Awaiting SAP") {
+        return false;
+      }
+      if (filter === "entered" && row.status !== "ID entered") {
+        return false;
+      }
+      if (filter === "gap" && row.status !== "Gap found") {
+        return false;
+      }
+      if (filter === "validated" && row.status !== "Validated") {
+        return false;
+      }
       if (!needle) {
         return true;
       }
@@ -155,7 +192,14 @@ export function RolesPage({ designationId }: { designationId: string }) {
     const direction = sort.direction === "asc" ? 1 : -1;
     return [...rows].sort((left, right) => {
       if (sort.key === "status") {
-        return compareStatus(left.status, right.status) * direction;
+        const rank = compareStatus(left.status, right.status) * direction;
+        if (rank !== 0) {
+          return rank;
+        }
+        if (left.retried !== right.retried) {
+          return left.retried ? -1 : 1;
+        }
+        return 0;
       }
       if (sort.key === "sapName") {
         return left.sapName.localeCompare(right.sapName) * direction;
@@ -227,11 +271,11 @@ export function RolesPage({ designationId }: { designationId: string }) {
       sapName: row.sapName,
       status: row.status,
       retried: row.retried,
+      allSettled: allCreated,
     });
   }
 
   function markRetry(roleId: string) {
-    setRetried((current) => ({ ...current, [roleId]: true }));
     void retryRole(designationId, roleId);
   }
 
@@ -240,6 +284,17 @@ export function RolesPage({ designationId }: { designationId: string }) {
       chooseMethod(designationId, "A");
     }
     router.push(pathFor("review", designationId));
+  }
+
+  function goLink() {
+    if (method === null) {
+      chooseMethod(designationId, "B");
+    }
+    router.push(pathFor("link", designationId));
+  }
+
+  function optionBActionLabel(current: OptionBPhase) {
+    return current === "before-send" ? "Link roles built in SAP (Option B)" : "Continue linking roles";
   }
 
   const newColumns: TableColumn<NewRow>[] = [
@@ -275,14 +330,38 @@ export function RolesPage({ designationId }: { designationId: string }) {
     {
       key: "detail",
       label: "Detail",
-      width: "21%",
-      render: (row) => roleDetail(row.status, row.sapName, row.retried),
+      width: phase && !optionBShowsActions(phase) ? "24%" : "21%",
+      render: (row) =>
+        phase ? optionBDetail(phase, row.status, row.enteredId, row.id) : roleDetail(row.status, row.sapName, row.retried, row.id, allCreated),
     },
+    ...(phase && !optionBShowsActions(phase)
+      ? []
+      : [
     {
       key: "actions",
       label: "Actions",
       width: "14%",
-      render: (row) => {
+      render: (row: NewRow) => {
+        if (phase) {
+          const label =
+            phase === "linking" && row.status === "Needed"
+              ? "Enter role ID"
+              : phase === "gaps" && row.status === "Gap found"
+                ? "View gap report"
+                : "View details";
+          return (
+            <Link
+              href={pathFor("link", designationId)}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                goLink();
+              }}
+            >
+              {label}
+            </Link>
+          );
+        }
         if (!started) {
           if (!isIssue(row.status)) {
             return null;
@@ -340,6 +419,7 @@ export function RolesPage({ designationId }: { designationId: string }) {
         );
       },
     },
+  ]),
   ];
 
   const existingColumns: TableColumn<ExistingRow>[] = [
@@ -375,48 +455,112 @@ export function RolesPage({ designationId }: { designationId: string }) {
       key: "label",
       label: "Role",
       sortable: true,
-      render: (row) => row.businessLabel,
+      render: (row) => (
+        <span className="block text-strong" style={{ fontFamily: "var(--font-family-label-l1)" }}>
+          {row.businessLabel}
+        </span>
+      ),
+    },
+    {
+      key: "sapName",
+      label: "Role ID",
+      width: "calc(var(--space-s80) * 3)",
+      render: (row) => truncate(row.sapRoleName, "text-body"),
     },
     {
       key: "match",
       label: "Match",
       sortable: true,
-      width: "calc(var(--space-s96) + var(--space-s40))",
-      render: (row) => `${row.match ?? 0}%`,
-    },
-    {
-      key: "sapName",
-      label: "Role ID",
-      width: "22%",
-      render: (row) => truncate(row.sapRoleName),
+      width: "calc(var(--space-s80) + var(--space-s40) + var(--space-s20))",
+      render: (row) => (
+        <span className="text-body" style={labelL2}>
+          {row.match ?? 0}% match
+        </span>
+      ),
     },
     {
       key: "actions",
       label: "Actions",
-      width: "calc(var(--space-s96) + var(--space-s16))",
+      width: "calc(var(--space-s80) + var(--space-s40) + var(--space-s20))",
       render: () => (
-        <Button variant="secondary" size="sm" disabled>
+        <Button variant="secondary" size="sm">
           View details
         </Button>
       ),
     },
   ];
 
-  const filterItems = started
+  const filterItems = phase
     ? [
         { value: "all", label: "All", count: newRows.length, variant: "light" as const },
-        { value: "issues", label: "Issues", count: failedCount, variant: "error" as const },
-        { value: "progress", label: "In progress", count: progressCount, variant: "in-progress" as const },
-        { value: "created", label: "Created", count: createdCount, variant: "completed" as const },
+        ...(phase === "before-send" || phase === "linking"
+          ? [{ value: "needed", label: "Needed", count: neededCount, variant: "pending" as const }]
+          : []),
+        ...(phase === "awaiting"
+          ? [{ value: "awaiting", label: "Awaiting SAP", count: awaitingCount, variant: "warning" as const }]
+          : []),
+        ...(phase === "linking"
+          ? [{ value: "entered", label: "ID entered", count: enteredCount, variant: "in-progress" as const }]
+          : []),
+        ...(phase === "gaps" || phase === "validated"
+          ? [{ value: "gap", label: "Gap found", count: gapCount, variant: "error" as const }]
+          : []),
+        ...(phase === "before-send" || phase === "awaiting" || phase === "gaps" || phase === "validated"
+          ? [{ value: "validated", label: "Validated", count: validatedCount, variant: "completed" as const }]
+          : []),
       ]
-    : [
-        { value: "all", label: "All", count: newRows.length, variant: "light" as const },
-        { value: "issues", label: "Issues", count: issueCount, variant: "error" as const },
-        { value: "ready", label: "Ready", count: readyCount, variant: "completed" as const },
-      ];
+    : started
+      ? [
+          { value: "all", label: "All", count: newRows.length, variant: "light" as const },
+          { value: "issues", label: "Issues", count: failedCount, variant: "error" as const },
+          { value: "progress", label: "In progress", count: progressCount, variant: "in-progress" as const },
+          { value: "created", label: "Created", count: createdCount, variant: "completed" as const },
+        ]
+      : [
+          { value: "all", label: "All", count: newRows.length, variant: "light" as const },
+          { value: "issues", label: "Issues", count: issueCount, variant: "error" as const },
+          { value: "ready", label: "Ready", count: readyCount, variant: "completed" as const },
+        ];
 
   const rangeStart = filteredNew.length === 0 ? 0 : (page - 1) * pageSize + 1;
   const rangeEnd = Math.min(page * pageSize, filteredNew.length);
+  const roleTotal = rolesFile.newRoles.length;
+
+  function optionBHelper(current: OptionBPhase) {
+    if (current === "validated") {
+      return `All ${roleTotal} roles validated. Validated roles are locked.`;
+    }
+    const reason =
+      tab === "existing" && current === "before-send"
+        ? "Next is locked: send the requirement, link the roles built in SAP, and validate them before continuing. "
+        : current === "before-send"
+          ? "Next is locked: the requirement has not been sent to the security team yet. "
+          : current === "awaiting"
+            ? `Next is locked: ${roleTotal} roles are still awaiting SAP. `
+            : current === "linking"
+              ? `Next is locked: ${neededCount} ${neededCount === 1 ? "role still needs" : "roles still need"} a SAP role ID. `
+              : `Next is locked: ${countLabel(gapCount, "role")} ${gapCount === 1 ? "has" : "have"} gaps. `;
+    const linkLabel = tab === "existing" ? "Open New roles" : current === "before-send" ? "Open link roles" : "Continue linking roles";
+    return (
+      <>
+        {reason}
+        <Link
+          href={tab === "existing" ? "#new-roles" : pathFor("link", designationId)}
+          onClick={(event) => {
+            event.preventDefault();
+            if (tab === "existing") {
+              setTab("new");
+              setPage(1);
+              return;
+            }
+            goLink();
+          }}
+        >
+          {linkLabel}
+        </Link>
+      </>
+    );
+  }
 
   return (
     <AppFrame>
@@ -431,10 +575,19 @@ export function RolesPage({ designationId }: { designationId: string }) {
         helperAlign="start"
         showFooterPrimary={false}
         primaryLabel="Next"
-        primaryDisabled={!allCreated}
-        onPrimaryClick={() => router.push(pathFor("finalize", designationId))}
+        primaryDisabled={phase ? phase !== "validated" : !allCreated}
+        onPrimaryClick={() => {
+          if (phase === "validated") {
+            completeLinkedRoles(designationId);
+          }
+          router.push(pathFor("finalize", designationId));
+        }}
         helperText={
-          allCreated ? undefined : (
+          phase ? (
+            optionBHelper(phase)
+          ) : allCreated ? (
+            `All ${rolesFile.newRoles.length} roles created and synced. Created roles are locked.`
+          ) : (
             <>
               {started
                 ? `Next is locked: ${countLabel(failedCount, "role")} failed and ${progressCount} ${progressCount === 1 ? "is" : "are"} still being created. `
@@ -487,13 +640,21 @@ export function RolesPage({ designationId }: { designationId: string }) {
                 Save as draft
               </Button>
             </div>
-            <h2 className="m-0 text-heading-h2 text-in-progress-text" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
+            <h2 className="m-0 text-heading-h2 text-strong" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
               Recommended Roles
             </h2>
             <p className="m-0 text-l2 text-body" style={labelL2}>
-              {allCreated
-                ? `${rolesFile.newRoles.length} new roles created · ${includedCount} existing roles ready`
-                : `${rolesFile.existingRoles.length} existing roles ready · ${rolesFile.newRoles.length} new roles need setup`}
+              {phase === "validated"
+                ? `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles validated`
+                : phase === "awaiting"
+                  ? `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles awaiting SAP`
+                  : phase === "linking" || phase === "gaps"
+                    ? `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles, linking started`
+                    : allCreated
+                      ? `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles created`
+                      : started
+                        ? `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles, creation started`
+                        : `${rolesFile.existingRoles.length} existing roles ready · ${roleTotal} new roles need setup`}
             </p>
           </div>
 
@@ -510,9 +671,17 @@ export function RolesPage({ designationId }: { designationId: string }) {
               {
                 value: "new",
                 label:
-                  (started ? failedCount : issueCount) > 0
-                    ? `New roles · ${countLabel(started ? failedCount : issueCount, "issue")}`
-                    : "New roles",
+                  phase === "gaps" && gapCount > 0
+                    ? `New roles · ${countLabel(gapCount, "issue")}`
+                    : phase === "validated"
+                      ? `New roles · ${roleTotal}`
+                      : phase
+                        ? "New roles"
+                        : (started ? failedCount : issueCount) > 0
+                          ? `New roles · ${countLabel(started ? failedCount : issueCount, "issue")}`
+                          : allCreated
+                            ? `New roles · ${roleTotal}`
+                            : "New roles",
               },
               {
                 value: "existing",
@@ -535,17 +704,60 @@ export function RolesPage({ designationId }: { designationId: string }) {
                 >
                   New roles ({rolesFile.newRoles.length})
                 </h3>
-                {started ? null : (
+                {started || (phase && phase !== "before-send") ? null : (
                   <p className="m-0 text-l2 text-body" style={labelL2}>
-                    How should these roles be created? Applies to all {rolesFile.newRoles.length}.
+                    How should these roles be created? Applies to all {roleTotal}.
                   </p>
                 )}
               </div>
 
-              {started ? (
+              {phase && phase !== "before-send" ? (
+                <>
+                  <div className="flex w-full items-center justify-between gap-s16">
+                    <p className="m-0 text-l2 text-body" style={labelL2}>
+                      Method is locked: Option B · Link roles built in SAP
+                    </p>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      rightIcon={<IconChevronRight size="s16" />}
+                      onClick={goLink}
+                    >
+                      Continue linking roles
+                    </Button>
+                  </div>
+                  <Alert
+                    type={phase === "validated" ? "success" : phase === "gaps" ? "error" : phase === "linking" ? "info" : "warning"}
+                    title={
+                      phase === "validated"
+                        ? "Roles validated"
+                        : phase === "gaps"
+                          ? "Gaps found"
+                          : phase === "linking"
+                            ? "Linking roles"
+                            : "Requirement sent"
+                    }
+                    action={
+                      phase === "validated" ? undefined : (
+                        <Button variant="secondary" size="sm" onClick={goLink}>
+                          Continue linking roles
+                        </Button>
+                      )
+                    }
+                  >
+                    {phase === "validated"
+                      ? `${roleTotal} of ${roleTotal} validated and synced. Validated roles are locked.`
+                      : phase === "gaps"
+                        ? `${gapCount} ${gapCount === 1 ? "role does" : "roles do"} not match the requirement. ${validatedCount} validated.`
+                        : phase === "linking"
+                          ? `${enteredCount} of ${roleTotal} linked. Run sync is available once all ${roleTotal} role IDs are entered.`
+                          : `${roleTotal} roles are with the security team. You will be notified when they are built in SAP.`}
+                  </Alert>
+                </>
+              ) : started ? (
                 <Alert
                   type={allCreated ? "success" : "warning"}
-                  title={allCreated ? "Roles created" : "Creating roles · Option A"}
+                  title={allCreated ? "Roles created · Option A" : "Creating roles · Option A"}
                   action={
                     allCreated ? undefined : (
                       <Button
@@ -553,11 +765,6 @@ export function RolesPage({ designationId }: { designationId: string }) {
                         size="sm"
                         disabled={failedCount === 0}
                         onClick={() => {
-                          for (const row of newRows) {
-                            if (row.status === "Failed") {
-                              setRetried((current) => ({ ...current, [row.id]: true }));
-                            }
-                          }
                           void retryFailedRoles(designationId);
                         }}
                       >
@@ -567,8 +774,8 @@ export function RolesPage({ designationId }: { designationId: string }) {
                   }
                 >
                   {allCreated
-                    ? `All ${rolesFile.newRoles.length} roles are created and synced. Method is locked: creation started.`
-                    : `${countLabel(createdCount, "role")} created, ${countLabel(progressCount, "role")} in progress, ${countLabel(failedCount, "role")} failed. Method is locked: creation started.`}
+                    ? `${roleTotal} of ${roleTotal} created and synced. Created roles are locked.`
+                    : `${createdCount} of ${roleTotal} created · ${progressCount} in progress · ${failedCount} failed. Method is locked: creation started.`}
                 </Alert>
               ) : (
                 <>
@@ -599,10 +806,12 @@ export function RolesPage({ designationId }: { designationId: string }) {
                   </RadioCardGroup>
                   <div className="flex w-full items-center justify-between gap-s16">
                     <p className="m-0 text-l2 text-body" style={labelL2}>
-                      Method can be changed freely until creation starts. Then it is locked for the designation.
+                      {selectedMethod === "B"
+                        ? "Method can be changed freely until the requirement is sent. Then it is locked for the designation."
+                        : "Method can be changed freely until creation starts. Then it is locked for the designation."}
                     </p>
                     <div className="flex shrink-0 items-center gap-s12">
-                      {reviewReason ? (
+                      {selectedMethod === "B" ? null : reviewReason ? (
                         <span className="text-l2 text-body" style={labelL2}>
                           {reviewReason}
                         </span>
@@ -610,11 +819,11 @@ export function RolesPage({ designationId }: { designationId: string }) {
                       <Button
                         variant="primary"
                         size="md"
-                        disabled={reviewDisabled}
+                        disabled={selectedMethod === "B" ? false : reviewDisabled}
                         rightIcon={<IconChevronRight size="s16" />}
-                        onClick={goReview}
+                        onClick={selectedMethod === "B" ? goLink : goReview}
                       >
-                        Review & Configure (Option A)
+                        {selectedMethod === "B" ? "Link roles built in SAP (Option B)" : "Review & Configure (Option A)"}
                       </Button>
                     </div>
                   </div>
@@ -686,37 +895,25 @@ export function RolesPage({ designationId }: { designationId: string }) {
           ) : (
             <section className="flex w-full flex-col gap-s16">
               <div className="flex w-full items-center justify-between gap-s16">
-                <div className="flex items-center gap-s8">
-                  <h3
-                    className="m-0 uppercase text-strong"
-                    style={{
-                      fontFamily: "var(--font-family-lato-semibold)",
-                      fontSize: "var(--font-size-l3)",
-                      fontWeight: "var(--font-weight-body-b1)",
-                      lineHeight: "var(--font-line-height-control-sm)",
-                    }}
-                  >
-                    Existing roles ({rolesFile.existingRoles.length})
-                  </h3>
+                <p className="m-0 min-w-0 flex-1 text-l2 text-body" style={labelL2}>
+                  {selectedMethod === "B"
+                    ? "Link roles built in SAP only applies to new roles."
+                    : "Review & Configure is only available on the New roles tab."}
+                </p>
+                <Button variant="primary" size="md" disabled rightIcon={<IconChevronRight size="s16" />}>
+                  {selectedMethod === "B" ? optionBActionLabel(phase ?? "before-send") : "Review & Configure (Option A)"}
+                </Button>
+              </div>
+              <div className="rounded-s12 border border-solid border-subtle bg-surface-white">
+                <div className="sticky top-0 z-10 flex items-center justify-between gap-s16 rounded-t-s12 border-b border-solid border-subtle bg-surface-white px-s16 py-s12">
                   <Badge size="md" variant="light">
                     {includedCount} of {rolesFile.existingRoles.length} included
                   </Badge>
-                </div>
-                <div className="flex shrink-0 items-center gap-s12">
-                  <span className="text-l2 text-body" style={labelL2}>
-                    Review & Configure only applies to new roles.
-                  </span>
-                  <Button variant="primary" size="md" disabled rightIcon={<IconChevronRight size="s16" />}>
-                    Review & Configure (Option A)
-                  </Button>
-                </div>
-              </div>
-              <div className="overflow-hidden rounded-s12 border border-solid border-subtle bg-surface-white">
-                <div className="flex justify-end px-s16 pt-s12">
                   <div className="shrink-0" style={{ width: "calc(var(--space-s80) * 4)" }}>
                     <TextField
                       type="search"
-                      placeholder="Search roles or suggested names"
+                      size="sm"
+                      placeholder="Search existing roles"
                       value={query}
                       onChange={setQuery}
                     />

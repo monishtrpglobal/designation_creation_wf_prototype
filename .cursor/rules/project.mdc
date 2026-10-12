@@ -73,3 +73,8 @@ alwaysApply: true
 # Working style
 - One screen or component per task. After building, run `next build` type check, then compare with `get_screenshot` of the Figma node and list differences.
 - Report anything missing or ambiguous before improvising.
+
+## Designation flow
+For anything about screens, flow, statuses or business rules, read `docs/FLOW_GUIDE.md` first.
+Reuse existing code in `src/ds/` (components) and `src/features/designation/` (screens).
+Do not create new components if one exists in `src/ds/`.

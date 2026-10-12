@@ -1,11 +1,18 @@
-import { rolesFile } from "@/mock";
-import { createRole, runLicenseAnalysis, runSync } from "@/lib/fakeApi";
+import { finalizationFile, rolesFile, type FinalizationConflict, type LicenseSummary } from "@/mock";
+import { optionBGapRoleIds, shouldFailCreation } from "@/features/designation/roles/rolesView";
+import { createRole, creationStep, runLicenseAnalysis, runSodCheck, runSync, trImportStep } from "@/lib/fakeApi";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ActivityEdit, DesignationRuntime, FlowMethod, OrgValue, RoleRuntimeStatus } from "./model";
-import { buildDraft, seedDesignations, settleInterrupted } from "./seed";
-
-const taxRoleId = "new-40";
+import type {
+  ActivityEdit,
+  DesignationRuntime,
+  FlowMethod,
+  OrgValue,
+  RoleEditorOverride,
+  RoleRuntimeStatus,
+  SodDecision,
+} from "./model";
+import { buildDraft, defaultRoleDescription, emptySodSim, seedDesignations, settleInterrupted } from "./seed";
 
 type FlowData = {
   designations: DesignationRuntime[];
@@ -26,21 +33,41 @@ type FlowActions = {
   chooseMethod: (id: string, method: FlowMethod) => void;
   sendRequirement: (id: string) => void;
   setRoleSapName: (id: string, roleId: string, sapRoleName: string) => void;
+  setRoleDescription: (id: string, roleId: string, description: string) => void;
+  resetRoleEdits: (id: string) => void;
   setOrgLevel: (id: string, levelId: string, value: OrgValue) => void;
+  updateRoleEditor: (
+    id: string,
+    roleId: string,
+    recipe: (current: RoleEditorOverride) => RoleEditorOverride,
+  ) => void;
   startRoleCreation: (id: string) => Promise<{ ok: boolean; reason?: string }>;
   retryRole: (id: string, roleId: string) => Promise<void>;
   retryFailedRoles: (id: string) => Promise<void>;
   setEnteredRoleId: (id: string, roleId: string, sapRoleId: string) => void;
   setLinkedRoleResult: (id: string, roleId: string, result: "Validated" | "Gap found") => void;
+  receiveBuiltRoles: (id: string) => void;
+  runLinkSync: (id: string) => boolean;
+  sendGapReport: (id: string) => void;
   completeLinkedRoles: (id: string) => boolean;
+  startSodSimulation: (id: string) => Promise<void>;
+  rerunSodSimulation: (id: string) => Promise<void>;
+  ensureFinalizationDecisions: (id: string) => void;
+  applySodDecisions: (
+    id: string,
+    conflictIds: string[],
+    decision: "whitelist" | "mitigate",
+    justification: string,
+  ) => boolean;
   setSodDecision: (
     id: string,
     conflictId: string,
     decision: "pending" | "whitelist" | "mitigate" | "accept",
     justification: string,
   ) => void;
-  completeFinalize: (id: string) => void;
+  completeFinalize: (id: string) => boolean;
   approveTr: (id: string) => void;
+  rejectTr: (id: string, reason: string) => boolean;
   startLicenseAnalysis: (id: string, options?: { fail?: boolean }) => Promise<void>;
   approveFinal: (id: string, input: { comment: string; highRiskAcknowledged: boolean }) => boolean;
   rejectFinal: (id: string, comment: string) => boolean;
@@ -58,6 +85,18 @@ function patch(
   recipe: (current: DesignationRuntime) => DesignationRuntime,
 ) {
   return designations.map((item) => (item.id === id ? recipe(item) : item));
+}
+
+/** Sample result when a re-run has no prior summary. Not the Inventory Controller figures. */
+const sampleRerunSummary: LicenseSummary = {
+  beforeLabel: "₹ 4.2 L",
+  afterLabel: "₹ 3.4 L",
+  savingLabel: "₹ 0.8 L",
+  savingPercent: 19,
+};
+
+function licenseSummaryAfterRun(current: LicenseSummary | null, finishedAt: string): LicenseSummary {
+  return { ...(current ?? sampleRerunSummary), lastRunAt: finishedAt };
 }
 
 function nameClashes(designation: DesignationRuntime, roleId: string, sapRoleName: string) {
@@ -96,11 +135,73 @@ function rolesNeedAttention(designation: DesignationRuntime) {
   );
 }
 
-function highRiskOpen(designation: DesignationRuntime) {
-  return Object.values(designation.sodDecisions).some(
-    (decision) =>
-      decision.risk === "High" && decision.decision !== "whitelist" && decision.decision !== "mitigate",
-  );
+export function emptyRoleEditor(): RoleEditorOverride {
+  return {
+    addedTcodeIds: [],
+    removedTcodeIds: [],
+    inactiveAuthIds: [],
+    removedAuthIds: [],
+    addedAuth: [],
+    tcodeObjects: {},
+    authActivities: {},
+    authRanges: {},
+    extraChanges: 0,
+  };
+}
+
+const sodInFlight = new Set<string>();
+
+function visibleFinalization(clearedIds: string[]) {
+  const cleared = new Set(clearedIds);
+  return finalizationFile.conflicts.filter((conflict) => !cleared.has(conflict.id));
+}
+
+function conflictsFoundFor(checked: number, visible: number) {
+  const midpoint = Math.min(12, visible);
+  if (checked >= 70) {
+    return visible;
+  }
+  if (checked <= 28) {
+    return Math.min(visible, Math.round((checked / 28) * midpoint));
+  }
+  const extra = visible - midpoint;
+  return Math.min(visible, midpoint + Math.round(((checked - 28) / (70 - 28)) * extra));
+}
+
+function decisionFromSeed(conflict: FinalizationConflict): SodDecision {
+  return {
+    conflictId: conflict.id,
+    risk: conflict.risk,
+    decision: conflict.initialDecision,
+    justification: conflict.justification,
+    whitelistedBy: conflict.whitelistedBy,
+    whitelistedAt: conflict.whitelistedAt,
+  };
+}
+
+function withFinalizationDecisions(current: DesignationRuntime) {
+  const cleared = new Set(current.sodSim.clearedIds);
+  const next = { ...current.sodDecisions };
+  for (const conflict of finalizationFile.conflicts) {
+    if (cleared.has(conflict.id) || next[conflict.id]) {
+      continue;
+    }
+    next[conflict.id] = decisionFromSeed(conflict);
+  }
+  return next;
+}
+
+function conflictOpen(current: DesignationRuntime, conflict: FinalizationConflict) {
+  const decision = current.sodDecisions[conflict.id]?.decision ?? conflict.initialDecision;
+  return decision === "pending" || decision === "mitigate" || decision === "accept";
+}
+
+function sodCounts(designation: DesignationRuntime) {
+  return {
+    high: designation.sodSummary?.high ?? 0,
+    medium: designation.sodSummary?.medium ?? 0,
+    low: designation.sodSummary?.low ?? 0,
+  };
 }
 
 function countCreation(roleStatuses: Record<string, RoleRuntimeStatus>) {
@@ -119,41 +220,79 @@ async function createOne(
   designationId: string,
   roleId: string,
 ) {
-  if (get().epoch !== epoch) {
+  const applyStatus = (status: RoleRuntimeStatus) => {
+    if (get().epoch !== epoch) {
+      return false;
+    }
+    set((state) => ({
+      designations: patch(state.designations, designationId, (item) => {
+        const roleStatuses = { ...item.roleStatuses, [roleId]: status };
+        const allCreated = Object.values(roleStatuses).every((value) => value === "Created");
+        return {
+          ...item,
+          roleStatuses,
+          creation: countCreation(roleStatuses),
+          steps: { ...item.steps, roles: allCreated },
+        };
+      }),
+    }));
+    return get().epoch === epoch;
+  };
+
+  if (!applyStatus("Creating")) {
     return;
   }
-  set((state) => ({
-    designations: patch(state.designations, designationId, (current) => ({
-      ...current,
-      roleStatuses: { ...current.roleStatuses, [roleId]: "Creating" },
-    })),
-  }));
+  await creationStep();
   const current = get().designations.find((item) => item.id === designationId);
-  const failOnce = current?.taxFailurePending === true && roleId === taxRoleId;
+  const retried = current?.roleRetried?.[roleId] === true;
+  if (shouldFailCreation(roleId, retried)) {
+    applyStatus("Failed");
+    return;
+  }
+  if (!applyStatus("Syncing")) {
+    return;
+  }
   const result = await createRole({
     roleId,
     sapRoleName: current?.roleSapNames[roleId] ?? "",
-    failOnce,
+    fail: false,
   });
-  if (get().epoch !== epoch) {
-    return;
-  }
-  set((state) => ({
-    designations: patch(state.designations, designationId, (item) => {
-      const roleStatuses = {
-        ...item.roleStatuses,
-        [roleId]: result.ok ? "Created" : "Failed",
-      } as Record<string, RoleRuntimeStatus>;
-      const allCreated = Object.values(roleStatuses).every((status) => status === "Created");
-      return {
+  applyStatus(result.ok ? "Created" : "Failed");
+}
+
+async function advanceTrImport(id: string) {
+  const epoch = useFlowStore.getState().epoch;
+  const total = rolesFile.newRoles.length;
+  while (useFlowStore.getState().epoch === epoch) {
+    const current = useFlowStore.getState().designations.find((item) => item.id === id);
+    if (!current?.approval.trImportLive) {
+      return;
+    }
+    if (current.approval.trImported >= total) {
+      void useFlowStore.getState().startLicenseAnalysis(id);
+      return;
+    }
+    await trImportStep();
+    if (useFlowStore.getState().epoch !== epoch) {
+      return;
+    }
+    const latest = useFlowStore.getState().designations.find((item) => item.id === id);
+    if (!latest?.approval.trImportLive) {
+      return;
+    }
+    const nextCount = Math.min(total, latest.approval.trImported + 1);
+    const done = nextCount >= total;
+    useFlowStore.setState((state) => ({
+      designations: patch(state.designations, id, (item) => ({
         ...item,
-        taxFailurePending: failOnce ? false : item.taxFailurePending,
-        roleStatuses,
-        creation: countCreation(roleStatuses),
-        steps: { ...item.steps, roles: allCreated },
-      };
-    }),
-  }));
+        approval: { ...item.approval, trImported: nextCount, trImportLive: !done },
+      })),
+    }));
+    if (done) {
+      void useFlowStore.getState().startLicenseAnalysis(id);
+      return;
+    }
+  }
 }
 
 export const useFlowStore = create<FlowState>()(
@@ -259,6 +398,7 @@ export const useFlowStore = create<FlowState>()(
             current.methodLocked ? current : { ...current, method },
           ),
         })),
+      // TODO(confirm): method locks once Send to security team is pressed.
       sendRequirement: (id) =>
         set((state) => ({
           designations: patch(state.designations, id, (current) => {
@@ -268,7 +408,7 @@ export const useFlowStore = create<FlowState>()(
             const roleStatuses = { ...current.roleStatuses };
             for (const roleId of Object.keys(roleStatuses)) {
               if (roleStatuses[roleId] !== "Validated" && roleStatuses[roleId] !== "Gap found") {
-                roleStatuses[roleId] = current.optionBRoleIds[roleId] ? "ID entered" : "Needed";
+                roleStatuses[roleId] = "Awaiting SAP";
               }
             }
             return {
@@ -293,12 +433,49 @@ export const useFlowStore = create<FlowState>()(
             };
           }),
         })),
+      setRoleDescription: (id, roleId, description) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => ({
+            ...current,
+            roleDescriptions: { ...current.roleDescriptions, [roleId]: description },
+          })),
+        })),
+      resetRoleEdits: (id) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => {
+            if (current.methodLocked) {
+              return current;
+            }
+            const roleSapNames = { ...current.roleSapNames };
+            const roleStatuses = { ...current.roleStatuses };
+            const roleDescriptions = { ...current.roleDescriptions };
+            for (const role of rolesFile.newRoles) {
+              roleSapNames[role.id] = role.sapRoleName;
+              roleStatuses[role.id] = role.status;
+              roleDescriptions[role.id] = defaultRoleDescription(role);
+            }
+            return { ...current, roleSapNames, roleStatuses, roleDescriptions, roleEditors: {} };
+          }),
+        })),
       setOrgLevel: (id, levelId, value) =>
         set((state) => ({
           designations: patch(state.designations, id, (current) => ({
             ...current,
             orgLevels: { ...current.orgLevels, [levelId]: value },
           })),
+        })),
+      updateRoleEditor: (id, roleId, recipe) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => {
+            const currentEditor = current.roleEditors?.[roleId] ?? emptyRoleEditor();
+            return {
+              ...current,
+              roleEditors: {
+                ...(current.roleEditors ?? {}),
+                [roleId]: recipe(currentEditor),
+              },
+            };
+          }),
         })),
       startRoleCreation: async (id) => {
         const epoch = get().epoch;
@@ -352,6 +529,7 @@ export const useFlowStore = create<FlowState>()(
           designations: patch(state.designations, id, (item) => ({
             ...item,
             creationLive: true,
+            roleRetried: { ...item.roleRetried, [roleId]: true },
             roleStatuses: { ...item.roleStatuses, [roleId]: "Queued" },
           })),
         }));
@@ -376,6 +554,9 @@ export const useFlowStore = create<FlowState>()(
       setEnteredRoleId: (id, roleId, sapRoleId) =>
         set((state) => ({
           designations: patch(state.designations, id, (current) => {
+            if (current.roleStatuses[roleId] === "Validated") {
+              return current;
+            }
             const trimmed = sapRoleId.trim();
             let status: RoleRuntimeStatus = "Needed";
             if (trimmed.length > 30) {
@@ -397,6 +578,58 @@ export const useFlowStore = create<FlowState>()(
             roleStatuses: { ...current.roleStatuses, [roleId]: result },
           })),
         })),
+      receiveBuiltRoles: (id) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => {
+            if (current.method !== "B" || !current.methodLocked) {
+              return current;
+            }
+            const roleStatuses = { ...current.roleStatuses };
+            for (const roleId of Object.keys(roleStatuses)) {
+              if (roleStatuses[roleId] === "Awaiting SAP") {
+                roleStatuses[roleId] = "Needed";
+              }
+            }
+            return { ...current, roleStatuses };
+          }),
+        })),
+      runLinkSync: (id) => {
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.method !== "B") {
+          return false;
+        }
+        const ready = rolesFile.newRoles.every((role) => {
+          const entered = (current.optionBRoleIds[role.id] ?? "").trim();
+          return entered.length > 0 && entered.length <= 30;
+        });
+        if (!ready) {
+          return false;
+        }
+        const checked = rolesFile.newRoles.some((role) => {
+          const status = current.roleStatuses[role.id];
+          return status === "Gap found" || status === "Validated";
+        });
+        const gapIds = new Set<string>(optionBGapRoleIds);
+        const roleStatuses = { ...current.roleStatuses };
+        for (const role of rolesFile.newRoles) {
+          if (roleStatuses[role.id] === "Validated") {
+            continue;
+          }
+          roleStatuses[role.id] = !checked && gapIds.has(role.id) ? "Gap found" : "Validated";
+        }
+        set((state) => ({
+          designations: patch(state.designations, id, (item) => ({ ...item, roleStatuses })),
+        }));
+        return true;
+      },
+      // TODO(confirm): Send gap report notifies inside the platform or exports a file.
+      sendGapReport: (id) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => ({
+            ...current,
+            optionBGapReportSent: true,
+          })),
+        })),
       completeLinkedRoles: (id) => {
         const current = get().designations.find((item) => item.id === id);
         if (!current) {
@@ -411,6 +644,129 @@ export const useFlowStore = create<FlowState>()(
             ...item,
             steps: { ...item.steps, roles: true },
           })),
+        }));
+        return true;
+      },
+      startSodSimulation: async (id) => {
+        if (sodInFlight.has(id)) {
+          return;
+        }
+        const current = get().designations.find((item) => item.id === id);
+        if (!current?.steps.roles || current.steps.finalize || current.sodSim.status === "completed") {
+          return;
+        }
+        sodInFlight.add(id);
+        const epoch = get().epoch;
+        const from = current.sodSim.status === "running" ? current.sodSim.checked : 0;
+        set((state) => ({
+          designations: patch(state.designations, id, (item) => ({
+            ...item,
+            sodSim: { ...item.sodSim, status: "running", checked: from },
+          })),
+        }));
+        try {
+          await runSodCheck((checked) => {
+            if (get().epoch !== epoch) {
+              return;
+            }
+            const latest = get().designations.find((item) => item.id === id);
+            const visible = visibleFinalization(latest?.sodSim.clearedIds ?? []);
+            set((state) => ({
+              designations: patch(state.designations, id, (item) => ({
+                ...item,
+                sodSim: {
+                  ...item.sodSim,
+                  status: "running",
+                  checked,
+                  conflictsFound: conflictsFoundFor(checked, visible.length),
+                },
+              })),
+            }));
+          }, from);
+          if (get().epoch !== epoch) {
+            return;
+          }
+          set((state) => ({
+            designations: patch(state.designations, id, (item) => {
+              const visible = visibleFinalization(item.sodSim.clearedIds);
+              const seeded = withFinalizationDecisions(item);
+              return {
+                ...item,
+                sodDecisions: seeded,
+                sodSim: {
+                  ...item.sodSim,
+                  status: "completed",
+                  checked: 70,
+                  conflictsFound: visible.length,
+                },
+              };
+            }),
+          }));
+        } finally {
+          sodInFlight.delete(id);
+        }
+      },
+      rerunSodSimulation: async (id) => {
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.steps.finalize || current.sodSim.status === "running" || sodInFlight.has(id)) {
+          return;
+        }
+        const cleared = new Set(current.sodSim.clearedIds);
+        for (const conflict of finalizationFile.conflicts) {
+          if (cleared.has(conflict.id)) {
+            continue;
+          }
+          const decision = current.sodDecisions[conflict.id]?.decision ?? conflict.initialDecision;
+          if (decision === "mitigate") {
+            cleared.add(conflict.id);
+          }
+        }
+        set((state) => ({
+          designations: patch(state.designations, id, (item) => ({
+            ...item,
+            sodSim: { status: "idle", checked: 0, conflictsFound: 0, clearedIds: [...cleared] },
+          })),
+        }));
+        await get().startSodSimulation(id);
+      },
+      ensureFinalizationDecisions: (id) =>
+        set((state) => ({
+          designations: patch(state.designations, id, (current) => {
+            if (current.sodSim.status !== "completed") {
+              return current;
+            }
+            return { ...current, sodDecisions: withFinalizationDecisions(current) };
+          }),
+        })),
+      applySodDecisions: (id, conflictIds, decision, justification) => {
+        const text = justification.trim();
+        if (decision === "whitelist" && text.length === 0) {
+          return false;
+        }
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.steps.finalize || conflictIds.length === 0) {
+          return false;
+        }
+        const today = new Date().toISOString().slice(0, 10);
+        set((state) => ({
+          designations: patch(state.designations, id, (item) => {
+            const sodDecisions = { ...item.sodDecisions };
+            for (const conflictId of conflictIds) {
+              const seed = finalizationFile.conflicts.find((conflict) => conflict.id === conflictId);
+              const previous = sodDecisions[conflictId];
+              sodDecisions[conflictId] = {
+                conflictId,
+                risk: previous?.risk ?? seed?.risk ?? "Low",
+                decision,
+                justification: decision === "whitelist" ? text : "",
+                // TODO(confirm): who may whitelist, and does a whitelist need a second approver?
+                whitelistedBy:
+                  decision === "whitelist" ? (previous?.whitelistedBy ?? "A. Rao (sample data)") : null,
+                whitelistedAt: decision === "whitelist" ? (previous?.whitelistedAt ?? today) : null,
+              };
+            }
+            return { ...item, sodDecisions };
+          }),
         }));
         return true;
       },
@@ -429,38 +785,97 @@ export const useFlowStore = create<FlowState>()(
                 }),
                 decision,
                 justification,
+                // TODO(confirm): who may whitelist, and does a whitelist need a second approver?
                 whitelistedBy:
-                  decision === "whitelist" ? (current.sodDecisions[conflictId]?.whitelistedBy ?? null) : null,
+                  decision === "whitelist"
+                    ? (current.sodDecisions[conflictId]?.whitelistedBy ?? "A. Rao (sample data)")
+                    : null,
                 whitelistedAt:
-                  decision === "whitelist" ? (current.sodDecisions[conflictId]?.whitelistedAt ?? null) : null,
+                  decision === "whitelist"
+                    ? (current.sodDecisions[conflictId]?.whitelistedAt ?? new Date().toISOString().slice(0, 10))
+                    : null,
               },
             },
           })),
         })),
-      completeFinalize: (id) =>
+      completeFinalize: (id) => {
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.steps.finalize || current.sodSim.status !== "completed") {
+          return false;
+        }
+        const visible = visibleFinalization(current.sodSim.clearedIds);
+        if (visible.some((conflict) => conflictOpen(current, conflict))) {
+          return false;
+        }
+        const sodSummary = { high: 0, medium: 0, low: 0 };
+        for (const conflict of visible) {
+          if (conflict.risk === "High") {
+            sodSummary.high += 1;
+          } else if (conflict.risk === "Medium") {
+            sodSummary.medium += 1;
+          } else {
+            sodSummary.low += 1;
+          }
+        }
         set((state) => ({
-          designations: patch(state.designations, id, (current) => ({
-            ...current,
+          designations: patch(state.designations, id, (item) => ({
+            ...item,
             status: "Awaiting TR approval",
-            steps: { ...current.steps, finalize: true },
-            approval: { ...current.approval, tr: "awaiting" },
+            sodSummary,
+            steps: { ...item.steps, finalize: true },
+            approval: { ...item.approval, tr: "awaiting" },
             updatedAt: new Date().toISOString(),
           })),
-        })),
-      approveTr: (id) =>
+        }));
+        return true;
+      },
+      approveTr: (id) => {
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.status !== "Awaiting TR approval") {
+          return;
+        }
         set((state) => ({
-          designations: patch(state.designations, id, (current) => ({
-            ...current,
+          designations: patch(state.designations, id, (item) => ({
+            ...item,
             status: "Moving to Quality",
-            steps: { ...current.steps, tr: true },
-            approval: { ...current.approval, tr: "approved", trNumber: "DEVK900125" },
+            steps: { ...item.steps, tr: true },
+            approval: {
+              ...item.approval,
+              tr: "approved",
+              trNumber: "DEVK900125",
+              trImported: 0,
+              trImportLive: true,
+            },
             updatedAt: new Date().toISOString(),
           })),
-        })),
+        }));
+        void advanceTrImport(id);
+      },
+      rejectTr: (id, reason) => {
+        const trimmed = reason.trim();
+        if (trimmed.length === 0) {
+          return false;
+        }
+        const current = get().designations.find((item) => item.id === id);
+        if (!current || current.status !== "Awaiting TR approval") {
+          return false;
+        }
+        set((state) => ({
+          designations: patch(state.designations, id, (item) => ({
+            ...item,
+            status: "Rejected",
+            approval: { ...item.approval, trRejectReason: trimmed },
+            updatedAt: new Date().toISOString(),
+          })),
+        }));
+        return true;
+      },
       startLicenseAnalysis: async (id, options) => {
         const epoch = get().epoch;
         const current = get().designations.find((item) => item.id === id);
-        if (!current?.steps.tr) {
+        const license = current?.approval.license;
+        const canStart = license === "none" || license === "failed" || license === "completed";
+        if (!current?.steps.tr || !canStart || current.approval.licenseLive) {
           return;
         }
         set((state) => ({
@@ -495,12 +910,13 @@ export const useFlowStore = create<FlowState>()(
           }));
           return;
         }
-        const summary = current.licenseSummary;
+        const finishedAt = new Date().toISOString();
+        const summary = licenseSummaryAfterRun(current.licenseSummary, finishedAt);
         set((state) => ({
           designations: patch(state.designations, id, (item) => ({
             ...item,
             status: "Awaiting final approval",
-            licenseSummary: summary ?? item.licenseSummary,
+            licenseSummary: summary,
             steps: { ...item.steps, license: true },
             approval: {
               ...item.approval,
@@ -518,15 +934,29 @@ export const useFlowStore = create<FlowState>()(
         if (!current?.steps.license) {
           return false;
         }
-        if (highRiskOpen(current) && !input.highRiskAcknowledged) {
+        const counts = sodCounts(current);
+        const hasRisk = counts.high + counts.medium + counts.low > 0;
+        if (hasRisk && !input.highRiskAcknowledged) {
           return false;
         }
+        // TODO(confirm): a new High risk requires a comment and does not hard-block publish.
+        if (counts.high > 0 && input.comment.trim().length === 0) {
+          return false;
+        }
+        const acknowledgedAt = new Date().toISOString();
         set((state) => ({
           designations: patch(state.designations, id, (item) => ({
             ...item,
             status: "Published",
-            approval: { ...item.approval, final: "published", finalComment: input.comment },
-            updatedAt: new Date().toISOString(),
+            approval: {
+              ...item.approval,
+              final: "published",
+              finalComment: input.comment.trim(),
+              finalAcknowledged: hasRisk ? input.highRiskAcknowledged : false,
+              finalAcknowledgedBy: hasRisk ? "Monish" : null,
+              finalAcknowledgedAt: hasRisk ? acknowledgedAt : null,
+            },
+            updatedAt: acknowledgedAt,
           })),
         }));
         return true;
@@ -584,14 +1014,24 @@ export const useFlowStore = create<FlowState>()(
               tr: false,
               license: false,
             },
-            approval: { ...current.approval, final: "none", finalComment: "" },
+            approval: {
+              ...current.approval,
+              final: "none",
+              finalComment: "",
+              finalAcknowledged: false,
+              finalAcknowledgedBy: null,
+              finalAcknowledgedAt: null,
+            },
+            sodSim: emptySodSim(),
+            sodDecisions: {},
+            sodSummary: null,
             updatedAt: new Date().toISOString(),
           })),
         })),
     }),
     {
       name: "irm-designation-flow",
-      version: 4,
+      version: 11,
       migrate: () => ({ designations: seedDesignations(), currentDesignationId: null }),
       skipHydration: true,
       partialize: (state) => ({

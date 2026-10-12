@@ -1,7 +1,7 @@
 "use client";
 
 import { TextInput } from "@mantine/core";
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 import { useState } from "react";
 import { IconClose, IconInfo, IconSearch } from "./icons";
 import { Tooltip } from "./Tooltip";
@@ -29,6 +29,8 @@ type TextFieldProps = {
   showInfo?: boolean;
   maxLength?: number;
   id?: string;
+  ariaLabel?: string;
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 export function TextField({
@@ -50,11 +52,19 @@ export function TextField({
   showInfo = false,
   maxLength,
   id,
+  ariaLabel,
+  inputRef,
 }: TextFieldProps) {
   const [uncontrolled, setUncontrolled] = useState(defaultValue ?? "");
   const current = value ?? uncontrolled;
   const showClear = type === "search" && clearable && current.length > 0 && !disabled && !readOnly;
   const overLimit = maxLength !== undefined && current.length > maxLength;
+  const counter =
+    showCounter && maxLength !== undefined ? (
+      <span className={styles.counterLead} data-over={overLimit || undefined}>
+        {current.length} / {maxLength}
+      </span>
+    ) : null;
 
   function update(next: string) {
     if (value === undefined) setUncontrolled(next);
@@ -63,7 +73,9 @@ export function TextField({
 
   const field = (
     <TextInput
+      ref={inputRef}
       id={id}
+      aria-label={label ? undefined : ariaLabel}
       variant="unstyled"
       label={
         label ? (
@@ -88,7 +100,16 @@ export function TextField({
           </span>
         ) : undefined
       }
-      description={description}
+      description={
+        counter ? (
+          <>
+            {description}
+            {counter}
+          </>
+        ) : (
+          description
+        )
+      }
       error={error}
       required={required}
       withAsterisk={false}
@@ -107,7 +128,7 @@ export function TextField({
         ) : undefined
       }
       rightSectionPointerEvents={showClear ? "all" : "none"}
-      wrapperProps={{ "data-irm-type": type, "data-irm-size": size }}
+      wrapperProps={{ "data-irm-type": type, "data-irm-size": size, "data-error": error ? true : undefined }}
       data-error={error ? true : undefined}
       classNames={{
         root: styles.root,
@@ -121,18 +142,5 @@ export function TextField({
     />
   );
 
-  if (!showCounter || maxLength === undefined) {
-    return field;
-  }
-
-  return (
-    <div className={styles.stack}>
-      {field}
-      <div className={styles.counter} data-over={overLimit || undefined}>
-        <span>
-          {current.length} / {maxLength}
-        </span>
-      </div>
-    </div>
-  );
+  return field;
 }

@@ -1,4 +1,5 @@
-import { activitiesFile, designations, rolesFile, sodFile, type LifecycleStatus } from "@/mock";
+import { activitiesFile, designations, rolesFile, sodFile, type LifecycleStatus, type RoleSeed } from "@/mock";
+import { creationFailureIds, creationStatusFor, optionBGapRoleIds, optionBLinkedCount } from "@/features/designation/roles/rolesView";
 import type {
   ApprovalState,
   CreationProgress,
@@ -6,6 +7,7 @@ import type {
   OrgValue,
   RoleRuntimeStatus,
   SodDecision,
+  SodSimulation,
   StepFlags,
   SyncState,
 } from "./model";
@@ -93,6 +95,19 @@ function initialOrgLevels(rolesComplete: boolean): Record<string, OrgValue> {
   return orgLevels;
 }
 
+export const sampleReviewRoleId = "new-01";
+export const openOrgRoleId = "new-05";
+
+export function defaultRoleDescription(role: RoleSeed): string {
+  if (role.id === sampleReviewRoleId) {
+    return "Change access for lease accounting";
+  }
+  if (role.id === openOrgRoleId) {
+    return "Change access for revenue recognition";
+  }
+  return `Change access for ${role.businessLabel}`;
+}
+
 function fixedSapName(sapRoleName: string, status: string): string {
   if (status === "Too long") {
     return "CORP_TREASURY_CASH_POS";
@@ -103,12 +118,20 @@ function fixedSapName(sapRoleName: string, status: string): string {
   return sapRoleName;
 }
 
-function roleState(rolesComplete: boolean, method: "A" | "B" | null) {
+function roleState(phase: "before" | "creating" | "created", method: "A" | "B" | null) {
   const roleStatuses: Record<string, RoleRuntimeStatus> = {};
+  const roleRetried: Record<string, boolean> = {};
   const roleSapNames: Record<string, string> = {};
+  const roleDescriptions: Record<string, string> = {};
   const optionBRoleIds: Record<string, string> = {};
+  const rolesComplete = phase === "created";
   for (const role of rolesFile.newRoles) {
+    roleDescriptions[role.id] = defaultRoleDescription(role);
     roleSapNames[role.id] = rolesComplete ? fixedSapName(role.sapRoleName, role.status) : role.sapRoleName;
+    if (phase === "creating" && method === "A") {
+      roleStatuses[role.id] = creationStatusFor(role.id);
+      continue;
+    }
     if (!rolesComplete) {
       roleStatuses[role.id] = role.status;
       continue;
@@ -119,8 +142,11 @@ function roleState(rolesComplete: boolean, method: "A" | "B" | null) {
       continue;
     }
     roleStatuses[role.id] = "Created";
+    if ((creationFailureIds as readonly string[]).includes(role.id)) {
+      roleRetried[role.id] = true;
+    }
   }
-  return { roleStatuses, roleSapNames, optionBRoleIds };
+  return { roleStatuses, roleRetried, roleSapNames, roleDescriptions, optionBRoleIds };
 }
 
 function syncFor(status: LifecycleStatus): SyncState {
@@ -136,11 +162,19 @@ function syncFor(status: LifecycleStatus): SyncState {
   return { status: "completed", progress: 100, message: "Completed", live: false };
 }
 
-function creationFor(rolesComplete: boolean): CreationProgress {
+function creationFor(phase: "before" | "creating" | "created"): CreationProgress {
   const total = rolesFile.newRoles.length;
-  return rolesComplete
-    ? { completed: total, total, failed: 0 }
-    : { completed: 0, total, failed: 0 };
+  if (phase === "creating") {
+    return { completed: 38, total, failed: 2 };
+  }
+  if (phase === "created") {
+    return { completed: total, total, failed: 0 };
+  }
+  return { completed: 0, total, failed: 0 };
+}
+
+export function emptySodSim(): SodSimulation {
+  return { status: "idle", checked: 0, conflictsFound: 0, clearedIds: [] };
 }
 
 function sodDecisionsFor(designationId: string): Record<string, SodDecision> {
@@ -152,7 +186,12 @@ function sodDecisionsFor(designationId: string): Record<string, SodDecision> {
     decisions[conflict.id] = {
       conflictId: conflict.id,
       risk: conflict.risk,
-      decision: conflict.whitelisted ? "whitelist" : "pending",
+      decision:
+      conflict.resolution === "remediated" || conflict.initialDecision === "mitigate"
+        ? "mitigate"
+        : conflict.whitelisted
+          ? "whitelist"
+          : "pending",
       justification: conflict.justification,
       whitelistedBy: conflict.whitelistedBy,
       whitelistedAt: conflict.whitelistedAt,
@@ -161,30 +200,54 @@ function sodDecisionsFor(designationId: string): Record<string, SodDecision> {
   return decisions;
 }
 
+const seedMovingImported = 28;
+
 function approvalFor(status: LifecycleStatus): ApprovalState {
+  const total = rolesFile.newRoles.length;
   const base: ApprovalState = {
     tr: "none",
     trNumber: null,
+    trImported: 0,
+    trImportLive: false,
+    trRejectReason: "",
     license: "none",
     licenseProgress: 0,
     licenseLive: false,
     final: "none",
     finalComment: "",
+    finalAcknowledged: false,
+    finalAcknowledgedBy: null,
+    finalAcknowledgedAt: null,
   };
   switch (status) {
     case "Awaiting TR approval":
       return { ...base, tr: "awaiting" };
     case "Moving to Quality":
-      return { ...base, tr: "approved", trNumber: "DEVK900125" };
+      return { ...base, tr: "approved", trNumber: "DEVK900125", trImported: seedMovingImported };
     case "License analysis running":
-      return { ...base, tr: "approved", trNumber: "DEVK900125", license: "running", licenseProgress: 60 };
+      return {
+        ...base,
+        tr: "approved",
+        trNumber: "DEVK900125",
+        trImported: total,
+        license: "running",
+        licenseProgress: 60,
+      };
     case "Analysis failed":
-      return { ...base, tr: "approved", trNumber: "DEVK900125", license: "failed", licenseProgress: 100 };
+      return {
+        ...base,
+        tr: "approved",
+        trNumber: "DEVK900125",
+        trImported: total,
+        license: "failed",
+        licenseProgress: 100,
+      };
     case "Awaiting final approval":
       return {
         ...base,
         tr: "approved",
         trNumber: "DEVK900125",
+        trImported: total,
         license: "completed",
         licenseProgress: 100,
         final: "awaiting",
@@ -194,20 +257,26 @@ function approvalFor(status: LifecycleStatus): ApprovalState {
         ...base,
         tr: "approved",
         trNumber: "DEVK900125",
+        trImported: total,
         license: "completed",
         licenseProgress: 100,
         final: "rejected",
         finalComment: "Role scope is wider than the business request (sample data).",
+        finalAcknowledged: false,
       };
     case "Published":
       return {
         ...base,
         tr: "approved",
         trNumber: "DEVK900125",
+        trImported: total,
         license: "completed",
         licenseProgress: 100,
         final: "published",
         finalComment: "Approved for publish (sample data).",
+        finalAcknowledged: true,
+        finalAcknowledgedBy: "Monish",
+        finalAcknowledgedAt: "2026-09-12T12:00:00.000Z",
       };
     default:
       return base;
@@ -231,19 +300,72 @@ function activitiesFor(id: string, status: LifecycleStatus): string[] {
   return [...(map[id] ?? activityIds.ledger)];
 }
 
-function methodFor(id: string, status: LifecycleStatus): { method: "A" | "B" | null; methodLocked: boolean } {
-  if (status === "Draft" || status === "Syncing to Dev" || status === "In progress") {
-    return { method: null, methodLocked: false };
+type LinkSample = "awaiting" | "linking" | "gaps" | "validated";
+
+function linkSampleFor(id: string): LinkSample | null {
+  if (id === "general-ledger-steward") {
+    return "awaiting";
+  }
+  if (id === "fixed-asset-analyst") {
+    return "linking";
+  }
+  if (id === "cost-controller") {
+    return "gaps";
   }
   if (id === "revenue-accountant") {
+    return "validated";
+  }
+  return null;
+}
+
+function applyLinkSample(
+  roles: ReturnType<typeof roleState>,
+  sample: LinkSample | null,
+): ReturnType<typeof roleState> {
+  if (!sample || sample === "validated") {
+    return roles;
+  }
+  const roleStatuses = { ...roles.roleStatuses };
+  const optionBRoleIds = { ...roles.optionBRoleIds };
+  const gapIds = new Set<string>(optionBGapRoleIds);
+  rolesFile.newRoles.forEach((role, index) => {
+    if (sample === "awaiting") {
+      roleStatuses[role.id] = "Awaiting SAP";
+      delete optionBRoleIds[role.id];
+      return;
+    }
+    if (sample === "linking") {
+      if (index < optionBLinkedCount) {
+        roleStatuses[role.id] = "ID entered";
+        optionBRoleIds[role.id] = roles.roleSapNames[role.id] ?? role.sapRoleName;
+        return;
+      }
+      roleStatuses[role.id] = "Needed";
+      delete optionBRoleIds[role.id];
+      return;
+    }
+    roleStatuses[role.id] = gapIds.has(role.id) ? "Gap found" : "Validated";
+    optionBRoleIds[role.id] = roles.roleSapNames[role.id] ?? role.sapRoleName;
+  });
+  return { ...roles, roleStatuses, optionBRoleIds };
+}
+
+function methodFor(id: string, status: LifecycleStatus): { method: "A" | "B" | null; methodLocked: boolean } {
+  if (status === "Draft" || status === "Syncing to Dev") {
+    return { method: null, methodLocked: false };
+  }
+  if (linkSampleFor(id)) {
     return { method: "B", methodLocked: true };
+  }
+  if (status === "In progress") {
+    return { method: "A", methodLocked: true };
   }
   return { method: "A", methodLocked: true };
 }
 
 export function buildDraft(id: string, name: string): DesignationRuntime {
   const steps = { ...emptySteps(), name: true };
-  const roles = roleState(false, null);
+  const roles = roleState("before", null);
   return {
     id,
     name,
@@ -259,9 +381,11 @@ export function buildDraft(id: string, name: string): DesignationRuntime {
     sync: { status: "idle", progress: 0, message: "", live: false },
     ...roles,
     orgLevels: initialOrgLevels(false),
-    creation: creationFor(false),
+    roleEditors: {},
+    creation: creationFor("before"),
     creationLive: false,
     taxFailurePending: true,
+    sodSim: emptySodSim(),
     sodDecisions: {},
     approval: approvalFor("Draft"),
     steps,
@@ -272,7 +396,9 @@ export function seedDesignations(): DesignationRuntime[] {
   return designations.map((seed) => {
     const steps = stepsFor(seed.status);
     const method = methodFor(seed.id, seed.status);
-    const roles = roleState(steps.roles, method.method);
+    const phase = seed.status === "In progress" ? "creating" : steps.roles ? "created" : "before";
+    // TODO(confirm): catalogue should show Awaiting SAP or Gaps found while Option B is pending. Lifecycle badges stay unchanged here.
+    const roles = applyLinkSample(roleState(phase, method.method), linkSampleFor(seed.id));
     return {
       id: seed.id,
       name: seed.name,
@@ -288,9 +414,13 @@ export function seedDesignations(): DesignationRuntime[] {
       sync: syncFor(seed.status),
       ...roles,
       orgLevels: initialOrgLevels(steps.roles),
-      creation: creationFor(steps.roles),
+      roleEditors: {},
+      creation: creationFor(phase),
       creationLive: false,
       taxFailurePending: !steps.roles,
+      sodSim: steps.finalize
+        ? { status: "completed", checked: 70, conflictsFound: 0, clearedIds: [] }
+        : emptySodSim(),
       sodDecisions: sodDecisionsFor(seed.id),
       approval: approvalFor(seed.status),
       steps,
@@ -318,7 +448,7 @@ export function settleInterrupted(designation: DesignationRuntime): DesignationR
   if (next.creationLive) {
     const roleStatuses = { ...next.roleStatuses };
     for (const [roleId, status] of Object.entries(roleStatuses)) {
-      if (status === "Creating" || status === "Queued") {
+      if (status === "Creating" || status === "Queued" || status === "Syncing") {
         roleStatuses[roleId] = "Failed";
       }
     }
@@ -328,6 +458,31 @@ export function settleInterrupted(designation: DesignationRuntime): DesignationR
       creationLive: false,
       roleStatuses,
       creation: { ...next.creation, failed },
+    };
+  }
+  if (next.approval.trImported === undefined || next.approval.trRejectReason === undefined) {
+    const total = rolesFile.newRoles.length;
+    const imported =
+      next.status === "Moving to Quality" ? seedMovingImported : next.approval.tr === "approved" ? total : 0;
+    next = {
+      ...next,
+      approval: {
+        ...next.approval,
+        trImported: next.approval.trImported ?? imported,
+        trImportLive: next.approval.trImportLive ?? false,
+        trRejectReason: next.approval.trRejectReason ?? "",
+      },
+    };
+  }
+  if (!next.roleEditors) {
+    next = { ...next, roleEditors: {} };
+  }
+  if (!next.sodSim) {
+    next = {
+      ...next,
+      sodSim: next.steps.finalize
+        ? { status: "completed", checked: 70, conflictsFound: 0, clearedIds: [] }
+        : emptySodSim(),
     };
   }
   return next;

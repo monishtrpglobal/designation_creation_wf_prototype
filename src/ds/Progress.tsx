@@ -86,7 +86,7 @@ export function ProgressRing({ value, size = "md", indeterminate = false }: Prog
 
 export type ProgressNodeState = "pending" | "active" | "done" | "error";
 export type ProgressConnectorState = "pending" | "done";
-export type ProgressTrackStage = "creating" | "profile-and-tr" | "synced" | "error";
+export type ProgressTrackStage = "creating" | "profile-and-tr" | "synced" | "error" | "stopped";
 
 const statusWord: Record<ProgressNodeState, string> = {
   pending: "Pending",
@@ -143,6 +143,7 @@ const stages: Record<
   "profile-and-tr": ["done", "done", "active", "pending", "pending"],
   synced: ["done", "done", "done", "done", "done"],
   error: ["done", "done", "error", "pending", "pending"],
+  stopped: ["error", "pending", "pending", "pending", "pending"],
 };
 
 type ProgressTrackProps = {

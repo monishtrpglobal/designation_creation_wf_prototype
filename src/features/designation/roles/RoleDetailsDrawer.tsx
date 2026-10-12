@@ -6,10 +6,10 @@ import { Button } from "@/ds/Button";
 import { Drawer } from "@/ds/Drawer";
 import { DrawerFooterSummary } from "@/ds/DrawerFooterSummary";
 import { IconClose } from "@/ds/icons";
-import { ProgressTrack } from "@/ds/Progress";
-import { StepCard } from "@/ds/StepCard";
+import { ProgressTrack, type ProgressTrackStage } from "@/ds/Progress";
+import { StepCard, type StepCardState } from "@/ds/StepCard";
 import type { RoleRuntimeStatus } from "@/state/model";
-import { badgeLabel, badgeVariant, roleDetail, sampleTr } from "./rolesView";
+import { badgeLabel, badgeVariant, roleDetail, transportNumber } from "./rolesView";
 
 export type RoleDrawerTarget = {
   id: string;
@@ -17,6 +17,7 @@ export type RoleDrawerTarget = {
   sapName: string;
   status: RoleRuntimeStatus;
   retried: boolean;
+  allSettled: boolean;
 };
 
 type RoleDetailsDrawerProps = {
@@ -25,10 +26,27 @@ type RoleDetailsDrawerProps = {
   onRetry: (roleId: string) => void;
 };
 
+function trackStage(status: RoleRuntimeStatus): ProgressTrackStage {
+  if (status === "Failed") {
+    return "stopped";
+  }
+  if (status === "Created") {
+    return "synced";
+  }
+  if (status === "Syncing") {
+    return "profile-and-tr";
+  }
+  return "creating";
+}
+
 export function RoleDetailsDrawer({ role, onClose, onRetry }: RoleDetailsDrawerProps) {
   const failed = role?.status === "Failed";
   const created = role?.status === "Created";
-  const detail = role ? roleDetail(role.status, role.sapName, role.retried) : "";
+  const syncing = role?.status === "Syncing";
+  const detail = role ? roleDetail(role.status, role.sapName, role.retried, role.id, role.allSettled) : "";
+  const tr = role ? transportNumber(role.id, role.status, role.allSettled) : "";
+  const progressState: StepCardState = failed ? "required" : created || syncing ? "done" : "waiting";
+  const transportState: StepCardState = failed ? "waiting" : created || syncing ? "done" : "locked";
 
   return (
     <Drawer
@@ -66,8 +84,8 @@ export function RoleDetailsDrawer({ role, onClose, onRetry }: RoleDetailsDrawerP
               </Badge>
             </div>
             {failed ? (
-              <Alert type="error" compact showTitle={false}>
-                Role failed. {detail}
+              <Alert type="info" compact showTitle={false}>
+                This role failed. Other roles are not affected.
               </Alert>
             ) : null}
           </div>
@@ -79,13 +97,15 @@ export function RoleDetailsDrawer({ role, onClose, onRetry }: RoleDetailsDrawerP
             label={failed ? "What happens next" : "Role"}
             result={
               failed
-                ? "Retry creates this role again. Roles that already exist are left as they are."
+                ? "Retry calls the SAP API again for this role only."
                 : created
                   ? "This role is created and synced."
                   : "SAP is still creating this role."
             }
             status={failed ? "warning" : created ? "success" : "secondary"}
-            statusLabel={failed ? "Creation failed" : created ? "Created" : "In progress"}
+            statusLabel={
+              failed ? "Not created yet: SAP API authorisation error" : created ? "Created" : "In progress"
+            }
             linkLabel={failed ? "View error log" : undefined}
             linkHref={failed ? "#role-error" : undefined}
             secondaryLabel="Close"
@@ -104,26 +124,32 @@ export function RoleDetailsDrawer({ role, onClose, onRetry }: RoleDetailsDrawerP
     >
       {role ? (
         <div className="flex flex-col gap-s12 p-s20">
-          <StepCard step={1} title="Check progress" state={failed ? "error" : created ? "done" : "waiting"}>
-            <ProgressTrack stage={failed ? "error" : created ? "synced" : "creating"} />
+          <StepCard
+            step={1}
+            title="Check progress"
+            state={progressState}
+            stateLabel={failed ? "Stopped at Creating" : created || syncing ? "Done" : "In progress"}
+          >
+            <ProgressTrack stage={trackStage(role.status)} />
           </StepCard>
           <StepCard
             step={2}
             title="Check transport request"
-            state={created ? "done" : failed ? "waiting" : "locked"}
+            state={transportState}
+            stateLabel={failed ? "Not created yet" : created || syncing ? "Done" : "Not created yet"}
           >
             <p
               className="m-0 text-l2 text-body"
               style={{ fontFamily: "var(--font-family-lato-regular)", lineHeight: "var(--font-line-height-label-l1)" }}
             >
-              {created
-                ? `Transport request ${sampleTr} is assigned.`
-                : "No transport request was created."}
+              {created || syncing
+                ? `Transport request ${tr} is assigned.`
+                : "A TR number appears after Profile and TR."}
             </p>
           </StepCard>
           {failed ? (
             <div id="role-error">
-              <StepCard step={3} title="Read the error" state="error">
+              <StepCard step={3} title="Read the error" state="error" stateLabel="Error">
                 <p
                   className="m-0 text-l2 text-body"
                   style={{
@@ -140,7 +166,7 @@ export function RoleDetailsDrawer({ role, onClose, onRetry }: RoleDetailsDrawerP
                     lineHeight: "var(--font-line-height-label-l1)",
                   }}
                 >
-                  SAP rejected the create call. Retry this role only. Created roles are never re-created.
+                  The technical user has no permission to create roles in SAP DEV. Ask the security team, then retry.
                 </p>
               </StepCard>
             </div>

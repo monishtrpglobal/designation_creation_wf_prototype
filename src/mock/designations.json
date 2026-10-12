@@ -66,7 +66,8 @@
       "beforeLabel": "₹ 12.4 L",
       "afterLabel": "₹ 9.6 L",
       "savingLabel": "₹ 2.8 L",
-      "savingPercent": 23
+      "savingPercent": 23,
+      "lastRunAt": "2026-10-03T08:50:00.000Z"
     },
     "sodSummary": {
       "high": 1,

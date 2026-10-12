@@ -1,4 +1,4 @@
-import type { AuthObjectStatus, LicenseSummary, LifecycleStatus, SodRisk, SodSummary } from "@/mock";
+import type { AuthClass, AuthObjectStatus, LicenseSummary, LifecycleStatus, SodRisk, SodSummary } from "@/mock";
 
 export type FlowMethod = "A" | "B";
 
@@ -16,9 +16,11 @@ export type RoleRuntimeStatus =
   | "Error"
   | "Queued"
   | "Creating"
+  | "Syncing"
   | "Created"
   | "Failed"
   | "Needed"
+  | "Awaiting SAP"
   | "ID entered"
   | "Validated"
   | "Gap found";
@@ -38,14 +40,30 @@ export type SodDecision = {
   whitelistedAt: string | null;
 };
 
+export type SodSimulation = {
+  status: "idle" | "running" | "completed";
+  checked: number;
+  conflictsFound: number;
+  clearedIds: string[];
+};
+
 export type ApprovalState = {
   tr: "none" | "awaiting" | "approved";
   trNumber: string | null;
+  /** How many of the 50 transport requests have been imported into Quality. */
+  trImported: number;
+  /** True while a movement started in this session is still importing. */
+  trImportLive: boolean;
+  trRejectReason: string;
   license: "none" | "running" | "completed" | "failed";
   licenseProgress: number;
   licenseLive: boolean;
   final: "none" | "awaiting" | "published" | "rejected";
   finalComment: string;
+  /** Admin ticked the SoD acknowledgement on Screen 16. */
+  finalAcknowledged: boolean;
+  finalAcknowledgedBy: string | null;
+  finalAcknowledgedAt: string | null;
 };
 
 export type StepFlags = {
@@ -62,6 +80,27 @@ export type CreationProgress = {
   completed: number;
   total: number;
   failed: number;
+};
+
+export type AuthRangeValue = { mode: "one" | "range" | "all"; from: string; to: string };
+
+export type AddedAuthObject = {
+  id: string;
+  name: string;
+  class: AuthClass;
+  description: string;
+};
+
+export type RoleEditorOverride = {
+  addedTcodeIds: string[];
+  removedTcodeIds: string[];
+  inactiveAuthIds: string[];
+  removedAuthIds: string[];
+  addedAuth: AddedAuthObject[];
+  tcodeObjects: Record<string, string[]>;
+  authActivities: Record<string, string[]>;
+  authRanges: Record<string, AuthRangeValue>;
+  extraChanges: number;
 };
 
 export type ActivityEdit = {
@@ -95,12 +134,17 @@ export type DesignationRuntime = {
   methodLocked: boolean;
   sync: SyncState;
   roleStatuses: Record<string, RoleRuntimeStatus>;
+  roleRetried: Record<string, boolean>;
   roleSapNames: Record<string, string>;
+  roleDescriptions: Record<string, string>;
   optionBRoleIds: Record<string, string>;
+  optionBGapReportSent?: boolean;
   orgLevels: Record<string, OrgValue>;
+  roleEditors: Record<string, RoleEditorOverride>;
   creation: CreationProgress;
   creationLive: boolean;
   taxFailurePending: boolean;
+  sodSim: SodSimulation;
   sodDecisions: Record<string, SodDecision>;
   approval: ApprovalState;
   steps: StepFlags;

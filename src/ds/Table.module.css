@@ -5,6 +5,24 @@
   background-color: var(--color-bg-surface-white);
 }
 
+.table[data-fit="true"] {
+  min-width: 0;
+}
+
+.table[data-density="compact"] .headerCell {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-bg-surface-white);
+}
+
+.table[data-density="compact"] .cell {
+  height: calc(var(--space-s40) + var(--space-s4));
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .headerCell,
 .cell {
   box-sizing: border-box;
@@ -102,6 +120,11 @@
 
 .row[data-clickable="true"]:hover .cell {
   background-color: var(--color-bg-surface-raised);
+}
+
+.row[data-highlighted="true"] .cell,
+.row[data-highlighted="true"]:hover .cell {
+  background-color: var(--color-info-bg);
 }
 
 .row[data-clickable="true"]:focus-visible {

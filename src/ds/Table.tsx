@@ -14,7 +14,7 @@ export type SortState = {
 
 export type TableColumn<Row> = {
   key: string;
-  label: string;
+  label: ReactNode;
   sortable?: boolean;
   width?: string;
   render?: (row: Row) => ReactNode;
@@ -27,6 +27,9 @@ type TableProps<Row> = {
   onRowClick?: (row: Row) => void;
   sort?: SortState | null;
   onSortChange?: (sort: SortState | null) => void;
+  minWidth?: string;
+  highlightedKey?: string;
+  density?: "default" | "compact";
 };
 
 function nextSort(current: SortState | null, key: string): SortState | null {
@@ -59,6 +62,9 @@ export function Table<Row>({
   onRowClick,
   sort,
   onSortChange,
+  minWidth,
+  highlightedKey,
+  density = "default",
 }: TableProps<Row>) {
   const [uncontrolled, setUncontrolled] = useState<SortState | null>(null);
   const active = sort !== undefined ? sort : uncontrolled;
@@ -82,7 +88,12 @@ export function Table<Row>({
   }
 
   return (
-    <MantineTable className={styles.table}>
+    <MantineTable
+      className={styles.table}
+      data-fit={density === "compact" ? "true" : undefined}
+      data-density={density}
+      style={minWidth ? { minWidth } : undefined}
+    >
       <MantineTable.Thead>
         <MantineTable.Tr>
           {columns.map((column) => {
@@ -119,6 +130,7 @@ export function Table<Row>({
           <MantineTable.Tr
             key={getRowKey(row)}
             className={styles.row}
+            data-highlighted={highlightedKey !== undefined && highlightedKey === getRowKey(row) ? "true" : undefined}
             data-clickable={onRowClick ? "true" : "false"}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
             onKeyDown={(event) => onRowKeyDown(event, row)}

@@ -4,9 +4,12 @@
   gap: var(--space-s16);
   box-sizing: border-box;
   width: 100%;
-  max-width: 1440px;
   min-height: 900px;
   padding: var(--space-s24);
+  background-color: var(--color-bg-canvas);
+}
+
+.shell[data-page-surface="white"] {
   background-color: var(--color-bg-surface-white);
 }
 
@@ -20,9 +23,17 @@
 }
 
 .content {
-  background-color: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--space-s96) * 6 + var(--space-s80));
+  background-color: var(--color-bg-surface-white);
   border-radius: var(--radius-s12);
   padding: var(--space-s16) var(--space-s20);
+  box-shadow: var(--shadow-card);
+}
+
+.content[data-surface="canvas"] {
+  background-color: var(--color-bg-surface);
 }
 
 .helper {

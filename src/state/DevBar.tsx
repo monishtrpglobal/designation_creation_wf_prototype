@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/ds/Button";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useFlowStore } from "./flowStore";
 
@@ -15,25 +13,4 @@ export function FlowHydration() {
   }, [setHydrated]);
 
   return null;
-}
-
-export function DevBar() {
-  const resetDemo = useFlowStore((state) => state.resetDemo);
-  const router = useRouter();
-
-  return (
-    <div className="flex items-center gap-s12 border-b border-neutral-border bg-surface px-s16 py-s8">
-      <span className="text-body-b4 text-secondary">Prototype</span>
-      <Button
-        variant="ghost"
-        size="xs"
-        onClick={() => {
-          resetDemo();
-          router.push("/designations");
-        }}
-      >
-        Reset demo
-      </Button>
-    </div>
-  );
 }

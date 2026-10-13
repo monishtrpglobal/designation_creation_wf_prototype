@@ -11,28 +11,32 @@ export type PageSize = (typeof pageSizes)[number];
 type PaginationProps = {
   page: number;
   total: number;
-  pageSize?: PageSize;
+  pageSize?: number;
+  sizes?: readonly number[];
   onPageChange: (page: number) => void;
-  onPageSizeChange?: (pageSize: PageSize) => void;
+  onPageSizeChange?: (pageSize: number) => void;
   range?: string;
+  pageSizeLabel?: string;
 };
 
 export function Pagination({
   page,
   total,
   pageSize = 25,
+  sizes = pageSizes,
   onPageChange,
   onPageSizeChange,
   range,
+  pageSizeLabel = "Rows per page",
 }: PaginationProps) {
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
   return (
     <nav className={styles.root} aria-label="Pagination">
-      {range ? <p className={styles.range}>{range}</p> : <span />}
+      {range ? <p className={styles.range}>{range}</p> : null}
       <div className={styles.sizes}>
-        <span className={styles.sizesLabel}>Rows per page</span>
-        {pageSizes.map((size) => (
+        <span className={styles.sizesLabel}>{pageSizeLabel}</span>
+        {sizes.map((size) => (
           <button
             key={size}
             type="button"

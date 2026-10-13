@@ -346,6 +346,12 @@
     0 10px 10px -5px rgb(0 0 0 / 4%);
   --shadow-mantine-xl: 0 1px 3px 0 rgb(0 0 0 / 5%), 0 36px 28px -7px rgb(0 0 0 / 5%),
     0 17px 17px -7px rgb(0 0 0 / 4%);
+  --shadow-header: 0 0 0 1px rgb(14 63 126 / 6%), 0 1px 1px -0.5px rgb(42 51 70 / 3%),
+    0 2px 2px -1px rgb(42 51 70 / 4%), 0 3px 3px -1.5px rgb(42 51 70 / 4%),
+    0 5px 5px -2.5px rgb(42 51 70 / 3%), 0 24px 24px -8px rgb(42 51 70 / 3%);
+  --shadow-profile: 0 1px 2px 0 rgb(0 0 0 / 16%);
+  --shadow-button-primary: 0 24px 12px rgb(0 0 0 / 6%), 0 12px 6px rgb(0 0 0 / 6%), 0 6px 3px rgb(0 0 0 / 6%),
+    0 3px 1.5px rgb(0 0 0 / 6%), 0 1px 0.5px rgb(0 0 0 / 6%);
   --size-drawer-sm: 380px;
   --size-drawer-md: 440px;
   --size-drawer-lg: 620px;
@@ -353,6 +359,8 @@
   --size-dialog-sm: 480px;
   --size-dialog-md: 600px;
   --size-dialog-lg: 720px;
+  /* Screen 4 edit-activity dialog frame is 1080 wide. No Figma size variable exists for it. */
+  --size-dialog-xl: 1080px;
 
   --color-bg-decor-lavender: var(--color-purple-0);
   --color-bg-surface-white: var(--color-pure-white);

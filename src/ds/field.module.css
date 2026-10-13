@@ -4,6 +4,24 @@
   width: 100%;
 }
 
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.wrapper {
+  order: 1;
+}
+
+.description {
+  order: 2;
+}
+
+.error {
+  order: 3;
+}
+
 .label,
 .labelRow {
   display: inline-flex;
@@ -33,6 +51,10 @@
   background: transparent;
   color: var(--color-text-strong);
   cursor: help;
+}
+
+.info[data-static] {
+  cursor: default;
 }
 
 .info:focus-visible {
@@ -134,6 +156,19 @@
   width: var(--space-s20);
 }
 
+/* Search: icon sits 8px inside the border, then an 8px gap before the text (Figma Text Field, Type=Search). */
+.root[data-irm-type="search"] .section[data-position="left"] {
+  inset-inline-start: calc(var(--space-s8) + var(--border-default));
+}
+
+.root[data-irm-type="search"] .input {
+  padding-left: calc(var(--space-s8) + var(--space-s16) + var(--space-s8));
+}
+
+.root[data-irm-type="search"][data-irm-size="md"] .input {
+  padding-left: calc(var(--space-s8) + var(--space-s20) + var(--space-s8));
+}
+
 .clear {
   display: inline-flex;
   align-items: center;
@@ -168,6 +203,9 @@
 }
 
 .error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-s4);
   color: var(--color-error-text);
 }
 
@@ -176,10 +214,21 @@
   justify-content: flex-end;
   align-items: center;
   gap: var(--space-s4);
-  color: var(--color-text-secondary);
+  color: var(--color-text-body);
 }
 
 .counter[data-over] {
+  color: var(--color-error-text);
+}
+
+.counterLead {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.counterLead[data-over] {
   color: var(--color-error-text);
 }
 

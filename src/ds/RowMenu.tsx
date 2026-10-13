@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu } from "@mantine/core";
+import type { Ref } from "react";
 import { IconDotsVertical } from "./icons";
 import styles from "./RowMenu.module.css";
 
@@ -13,13 +14,14 @@ export type RowMenuItem = {
 type RowMenuProps = {
   items: RowMenuItem[];
   label?: string;
+  triggerRef?: Ref<HTMLButtonElement>;
 };
 
-export function RowMenu({ items, label = "Row actions" }: RowMenuProps) {
+export function RowMenu({ items, label = "Row actions", triggerRef }: RowMenuProps) {
   return (
     <Menu position="bottom-end" withinPortal>
       <Menu.Target>
-        <button type="button" className={styles.kebab} aria-label={label}>
+        <button ref={triggerRef} type="button" className={styles.kebab} aria-label={label}>
           <IconDotsVertical size="s16" />
         </button>
       </Menu.Target>

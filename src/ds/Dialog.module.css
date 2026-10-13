@@ -40,3 +40,28 @@
 .footer {
   border-top: var(--border-default) solid var(--color-border-subtle);
 }
+
+/* confirm: plain card, 20px padding, 16px gap, no bands (Figma Screen 12 confirm dialog). */
+.contentConfirm {
+  border: var(--border-default) solid var(--color-border-subtle);
+  border-radius: var(--radius-s12);
+  background-color: var(--color-bg-surface-white);
+}
+
+.mantineBodyConfirm {
+  gap: var(--space-s16);
+  padding: var(--space-s20);
+  background-color: var(--color-bg-surface-white);
+}
+
+.headerConfirm,
+.footerConfirm {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.bodyConfirm {
+  flex: 0 1 auto;
+  padding: 0;
+}

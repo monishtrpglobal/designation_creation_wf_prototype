@@ -1,20 +1,21 @@
 "use client";
 
 import { FlowShell } from "@/ds/FlowShell";
-import type { StepItem } from "@/ds/Stepper";
+import { flowSteps } from "@/features/designation/flowSteps";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { guardRedirect, screenTitle, shellIndexFor } from "@/state/access";
+import { guardRedirect, pathFor, screenTitle, shellIndexFor } from "@/state/access";
 import { useFlowStore } from "@/state/flowStore";
 import type { FlowRoute } from "@/state/model";
 
-const steps: StepItem[] = [
-  { label: "Designation Name" },
-  { label: "Business Activities" },
-  { label: "Run Sync" },
-  { label: "Role Recommendation" },
-  { label: "Role Finalization" },
-];
+const previousShellRoute: Partial<Record<FlowRoute, FlowRoute>> = {
+  activities: "name",
+  sync: "activities",
+  roles: "sync",
+  review: "sync",
+  link: "sync",
+  finalize: "roles",
+};
 
 type ScreenFrameProps = {
   route: FlowRoute;
@@ -64,9 +65,19 @@ export function ScreenFrame({ route, designationId }: ScreenFrameProps) {
     <main className="bg-canvas p-s24">
       <FlowShell
         title="Create a New Designation"
-        steps={steps}
+        steps={flowSteps}
         activeIndex={shellIndex}
         showSaveAsDraft
+        onBack={
+          designationId && previousShellRoute[route]
+            ? () => {
+                const previous = previousShellRoute[route];
+                if (previous) {
+                  router.push(pathFor(previous, designationId));
+                }
+              }
+            : undefined
+        }
         primaryLabel="Next"
         primaryDisabled
         helperText="This screen is not built yet."

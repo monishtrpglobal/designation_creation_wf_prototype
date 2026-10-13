@@ -1,20 +1,51 @@
 .table {
   width: 100%;
+  min-width: calc(var(--space-s96) * 13);
   border-collapse: collapse;
   background-color: var(--color-bg-surface-white);
+}
+
+.table[data-fit="true"] {
+  min-width: 0;
+}
+
+.table[data-density="compact"] .headerCell {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-bg-surface-white);
+}
+
+.table[data-density="compact"] .cell {
+  height: calc(var(--space-s40) + var(--space-s4));
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .headerCell,
 .cell {
   box-sizing: border-box;
-  height: var(--space-s40);
   padding: 0 var(--space-s16) 0 var(--space-s12);
-  border-bottom: var(--border-default) solid var(--color-border-subtle);
+  border-bottom: var(--border-default) solid var(--color-neutral-border);
   text-align: left;
   vertical-align: middle;
 }
 
 .headerCell {
+  height: var(--space-s40);
+}
+
+.cell {
+  height: auto;
+  min-height: var(--space-s64);
+  padding-top: var(--space-s8);
+  padding-bottom: var(--space-s8);
+}
+
+.headerCell {
+  padding-top: 0;
+  padding-bottom: 0;
   color: var(--color-text-strong);
   font-family: var(--font-family-inter-display-bold);
   font-size: var(--font-size-l3);
@@ -89,6 +120,11 @@
 
 .row[data-clickable="true"]:hover .cell {
   background-color: var(--color-bg-surface-raised);
+}
+
+.row[data-highlighted="true"] .cell,
+.row[data-highlighted="true"]:hover .cell {
+  background-color: var(--color-info-bg);
 }
 
 .row[data-clickable="true"]:focus-visible {

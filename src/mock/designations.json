@@ -1,32 +1,73 @@
 [
   {
-    "id": "draft-cash-application",
-    "name": "Cash Application Specialist",
+    "id": "head-of-accountant",
+    "name": "Head of Accountant",
     "businessArea": "Finance",
     "status": "Draft",
-    "updatedAt": "2026-10-01T09:00:00.000Z",
+    "updatedAt": "2026-10-06T09:00:00.000Z",
     "sample": true
   },
   {
-    "id": "syncing-revenue",
-    "name": "Revenue Accountant",
+    "id": "senior-ap-specialist",
+    "name": "Senior AP Specialist",
+    "businessArea": "Finance",
+    "status": "In progress",
+    "updatedAt": "2026-10-05T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "treasury-analyst",
+    "name": "Treasury Analyst",
     "businessArea": "Finance",
     "status": "Syncing to Dev",
-    "updatedAt": "2026-10-02T09:00:00.000Z",
+    "updatedAt": "2026-10-04T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "procurement-lead",
+    "name": "Procurement Lead",
+    "businessArea": "Procurement",
+    "status": "Awaiting TR approval",
+    "updatedAt": "2026-10-03T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "revenue-accountant",
+    "name": "Revenue Accountant",
+    "businessArea": "Finance",
+    "status": "Moving to Quality",
+    "updatedAt": "2026-09-28T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "sales-operations-manager",
+    "name": "Sales Operations Manager",
+    "businessArea": "Sales",
+    "status": "License analysis running",
+    "updatedAt": "2026-09-21T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "tax-compliance-officer",
+    "name": "Tax Compliance Officer",
+    "businessArea": "Finance",
+    "status": "Analysis failed",
+    "updatedAt": "2026-09-18T09:00:00.000Z",
     "sample": true
   },
   {
     "id": "inventory-controller",
     "name": "Inventory Controller",
     "businessArea": "Supply Chain",
-    "status": "Awaiting TR approval",
-    "updatedAt": "2026-10-03T09:00:00.000Z",
+    "status": "Awaiting final approval",
+    "updatedAt": "2026-09-12T09:00:00.000Z",
     "sample": true,
     "license": {
       "beforeLabel": "₹ 12.4 L",
       "afterLabel": "₹ 9.6 L",
       "savingLabel": "₹ 2.8 L",
-      "savingPercent": 23
+      "savingPercent": 23,
+      "lastRunAt": "2026-10-03T08:50:00.000Z"
     },
     "sodSummary": {
       "high": 1,
@@ -35,51 +76,651 @@
     }
   },
   {
-    "id": "quality-maintenance",
-    "name": "Maintenance Planner",
-    "businessArea": "Plant Maintenance",
-    "status": "Moving to Quality",
-    "updatedAt": "2026-10-04T09:00:00.000Z",
-    "sample": true
-  },
-  {
-    "id": "license-payables",
-    "name": "Accounts Payable Lead",
+    "id": "asset-accounting-lead",
+    "name": "Asset Accounting Lead",
     "businessArea": "Finance",
-    "status": "License analysis running",
-    "updatedAt": "2026-10-05T09:00:00.000Z",
-    "sample": true
+    "status": "Published",
+    "updatedAt": "2026-09-09T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 10.6 L",
+      "afterLabel": "₹ 8.7 L",
+      "savingLabel": "₹ 1.9 L",
+      "savingPercent": 18
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 2
+    }
   },
   {
-    "id": "approve-ledger",
-    "name": "General Ledger Steward",
-    "businessArea": "Finance",
-    "status": "Awaiting final approval",
-    "updatedAt": "2026-10-06T09:00:00.000Z",
-    "sample": true
-  },
-  {
-    "id": "failed-tax",
-    "name": "Tax Compliance Lead",
-    "businessArea": "Finance",
-    "status": "Analysis failed",
-    "updatedAt": "2026-10-07T09:00:00.000Z",
-    "sample": true
-  },
-  {
-    "id": "rejected-assets",
-    "name": "Asset Accountant",
+    "id": "credit-controller",
+    "name": "Credit Controller",
     "businessArea": "Finance",
     "status": "Rejected",
-    "updatedAt": "2026-09-28T09:00:00.000Z",
+    "updatedAt": "2026-09-02T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 9.3 L",
+      "afterLabel": "₹ 7.9 L",
+      "savingLabel": "₹ 1.4 L",
+      "savingPercent": 15
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "cash-application-specialist",
+    "name": "Cash Application Specialist",
+    "businessArea": "Finance",
+    "status": "Draft",
+    "updatedAt": "2026-08-30T09:00:00.000Z",
     "sample": true
   },
   {
-    "id": "published-billing",
+    "id": "accounts-receivable-clerk",
+    "name": "Accounts Receivable Clerk",
+    "businessArea": "Finance",
+    "status": "In progress",
+    "updatedAt": "2026-08-28T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "general-ledger-steward",
+    "name": "General Ledger Steward",
+    "businessArea": "Finance",
+    "status": "Completed",
+    "updatedAt": "2026-08-26T09:00:00.000Z",
+    "sample": true,
+    "sodSummary": {
+      "high": 0,
+      "medium": 1,
+      "low": 0
+    }
+  },
+  {
+    "id": "collections-analyst",
+    "name": "Collections Analyst",
+    "businessArea": "Finance",
+    "status": "Syncing to Dev",
+    "updatedAt": "2026-08-24T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "intercompany-accountant",
+    "name": "Intercompany Accountant",
+    "businessArea": "Finance",
+    "status": "Awaiting TR approval",
+    "updatedAt": "2026-08-22T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "treasury-operations-lead",
+    "name": "Treasury Operations Lead",
+    "businessArea": "Treasury",
+    "status": "Moving to Quality",
+    "updatedAt": "2026-08-20T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "order-management-specialist",
+    "name": "Order Management Specialist",
+    "businessArea": "Sales",
+    "status": "License analysis running",
+    "updatedAt": "2026-08-18T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "finance-business-partner",
+    "name": "Finance Business Partner",
+    "businessArea": "Finance",
+    "status": "Awaiting final approval",
+    "updatedAt": "2026-08-16T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 50.7 L",
+      "afterLabel": "₹ 36.5 L",
+      "savingLabel": "₹ 14.2 L",
+      "savingPercent": 28
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 1,
+      "low": 2
+    }
+  },
+  {
+    "id": "accounts-payable-lead",
+    "name": "Accounts Payable Lead",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-08-14T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 6.7 L",
+      "afterLabel": "₹ 5.9 L",
+      "savingLabel": "₹ 0.8 L",
+      "savingPercent": 12
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "project-accountant",
+    "name": "Project Accountant",
+    "businessArea": "Finance",
+    "status": "Rejected",
+    "updatedAt": "2026-08-12T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 7.9 L",
+      "afterLabel": "₹ 6.8 L",
+      "savingLabel": "₹ 1.1 L",
+      "savingPercent": 14
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "warehouse-supervisor",
+    "name": "Warehouse Supervisor",
+    "businessArea": "Supply Chain",
+    "status": "Draft",
+    "updatedAt": "2026-08-10T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "logistics-coordinator",
+    "name": "Logistics Coordinator",
+    "businessArea": "Supply Chain",
+    "status": "In progress",
+    "updatedAt": "2026-08-08T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "fixed-asset-analyst",
+    "name": "Fixed Asset Analyst",
+    "businessArea": "Finance",
+    "status": "Completed",
+    "updatedAt": "2026-08-06T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "purchasing-agent",
+    "name": "Purchasing Agent",
+    "businessArea": "Procurement",
+    "status": "Syncing to Dev",
+    "updatedAt": "2026-08-04T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "supply-chain-planner",
+    "name": "Supply Chain Planner",
+    "businessArea": "Supply Chain",
+    "status": "Awaiting final approval",
+    "updatedAt": "2026-08-02T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 36.5 L",
+      "afterLabel": "₹ 25.2 L",
+      "savingLabel": "₹ 11.3 L",
+      "savingPercent": 31
+    },
+    "sodSummary": {
+      "high": 1,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "credit-analyst",
+    "name": "Credit Analyst",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-07-31T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 8.0 L",
+      "afterLabel": "₹ 6.8 L",
+      "savingLabel": "₹ 1.2 L",
+      "savingPercent": 15
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "payroll-analyst",
+    "name": "Payroll Analyst",
+    "businessArea": "HR",
+    "status": "Draft",
+    "updatedAt": "2026-07-29T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "plant-maintenance-planner",
+    "name": "Plant Maintenance Planner",
+    "businessArea": "Plant Maintenance",
+    "status": "In progress",
+    "updatedAt": "2026-07-27T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "cost-controller",
+    "name": "Cost Controller",
+    "businessArea": "Finance",
+    "status": "Completed",
+    "updatedAt": "2026-07-25T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "procurement-manager",
+    "name": "Procurement Manager",
+    "businessArea": "Procurement",
+    "status": "Awaiting final approval",
+    "updatedAt": "2026-07-23T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 39.2 L",
+      "afterLabel": "₹ 29.0 L",
+      "savingLabel": "₹ 10.2 L",
+      "savingPercent": 26
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 2,
+      "low": 0
+    }
+  },
+  {
+    "id": "sales-order-administrator",
+    "name": "Sales Order Administrator",
+    "businessArea": "Sales",
+    "status": "Published",
+    "updatedAt": "2026-07-21T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 8.3 L",
+      "afterLabel": "₹ 6.8 L",
+      "savingLabel": "₹ 1.5 L",
+      "savingPercent": 18
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "production-planner",
+    "name": "Production Planner",
+    "businessArea": "Manufacturing",
+    "status": "Draft",
+    "updatedAt": "2026-07-19T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "billing-specialist",
     "name": "Billing Specialist",
     "businessArea": "Order to Cash",
-    "status": "Published",
-    "updatedAt": "2026-09-20T09:00:00.000Z",
+    "status": "Completed",
+    "updatedAt": "2026-07-17T09:00:00.000Z",
     "sample": true
+  },
+  {
+    "id": "inventory-accountant",
+    "name": "Inventory Accountant",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-07-15T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 9.0 L",
+      "afterLabel": "₹ 7.1 L",
+      "savingLabel": "₹ 1.9 L",
+      "savingPercent": 21
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "customer-service-lead",
+    "name": "Customer Service Lead",
+    "businessArea": "Sales",
+    "status": "Draft",
+    "updatedAt": "2026-07-13T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "material-planner",
+    "name": "Material Planner",
+    "businessArea": "Supply Chain",
+    "status": "Completed",
+    "updatedAt": "2026-07-11T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "tax-accountant",
+    "name": "Tax Accountant",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-07-09T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 9.6 L",
+      "afterLabel": "₹ 7.3 L",
+      "savingLabel": "₹ 2.3 L",
+      "savingPercent": 24
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "quality-inspector",
+    "name": "Quality Inspector",
+    "businessArea": "Quality",
+    "status": "Completed",
+    "updatedAt": "2026-07-07T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "bank-reconciliation-officer",
+    "name": "Bank Reconciliation Officer",
+    "businessArea": "Treasury",
+    "status": "Published",
+    "updatedAt": "2026-07-05T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 22.5 L",
+      "afterLabel": "₹ 19.8 L",
+      "savingLabel": "₹ 2.7 L",
+      "savingPercent": 12
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "vendor-master-administrator",
+    "name": "Vendor Master Administrator",
+    "businessArea": "Procurement",
+    "status": "Completed",
+    "updatedAt": "2026-07-03T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "financial-reporting-analyst",
+    "name": "Financial Reporting Analyst",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-07-01T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 20.0 L",
+      "afterLabel": "₹ 17.0 L",
+      "savingLabel": "₹ 3.0 L",
+      "savingPercent": 15
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "cash-manager",
+    "name": "Cash Manager",
+    "businessArea": "Treasury",
+    "status": "Completed",
+    "updatedAt": "2026-06-29T09:00:00.000Z",
+    "sample": true
+  },
+  {
+    "id": "budget-analyst",
+    "name": "Budget Analyst",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-06-27T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 5.0 L",
+      "afterLabel": "₹ 4.1 L",
+      "savingLabel": "₹ 0.9 L",
+      "savingPercent": 18
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "pricing-specialist",
+    "name": "Pricing Specialist",
+    "businessArea": "Sales",
+    "status": "Published",
+    "updatedAt": "2026-06-25T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 6.2 L",
+      "afterLabel": "₹ 4.9 L",
+      "savingLabel": "₹ 1.3 L",
+      "savingPercent": 21
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "goods-receipt-clerk",
+    "name": "Goods Receipt Clerk",
+    "businessArea": "Supply Chain",
+    "status": "Published",
+    "updatedAt": "2026-06-23T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 6.7 L",
+      "afterLabel": "₹ 5.1 L",
+      "savingLabel": "₹ 1.6 L",
+      "savingPercent": 24
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "production-supervisor",
+    "name": "Production Supervisor",
+    "businessArea": "Manufacturing",
+    "status": "Published",
+    "updatedAt": "2026-06-21T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 16.7 L",
+      "afterLabel": "₹ 14.7 L",
+      "savingLabel": "₹ 2.0 L",
+      "savingPercent": 12
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "maintenance-technician",
+    "name": "Maintenance Technician",
+    "businessArea": "Plant Maintenance",
+    "status": "Published",
+    "updatedAt": "2026-06-19T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 16.0 L",
+      "afterLabel": "₹ 13.6 L",
+      "savingLabel": "₹ 2.4 L",
+      "savingPercent": 15
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "procurement-analyst",
+    "name": "Procurement Analyst",
+    "businessArea": "Procurement",
+    "status": "Published",
+    "updatedAt": "2026-06-17T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 15.0 L",
+      "afterLabel": "₹ 12.3 L",
+      "savingLabel": "₹ 2.7 L",
+      "savingPercent": 18
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "payroll-accountant",
+    "name": "Payroll Accountant",
+    "businessArea": "HR",
+    "status": "Published",
+    "updatedAt": "2026-06-15T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 14.8 L",
+      "afterLabel": "₹ 11.7 L",
+      "savingLabel": "₹ 3.1 L",
+      "savingPercent": 21
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "travel-expense-auditor",
+    "name": "Travel Expense Auditor",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-06-13T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 4.2 L",
+      "afterLabel": "₹ 3.2 L",
+      "savingLabel": "₹ 1.0 L",
+      "savingPercent": 24
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "contract-manager",
+    "name": "Contract Manager",
+    "businessArea": "Procurement",
+    "status": "Published",
+    "updatedAt": "2026-06-11T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 11.7 L",
+      "afterLabel": "₹ 10.3 L",
+      "savingLabel": "₹ 1.4 L",
+      "savingPercent": 12
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
+  },
+  {
+    "id": "demand-planner",
+    "name": "Demand Planner",
+    "businessArea": "Supply Chain",
+    "status": "Published",
+    "updatedAt": "2026-06-09T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 11.3 L",
+      "afterLabel": "₹ 9.6 L",
+      "savingLabel": "₹ 1.7 L",
+      "savingPercent": 15
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "shipping-coordinator",
+    "name": "Shipping Coordinator",
+    "businessArea": "Supply Chain",
+    "status": "Published",
+    "updatedAt": "2026-06-07T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 11.7 L",
+      "afterLabel": "₹ 9.6 L",
+      "savingLabel": "₹ 2.1 L",
+      "savingPercent": 18
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    }
+  },
+  {
+    "id": "internal-auditor",
+    "name": "Internal Auditor",
+    "businessArea": "Finance",
+    "status": "Published",
+    "updatedAt": "2026-06-05T09:00:00.000Z",
+    "sample": true,
+    "license": {
+      "beforeLabel": "₹ 11.9 L",
+      "afterLabel": "₹ 9.4 L",
+      "savingLabel": "₹ 2.5 L",
+      "savingPercent": 21
+    },
+    "sodSummary": {
+      "high": 0,
+      "medium": 0,
+      "low": 1
+    }
   }
 ]

@@ -55,7 +55,8 @@
   height: calc(var(--space-s16) + var(--space-s2));
 }
 
-.root[data-irm-shape="round"] .input {
+.root[data-irm-shape="round"] .input,
+.input[data-irm-shape="round"] {
   border-radius: var(--radius-full);
 }
 

@@ -15,7 +15,7 @@ type RadioCardProps = {
 export function RadioCard({ value, title, subtitle, unavailable = false, disabled }: RadioCardProps) {
   return (
     <Radio.Card value={value} disabled={disabled} classNames={{ card: styles.card }}>
-      <Radio.Indicator classNames={{ indicator: styles.indicator }} />
+      <Radio.Indicator classNames={{ indicator: styles.indicator, icon: styles.icon }} />
       <span className={styles.body}>
         <span className={styles.title}>{title}</span>
         {subtitle ? <span className={styles.subtitle}>{subtitle}</span> : null}
@@ -30,17 +30,25 @@ type RadioCardGroupProps = {
   defaultValue?: string;
   onChange?: (value: string) => void;
   label?: ReactNode;
+  direction?: "column" | "row";
   children: ReactNode;
 };
 
-export function RadioCardGroup({ value, defaultValue, onChange, label, children }: RadioCardGroupProps) {
+export function RadioCardGroup({
+  value,
+  defaultValue,
+  onChange,
+  label,
+  direction = "column",
+  children,
+}: RadioCardGroupProps) {
   return (
     <Radio.Group
       value={value}
       defaultValue={defaultValue}
       onChange={onChange}
       label={label}
-      classNames={{ root: styles.group }}
+      classNames={{ root: direction === "row" ? `${styles.group} ${styles.row}` : styles.group }}
     >
       {children}
     </Radio.Group>

@@ -11,24 +11,38 @@ const orderedRoutes = [
   "approve",
 ] as const satisfies readonly FlowRoute[];
 
+const wizardSteps = ["name", "activities", "sync", "roles", "review", "link", "finalize"] as const;
+
+export type WizardStep = (typeof wizardSteps)[number];
+
+export function isWizardStep(value: string | null): value is WizardStep {
+  return wizardSteps.some((step) => step === value);
+}
+
+function wizardPath(step: WizardStep, id: string | null): string {
+  if (step === "name" && !id) {
+    return "/designation/new";
+  }
+  const params = new URLSearchParams();
+  if (id) {
+    params.set("id", id);
+  }
+  params.set("step", step);
+  return `/designation/new?${params.toString()}`;
+}
+
 export function pathFor(route: FlowRoute, id: string | null): string {
   switch (route) {
     case "catalogue":
       return "/designations";
     case "name":
-      return "/designation/new";
     case "activities":
-      return `/designation/${id}/activities`;
     case "sync":
-      return `/designation/${id}/sync`;
     case "roles":
-      return `/designation/${id}/roles`;
     case "review":
-      return `/designation/${id}/roles/review`;
     case "link":
-      return `/designation/${id}/roles/link`;
     case "finalize":
-      return `/designation/${id}/finalize`;
+      return wizardPath(route, id);
     case "tr":
       return `/designation/${id}/tr`;
     case "license":

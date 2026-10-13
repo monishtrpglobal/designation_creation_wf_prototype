@@ -4,18 +4,30 @@ import { Modal } from "@mantine/core";
 import type { ReactNode } from "react";
 import styles from "./Dialog.module.css";
 
-export type DialogSize = "sm" | "md" | "lg";
+export type DialogSize = "sm" | "md" | "lg" | "xl";
+
+/**
+ * default: header, body and footer bands with a blurred scrim.
+ * confirm: plain card with a flat pure-black scrim (Figma Screen 12, delete draft confirm).
+ */
+export type DialogVariant = "default" | "confirm";
 
 const dialogSize: Record<DialogSize, string> = {
   sm: "var(--size-dialog-sm)",
   md: "var(--size-dialog-md)",
   lg: "var(--size-dialog-lg)",
+  xl: "var(--size-dialog-xl)",
 };
 
 type DialogProps = {
   opened: boolean;
   onClose: () => void;
   size?: DialogSize;
+  /** CSS length that overrides `size`. Pass an existing token, such as a drawer width. */
+  width?: string;
+  /** Stack above another overlay. Use a token such as the dropdown layer. */
+  zIndex?: number;
+  variant?: DialogVariant;
   header?: ReactNode;
   footer?: ReactNode;
   children?: ReactNode;
@@ -25,10 +37,16 @@ export function Dialog({
   opened,
   onClose,
   size = "md",
+  width,
+  zIndex,
+  variant = "default",
   header,
   footer,
   children,
 }: DialogProps) {
+  const confirm = variant === "confirm";
+  const part = (base: string, plain: string) => (confirm ? `${base} ${plain}` : base);
+
   return (
     <Modal
       opened={opened}
@@ -39,22 +57,29 @@ export function Dialog({
       withCloseButton={false}
       lockScroll
       trapFocus
-      size={dialogSize[size]}
+      zIndex={zIndex}
+      size={width ?? dialogSize[size]}
       styles={{
-        overlay: {
-          "--overlay-bg":
-            "color-mix(in srgb, var(--color-bg-nav) var(--opacity-overlay-drawer), transparent)",
-          "--overlay-filter": "blur(var(--blur-modal))",
-        },
+        overlay: confirm
+          ? {
+              "--overlay-bg":
+                "color-mix(in srgb, var(--color-pure-black) var(--opacity-overlay-drawer), transparent)",
+              "--overlay-filter": "none",
+            }
+          : {
+              "--overlay-bg":
+                "color-mix(in srgb, var(--color-bg-nav) var(--opacity-overlay-drawer), transparent)",
+              "--overlay-filter": "blur(var(--blur-modal))",
+            },
       }}
       classNames={{
-        content: styles.content,
-        body: styles.mantineBody,
+        content: part(styles.content, styles.contentConfirm),
+        body: part(styles.mantineBody, styles.mantineBodyConfirm),
       }}
     >
-      {header ? <header className={styles.header}>{header}</header> : null}
-      <div className={styles.body}>{children}</div>
-      {footer ? <footer className={styles.footer}>{footer}</footer> : null}
+      {header ? <header className={part(styles.header, styles.headerConfirm)}>{header}</header> : null}
+      <div className={part(styles.body, styles.bodyConfirm)}>{children}</div>
+      {footer ? <footer className={part(styles.footer, styles.footerConfirm)}>{footer}</footer> : null}
     </Modal>
   );
 }

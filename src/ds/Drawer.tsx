@@ -17,6 +17,8 @@ type DrawerProps = {
   opened: boolean;
   onClose: () => void;
   size?: DrawerSize;
+  /** Stack above another overlay. Use a token such as the dropdown layer. */
+  zIndex?: number;
   header?: ReactNode;
   footer?: ReactNode;
   children?: ReactNode;
@@ -26,6 +28,7 @@ export function Drawer({
   opened,
   onClose,
   size = "lg",
+  zIndex,
   header,
   footer,
   children,
@@ -39,6 +42,7 @@ export function Drawer({
       withCloseButton={false}
       lockScroll
       trapFocus
+      zIndex={zIndex}
       size={drawerSize[size]}
       styles={{
         overlay: {

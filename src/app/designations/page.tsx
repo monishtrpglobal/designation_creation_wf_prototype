@@ -1,5 +1,5 @@
-import { ScreenFrame } from "@/features/designation/ScreenFrame";
+import { CataloguePage } from "@/features/designation/catalogue/CataloguePage";
 
 export default function DesignationsPage() {
-  return <ScreenFrame route="catalogue" />;
+  return <CataloguePage />;
 }

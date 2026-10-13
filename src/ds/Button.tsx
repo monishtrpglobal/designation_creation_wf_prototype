@@ -15,6 +15,7 @@ type ButtonProps = Omit<
   disabled?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  iconOnly?: boolean;
   loading?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 };
@@ -25,6 +26,7 @@ export function Button({
   disabled,
   leftIcon,
   rightIcon,
+  iconOnly = false,
   loading,
   children,
   ...rest
@@ -35,10 +37,11 @@ export function Button({
       variant="transparent"
       disabled={disabled}
       loading={loading}
-      leftSection={leftIcon}
-      rightSection={rightIcon}
+      leftSection={iconOnly ? undefined : leftIcon}
+      rightSection={iconOnly ? undefined : rightIcon}
       data-irm-variant={variant}
       data-irm-size={size}
+      data-icon-only={iconOnly || undefined}
       classNames={{
         root: styles.root,
         inner: styles.inner,
@@ -47,7 +50,7 @@ export function Button({
         loader: styles.loader,
       }}
     >
-      {children}
+      {iconOnly ? leftIcon : children}
     </MantineButton>
   );
 }

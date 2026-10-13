@@ -1,3 +1,9 @@
+import { AppFrame } from "@/ds/AppFrame";
+
 export default function Home() {
-  return <main>iRM prototype</main>;
+  return (
+    <AppFrame>
+      <main>iRM prototype</main>
+    </AppFrame>
+  );
 }

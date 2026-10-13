@@ -1,0 +1,761 @@
+"use client";
+
+import { AppFrame } from "@/ds/AppFrame";
+import { Badge } from "@/ds/Badge";
+import { Button } from "@/ds/Button";
+import { Dialog } from "@/ds/Dialog";
+import { IconAlertCircle, IconAlertTriangle, IconCircleCheck, IconClock, IconSearch, IconUserCircle } from "@/ds/icons";
+import { Link } from "@/ds/Link";
+import { Pagination, type PageSize } from "@/ds/Pagination";
+import { RowMenu } from "@/ds/RowMenu";
+import { Table, type SortState, type TableColumn } from "@/ds/Table";
+import { Tabs } from "@/ds/Tabs";
+import { TextField } from "@/ds/TextField";
+import { Tooltip } from "@/ds/Tooltip";
+import { guardRedirect } from "@/state/access";
+import { useFlowStore } from "@/state/flowStore";
+import type { DesignationRuntime } from "@/state/model";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { ApprovalResultDialog } from "@/features/designation/approve/ApprovalResultDialog";
+import { LicenseReportDrawer } from "@/features/designation/license/LicenseReportDrawer";
+import { showsLicenseReport } from "@/features/designation/license/licenseReportView";
+import { TrDialog } from "@/features/designation/tr/TrDialog";
+import {
+  catalogueActionId,
+  queueCatalogueFocus,
+  showsTrDialog,
+  takeCatalogueFocus,
+} from "@/features/designation/tr/trView";
+import {
+  canRerunLicense,
+  catalogueFilters,
+  formatLakhs,
+  formatUpdated,
+  licenceCell,
+  licenceRank,
+  matchesFilter,
+  rowAction,
+  savingLakhs,
+  savingText,
+  savingTooltip,
+  sodCell,
+  sodRank,
+  statusBadgeVariant,
+  statusNote,
+  type CatalogueFilter,
+} from "./catalogueView";
+
+const searchWidth = "calc(var(--space-s96) * 3 + var(--space-s32))";
+const labelL2: CSSProperties = {
+  fontFamily: "var(--font-family-lato-regular)",
+  fontSize: "var(--font-size-l2)",
+  fontWeight: "var(--font-weight-body-b4)",
+  lineHeight: "var(--font-line-height-label-l1)",
+};
+
+/** Column widths from the Figma frame (1310 wide table); Department and Last updated take the rest. */
+const widths = {
+  name: "calc(var(--space-s80) * 3)",
+  status: "calc(var(--space-s96) * 2 - var(--space-s2))",
+  licence: "calc(var(--space-s96) * 2 - var(--space-s2))",
+  saving: "calc(var(--space-s96) + var(--space-s40) + var(--space-s4))",
+  sod: "calc(var(--space-s96) + var(--space-s4))",
+} as const;
+
+const emptyBodyWidth = "calc(var(--space-s96) * 3 + var(--space-s48) + var(--space-s4))";
+const noResultsBodyWidth = "calc(var(--space-s96) * 4 + var(--space-s48) + var(--space-s8))";
+const labelL1: CSSProperties = {
+  fontFamily: "var(--font-family-lato-bold)",
+  fontSize: "var(--font-size-l1)",
+  fontWeight: "var(--font-weight-label-l1)",
+  lineHeight: "var(--font-line-height-label-l1)",
+};
+
+function SummaryCard({
+  icon,
+  title,
+  value,
+  detail,
+  border,
+  wash,
+}: {
+  icon: ReactNode;
+  title: string;
+  value: string;
+  detail: string;
+  border: string;
+  wash: string;
+}) {
+  return (
+    <article
+      className="flex min-w-0 flex-1 flex-col gap-s8 rounded-s12 border border-solid p-s16"
+      style={{ borderColor: border, backgroundImage: `linear-gradient(154deg, ${wash}, var(--color-bg-surface-white))` }}
+    >
+      <span
+        className="inline-flex items-center justify-center rounded-s10 bg-surface-white"
+        style={{ width: "calc(var(--space-s32) + var(--space-s2))", height: "calc(var(--space-s32) + var(--space-s2))" }}
+      >
+        {icon}
+      </span>
+      <p className="m-0 text-body" style={labelL2}>
+        {title}
+      </p>
+      <p className="m-0 text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
+        {value}
+      </p>
+      <p className="m-0 text-control-sm text-body" style={{ fontFamily: "var(--font-family-control-sm)" }}>
+        {detail}
+      </p>
+    </article>
+  );
+}
+
+function Stack({ children }: { children: ReactNode }) {
+  return <div className="flex flex-col items-start gap-s4">{children}</div>;
+}
+
+function Dash() {
+  return <span aria-label="None">—</span>;
+}
+
+export function CataloguePage({
+  trDesignationId,
+  reportDesignationId,
+}: {
+  trDesignationId?: string;
+  reportDesignationId?: string;
+}) {
+  const router = useRouter();
+  const hydrated = useFlowStore((state) => state.hydrated);
+  const designations = useFlowStore((state) => state.designations);
+  const deleteDesignation = useFlowStore((state) => state.deleteDesignation);
+  const reopenDesignation = useFlowStore((state) => state.reopenDesignation);
+  const startLicenseAnalysis = useFlowStore((state) => state.startLicenseAnalysis);
+  const [filter, setFilter] = useState<CatalogueFilter>("all");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortState | null>({ key: "updatedAt", direction: "desc" });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<PageSize>(10);
+  const [pendingDelete, setPendingDelete] = useState<DesignationRuntime | null>(null);
+  const [trOpen, setTrOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [approvalResult, setApprovalResult] = useState<"published" | "rejected" | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const kebabRefs = useRef(new Map<string, HTMLButtonElement>());
+  const focusId = useRef<string | null>(null);
+  const focusScheduled = useRef<string | null>(null);
+  const trGate = useRef(false);
+  const reportGate = useRef(false);
+  const trDesignation = designations.find((item) => item.id === trDesignationId);
+  const reportDesignation = designations.find((item) => item.id === reportDesignationId);
+
+  const counts = useMemo(() => {
+    const tally = new Map<CatalogueFilter, number>();
+    for (const item of catalogueFilters) {
+      tally.set(item.value, designations.filter((row) => matchesFilter(row, item.value)).length);
+    }
+    return tally;
+  }, [designations]);
+
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const rows = designations.filter((item) => {
+      if (!matchesFilter(item, filter)) {
+        return false;
+      }
+      if (!needle) {
+        return true;
+      }
+      return (
+        item.name.toLowerCase().includes(needle) || item.businessArea.toLowerCase().includes(needle)
+      );
+    });
+    if (!sort) {
+      return rows;
+    }
+    const direction = sort.direction === "asc" ? 1 : -1;
+    return [...rows].sort((left, right) => direction * compare(left, right, sort.key));
+  }, [designations, filter, query, sort]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(page, pageCount);
+  const visible = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const rangeStart = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(safePage * pageSize, filtered.length);
+
+  const awaitingFinal = designations.filter((item) => item.status === "Awaiting final approval").length;
+  const failed = designations.filter((item) => item.status === "Analysis failed").length;
+  const openSod = designations.filter((item) => {
+    if (item.status === "Published" || item.status === "Rejected") {
+      return false;
+    }
+    const summary = item.sodSummary;
+    return summary ? summary.high + summary.medium + summary.low > 0 : false;
+  }).length;
+  const pendingSaving = designations
+    .filter((item) => item.status !== "Published" && item.status !== "Rejected")
+    .reduce((sum, item) => sum + savingLakhs(item), 0);
+
+  useEffect(() => {
+    if (!hydrated || !trDesignationId || trGate.current) {
+      return;
+    }
+    trGate.current = true;
+    if (!trDesignation) {
+      router.replace(guardRedirect(undefined, "tr") ?? "/designations");
+      return;
+    }
+    const redirect = guardRedirect(trDesignation, "tr");
+    if (redirect) {
+      router.replace(redirect);
+      return;
+    }
+    if (!showsTrDialog(trDesignation.status)) {
+      router.replace("/designations");
+      return;
+    }
+    setTrOpen(true);
+  }, [hydrated, trDesignationId, trDesignation, router]);
+
+  useEffect(() => {
+    if (!hydrated || !reportDesignationId || reportGate.current) {
+      return;
+    }
+    reportGate.current = true;
+    if (!reportDesignation || !showsLicenseReport(reportDesignation)) {
+      router.replace("/designations");
+      return;
+    }
+    setReportOpen(true);
+  }, [hydrated, reportDesignationId, reportDesignation, router]);
+
+  useEffect(() => {
+    if (!trDesignationId) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === trDesignationId);
+    if (index < 0) {
+      return;
+    }
+    const nextPage = Math.floor(index / pageSize) + 1;
+    setPage((current) => (current === nextPage ? current : nextPage));
+  }, [trDesignationId, filtered, pageSize]);
+
+  useEffect(() => {
+    if (!reportDesignationId) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === reportDesignationId);
+    if (index < 0) {
+      return;
+    }
+    const nextPage = Math.floor(index / pageSize) + 1;
+    setPage((current) => (current === nextPage ? current : nextPage));
+  }, [reportDesignationId, filtered, pageSize]);
+
+  useEffect(() => {
+    if (!hydrated || trDesignationId || reportDesignationId) {
+      return;
+    }
+    if (!focusId.current) {
+      focusId.current = takeCatalogueFocus();
+    }
+    const id = focusId.current;
+    if (!id) {
+      return;
+    }
+    const index = filtered.findIndex((row) => row.id === id);
+    if (index >= 0) {
+      const nextPage = Math.floor(index / pageSize) + 1;
+      if (nextPage !== page) {
+        setPage(nextPage);
+        return;
+      }
+    }
+    const node = document.getElementById(catalogueActionId(id));
+    if (!node || focusScheduled.current === id) {
+      return;
+    }
+    focusScheduled.current = id;
+    focusId.current = null;
+    window.setTimeout(() => {
+      document.getElementById(catalogueActionId(id))?.focus();
+    }, 50);
+  }, [hydrated, trDesignationId, reportDesignationId, filtered, page, pageSize]);
+
+  function closeTr() {
+    if (!trDesignationId) {
+      return;
+    }
+    queueCatalogueFocus(trDesignationId);
+    router.push("/designations");
+  }
+
+  function closeReport() {
+    if (!reportDesignationId) {
+      return;
+    }
+    queueCatalogueFocus(reportDesignationId);
+    router.push("/designations");
+  }
+
+  function openRow(row: DesignationRuntime) {
+    const action = rowAction(row);
+    if (action.label === "Re-run analysis") {
+      void startLicenseAnalysis(row.id);
+      return;
+    }
+    if (action.label === "Reopen") {
+      reopenDesignation(row.id);
+    }
+    router.push(action.href);
+  }
+
+  function dismissDelete() {
+    const id = pendingDelete?.id;
+    setPendingDelete(null);
+    window.setTimeout(() => {
+      if (id) {
+        kebabRefs.current.get(id)?.focus();
+      }
+    }, 0);
+  }
+
+  function clearSearch() {
+    setQuery("");
+    setPage(1);
+    searchRef.current?.focus();
+  }
+
+  const columns: TableColumn<DesignationRuntime>[] = [
+    {
+      key: "no",
+      label: "No",
+      width: "var(--space-s64)",
+      render: (row) => filtered.indexOf(row) + 1,
+    },
+    {
+      key: "name",
+      label: "Designation",
+      sortable: true,
+      width: widths.name,
+      render: (row) => row.name,
+    },
+    {
+      key: "department",
+      label: "Department",
+      sortable: true,
+      render: (row) => row.businessArea || <Dash />,
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      width: widths.status,
+      render: (row) => (
+        <Stack>
+          <Badge variant={statusBadgeVariant(row.status)}>{row.status}</Badge>
+          {statusNote(row) ? (
+            <span className="text-control-sm text-body" style={{ fontFamily: "var(--font-family-control-sm)" }}>
+              {statusNote(row)}
+            </span>
+          ) : null}
+        </Stack>
+      ),
+    },
+    {
+      key: "license",
+      label: "License / status",
+      sortable: true,
+      width: widths.licence,
+      render: (row) => {
+        const cell = licenceCell(row);
+        if (cell.badges.length === 0) {
+          return <Dash />;
+        }
+        return (
+          <Stack>
+            <span className="flex flex-wrap items-center gap-s4">
+              {cell.badges.map((badge) => (
+                <Badge key={badge.label} variant={badge.variant}>
+                  {badge.label}
+                </Badge>
+              ))}
+            </span>
+            {cell.note ? (
+              <span
+                className={`text-control-sm ${cell.badges.some((badge) => badge.variant === "error") ? "text-error-text" : "text-body"}`}
+                style={{ fontFamily: "var(--font-family-control-sm)" }}
+              >
+                {cell.note}
+              </span>
+            ) : null}
+          </Stack>
+        );
+      },
+    },
+    {
+      key: "saving",
+      label: "Saving",
+      sortable: true,
+      width: widths.saving,
+      render: (row) => {
+        const saving = savingText(row);
+        const tip = savingTooltip(row);
+        if (!saving || !tip) {
+          return <Dash />;
+        }
+        return (
+          <Tooltip
+            width="wide"
+            label={
+              <span className="flex flex-col gap-s2">
+                <span>{`Current cost ${tip.currentCost}`}</span>
+                <span>{`Projected cost ${tip.projectedCost}`}</span>
+                <span>{`Last run ${tip.lastRun}`}</span>
+              </span>
+            }
+          >
+            <span className="text-success-text" style={labelL2} tabIndex={0}>
+              {saving}
+            </span>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      key: "sod",
+      label: "SoD risk",
+      sortable: true,
+      width: widths.sod,
+      render: (row) => {
+        const cell = sodCell(row);
+        if (!cell) {
+          return <Dash />;
+        }
+        return <Badge variant={cell.variant}>{cell.label}</Badge>;
+      },
+    },
+    {
+      key: "updatedAt",
+      label: "Last updated",
+      sortable: true,
+      render: (row) => formatUpdated(row.updatedAt),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      width: "calc(var(--space-s80) * 2)",
+      render: (row) => {
+        const action = rowAction(row);
+        return (
+          <span className="flex items-center gap-s8" onClick={(event) => event.stopPropagation()}>
+            <Link
+              id={catalogueActionId(row.id)}
+              href={action.href}
+              onClick={(event) => {
+                if (action.label === "Re-run analysis") {
+                  event.preventDefault();
+                  void startLicenseAnalysis(row.id);
+                  return;
+                }
+                if (action.label !== "Reopen") {
+                  return;
+                }
+                event.preventDefault();
+                openRow(row);
+              }}
+            >
+              {action.label}
+            </Link>
+            {row.status === "Draft" || (canRerunLicense(row) && row.status !== "Analysis failed") ? (
+              <RowMenu
+                label={`Actions for ${row.name}`}
+                triggerRef={(node) => {
+                  if (node) {
+                    kebabRefs.current.set(row.id, node);
+                  } else {
+                    kebabRefs.current.delete(row.id);
+                  }
+                }}
+                items={
+                  row.status === "Draft"
+                    ? [{ label: "Delete draft", onClick: () => setPendingDelete(row) }]
+                    : [{ label: "Re-run analysis", onClick: () => void startLicenseAnalysis(row.id) }]
+                }
+              />
+            ) : null}
+          </span>
+        );
+      },
+    },
+  ];
+
+  if (!hydrated) {
+    return (
+      <AppFrame>
+        <main className="min-h-full flex-1 bg-surface-white p-s24">
+          <p className="m-0 text-body" style={labelL2}>
+            Loading
+          </p>
+        </main>
+      </AppFrame>
+    );
+  }
+
+  return (
+    <AppFrame>
+    <main className="min-h-full flex-1 bg-surface-white p-s24">
+      <section className="flex flex-col gap-s24 rounded-s12 border border-solid border-subtle px-s40 py-s32">
+        <header className="flex items-center justify-between gap-s16">
+          <div className="flex flex-col gap-s10">
+            <h1
+              className="m-0 text-heading-h2"
+              style={{ fontFamily: "var(--font-family-heading-h2)", color: "var(--color-in-progress-text)" }}
+            >
+              Designation catalogue
+            </h1>
+            <p className="m-0 text-body" style={labelL2}>
+              Create and manage the designations your organisation uses.
+            </p>
+          </div>
+          {designations.length > 0 ? (
+            <Button variant="primary" size="md" onClick={() => router.push("/designation/new")}>
+              Create a New Designation
+            </Button>
+          ) : null}
+        </header>
+
+        {designations.length === 0 ? (
+          <div
+            className="flex flex-col items-center justify-center gap-s16 rounded-s12 border border-dashed px-s24 py-s56 text-center"
+            style={{ borderColor: "var(--color-border-input)" }}
+          >
+            <IconUserCircle size="s24" style={iconStyle("var(--color-text-strong)")} />
+            <p
+              className="m-0 text-body"
+              style={{
+                fontFamily: "var(--font-family-lato-bold)",
+                fontSize: "var(--font-size-l1)",
+                fontWeight: "var(--font-weight-label-l1)",
+                lineHeight: "var(--font-line-height-label-l1)",
+              }}
+            >
+              Create your first designation
+            </p>
+            <p
+              className="m-0 text-body"
+              style={{
+                width: emptyBodyWidth,
+                fontFamily: "var(--font-family-lato-regular)",
+                fontSize: "var(--font-size-l2)",
+                fontWeight: "var(--font-weight-body-b4)",
+                lineHeight: "var(--font-line-height-label-l1)",
+              }}
+            >
+              A designation groups the business activities and roles a position needs. Start with one and we&apos;ll
+              guide you through it.
+            </p>
+            <Button variant="primary" size="md" onClick={() => router.push("/designation/new")}>
+              Create a New Designation
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-stretch gap-s8">
+              <SummaryCard
+                icon={<IconClock size="s20" style={iconStyle("var(--color-info-text)")} />}
+                title="Awaiting final approval"
+                value={String(awaitingFinal)}
+                detail="Admin approval needed"
+                border="var(--color-info-border-subtle)"
+                wash="var(--color-info-bg)"
+              />
+              <SummaryCard
+                icon={<IconCircleCheck size="s20" style={iconStyle("var(--color-success-text)")} />}
+                title="Projected annual saving (pending)"
+                value={formatLakhs(pendingSaving)}
+                detail="Sample figure, pending approval"
+                border="var(--color-success-border-subtle)"
+                wash="var(--color-success-bg)"
+              />
+              <SummaryCard
+                icon={<IconAlertTriangle size="s20" style={iconStyle("var(--color-warning-text)")} />}
+                title="Designations with open SoD risk"
+                value={String(openSod)}
+                detail="Review before approval"
+                border="var(--color-warning-border-subtle)"
+                wash="var(--color-warning-bg)"
+              />
+              <SummaryCard
+                icon={<IconAlertCircle size="s20" style={iconStyle("var(--color-error-text)")} />}
+                title="Analysis failed"
+                value={String(failed)}
+                detail="Re-run by technical user"
+                border="var(--color-error-border-subtle)"
+                wash="var(--color-error-bg)"
+              />
+            </div>
+
+            <div className="flex items-start justify-between gap-s16">
+              <div className="min-w-0 flex-1">
+                <Tabs
+                  variant="pill"
+                  value={filter}
+                  onChange={(value) => {
+                    setFilter((value as CatalogueFilter) ?? "all");
+                    setPage(1);
+                  }}
+                  items={catalogueFilters.map((item) => ({
+                    value: item.value,
+                    label: item.label,
+                    count: (
+                      <Badge size="sm" variant="light">
+                        {counts.get(item.value) ?? 0}
+                      </Badge>
+                    ),
+                  }))}
+                />
+              </div>
+              <div style={{ width: searchWidth }} className="shrink-0">
+                <TextField
+                  type="search"
+                  placeholder="Search designations"
+                  ariaLabel="Search designations"
+                  inputRef={searchRef}
+                  value={query}
+                  onChange={(value) => {
+                    setQuery(value);
+                    setPage(1);
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-full overflow-x-auto">
+              <Table
+                columns={columns}
+                rows={visible}
+                getRowKey={(row) => row.id}
+                highlightedKey={trDesignationId ?? reportDesignationId}
+                sort={sort}
+                onSortChange={setSort}
+                onRowClick={openRow}
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-s16 px-s24 py-s56 text-center">
+                <IconSearch size="s24" style={iconStyle("var(--color-text-strong)")} />
+                <p className="m-0 text-body" style={labelL1}>
+                  {`No designations match "${query.trim() || catalogueFilters.find((item) => item.value === filter)?.label || "All"}"`}
+                </p>
+                <p className="m-0 text-body" style={{ ...labelL2, width: noResultsBodyWidth }}>
+                  {`Check the spelling or clear the search to see all ${designations.length} designations.`}
+                </p>
+                <Link
+                  href="#designation-catalogue-search"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    clearSearch();
+                  }}
+                >
+                  Clear search
+                </Link>
+              </div>
+            ) : (
+              <Pagination
+                page={safePage}
+                total={filtered.length}
+                pageSize={pageSize}
+                pageSizeLabel="Designations per page"
+                range={`Showing ${rangeStart} to ${rangeEnd} of ${filtered.length}`}
+                onPageChange={setPage}
+                onPageSizeChange={(size) => {
+                  if (size === 10 || size === 25 || size === 50) {
+                    setPageSize(size);
+                  }
+                  setPage(1);
+                }}
+              />
+            )}
+          </>
+        )}
+      </section>
+
+      <Dialog
+        opened={pendingDelete !== null}
+        onClose={dismissDelete}
+        size="sm"
+        variant="confirm"
+        header={
+          <h2 className="m-0 text-heading-h2 text-body" style={{ fontFamily: "var(--font-family-heading-h2)" }}>
+            {`Delete draft "${pendingDelete?.name ?? ""}"?`}
+          </h2>
+        }
+        footer={
+          <div className="flex items-center justify-end gap-s12">
+            <Button variant="secondary" size="md" onClick={dismissDelete}>
+              Cancel
+            </Button>
+            <Button
+              variant="warn"
+              size="md"
+              onClick={() => {
+                if (pendingDelete) {
+                  deleteDesignation(pendingDelete.id);
+                }
+                setPendingDelete(null);
+              }}
+            >
+              Delete draft
+            </Button>
+          </div>
+        }
+      >
+        <p className="m-0 text-body" style={labelL2}>
+          This removes the draft and everything you&apos;ve set up so far. It can&apos;t be undone. No roles have been
+          created in SAP.
+        </p>
+      </Dialog>
+      {trOpen && trDesignation ? <TrDialog designation={trDesignation} onClose={closeTr} /> : null}
+      {reportOpen && reportDesignation ? (
+        <LicenseReportDrawer
+          designation={reportDesignation}
+          onClose={closeReport}
+          onFinished={(result) => {
+            setReportOpen(false);
+            setApprovalResult(result);
+          }}
+        />
+      ) : null}
+      <ApprovalResultDialog result={approvalResult} onClose={() => setApprovalResult(null)} />
+    </main>
+    </AppFrame>
+  );
+}
+
+function iconStyle(color: string): CSSProperties {
+  return { color };
+}
+
+function compare(left: DesignationRuntime, right: DesignationRuntime, key: string): number {
+  switch (key) {
+    case "name":
+      return left.name.localeCompare(right.name);
+    case "department":
+      return left.businessArea.localeCompare(right.businessArea);
+    case "status":
+      return left.status.localeCompare(right.status);
+    case "license":
+      return licenceRank(left) - licenceRank(right);
+    case "saving":
+      return savingLakhs(left) - savingLakhs(right);
+    case "sod":
+      return sodRank(left) - sodRank(right);
+    case "updatedAt":
+      return new Date(left.updatedAt).getTime() - new Date(right.updatedAt).getTime();
+    default:
+      return 0;
+  }
+}

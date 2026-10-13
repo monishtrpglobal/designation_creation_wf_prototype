@@ -17,8 +17,8 @@ test.describe("workflow gaps", () => {
     // general-ledger-steward and cost-controller should show those statuses on /designations.
   });
 
-  test.fixme("G4 license route shows analysis states", async () => {
-    // /designation/tax-compliance-officer/license should show the failed analysis, not the unfinished shell.
+  test.fixme("G4 license analysis stays on the catalogue", async () => {
+    // License analysis states stay on /designations. View must not open /designation/{id}/license.
   });
 
   test.fixme("G5 activity auth wildcard requires confirmation", async () => {
@@ -47,5 +47,13 @@ test.describe("workflow gaps", () => {
 
   test.fixme("G12 setSodDecision refuses changes after submit", async () => {
     // setSodDecision in the store should no-op once steps.finalize is true. The screen already disables the controls.
+  });
+
+  test.fixme("G13 TR approval stays on the catalogue", async () => {
+    // Review TR and Moving to Quality View open the TR dialog on /designations.
+  });
+
+  test.fixme("G14 license report and final approval stay on the catalogue", async () => {
+    // Approve opens the report drawer and final-approval dialog on /designations. Published View stays there.
   });
 });

@@ -27,12 +27,12 @@ Each gap has a Playwright scenario marked `test.fixme` in [e2e/gaps.spec.ts](../
 - **Now:** Role chips on the link screen use those texts. Catalogue lifecycle badges stay Draft, Completed, and the other statuses in [catalogueView.ts](../src/features/designation/catalogue/catalogueView.ts). [seed.ts](../src/state/seed.ts) notes this with `TODO(confirm)` inside `seedDesignations`. Sample rows: `general-ledger-steward` (awaiting), `cost-controller` (gaps).
 - **Fixme:** `G3 catalogue shows Awaiting SAP or Gaps found`
 
-### G4 — License route is an unfinished shell
+### G4 — License analysis is a separate route
 
-- **Rule:** Screen 14, license analysis cell states.
-- **Expected:** `/designation/{id}/license` shows the license analysis states (running, done, failed, flagged).
-- **Now:** [src/app/designation/[id]/license/page.tsx](../src/app/designation/[id]/license/page.tsx) renders [ScreenFrame.tsx](../src/features/designation/ScreenFrame.tsx) with “This screen is not built yet.” Cell states and Re-run analysis live on the catalogue (`licenceCell`, `canRerunLicense`).
-- **Fixme:** `G4 license route shows analysis states`
+- **Rule:** Screen 14. License analysis is the catalogue licence column (running, done, failed, flagged), not its own page. Screens 1 and 12 are the only catalogue surfaces.
+- **Expected:** Those states stay on `/designations`. There is no `/designation/{id}/license` page, and View does not navigate there. Starting a failed run from the UI is G9.
+- **Now:** [src/app/designation/[id]/license/page.tsx](../src/app/designation/[id]/license/page.tsx) renders [ScreenFrame.tsx](../src/features/designation/ScreenFrame.tsx) with “This screen is not built yet.” The column already shows the states on the catalogue (`licenceCell`, `canRerunLicense`). View on “License analysis running” still opens that route, because `lastAllowedRoute` in [access.ts](../src/state/access.ts) returns `license` and [catalogueView.ts](../src/features/designation/catalogue/catalogueView.ts) `rowAction` uses `pathFor`.
+- **Fixme:** `G4 license analysis stays on the catalogue`
 
 ### G5 — Activity auth wildcard does not require confirmation
 
@@ -85,10 +85,25 @@ G8 is not a gap. Send gap report already shows the alert “Gap report sent”. 
 - **Now:** The screen holds the rule. [FinalizePage.tsx](../src/features/designation/finalize/FinalizePage.tsx) disables the controls when submitted, and `applySodDecisions` returns false when `steps.finalize` is set. `setSodDecision` in [flowStore.ts](../src/state/flowStore.ts) does not check that flag. A browser test cannot call that action; the skipped scenario records the store gap.
 - **Fixme:** `G12 setSodDecision refuses changes after submit`
 
+### G13 — TR approval leaves the catalogue
+
+- **Rule:** Screen 13. Approve TR movement is a dialog over the catalogue (screens 1 and 12), not a separate page.
+- **Expected:** Review TR and View for “Moving to Quality” open `TrDialog` while the URL stays `/designations`.
+- **Now:** [catalogueView.ts](../src/features/designation/catalogue/catalogueView.ts) `rowAction` and `pathFor("tr")` in [access.ts](../src/state/access.ts) go to `/designation/{id}/tr`. [src/app/designation/[id]/tr/page.tsx](../src/app/designation/[id]/tr/page.tsx) only re-renders [CataloguePage.tsx](../src/features/designation/catalogue/CataloguePage.tsx) with `trDesignationId` so [TrDialog.tsx](../src/features/designation/tr/TrDialog.tsx) opens. Close already returns to `/designations`.
+- **Fixme:** `G13 TR approval stays on the catalogue`
+
+### G14 — License report and final approval leave the catalogue
+
+- **Rule:** Screens 15 and 16. The license optimization report is a drawer on the catalogue. Final approval is a dialog opened from that drawer. Published rows stay on the catalogue.
+- **Expected:** Approve opens the report drawer and the final-approval dialog while the URL stays `/designations`. Published View stays on `/designations` and does not pass through `/approve`.
+- **Now:** `pathFor("approve")` and [src/app/designation/[id]/approve/page.tsx](../src/app/designation/[id]/approve/page.tsx) re-render the catalogue with `reportDesignationId` so [LicenseReportDrawer.tsx](../src/features/designation/license/LicenseReportDrawer.tsx) opens. Approve inside the drawer opens [FinalApprovalDialog.tsx](../src/features/designation/approve/FinalApprovalDialog.tsx). Published View uses the same path, because `lastAllowedRoute` returns `approve` once the license step is done. That page then returns to `/designations`, because `showsLicenseReport` in [licenseReportView.ts](../src/features/designation/license/licenseReportView.ts) is only true for “Awaiting final approval”.
+- **Fixme:** `G14 license report and final approval stay on the catalogue`
+
 ## Already aligned (do not re-open)
 
 These match the guide in the current store and screens:
 
+- Wizard screens 2, 3, 6, 7, 8, 9, and 11, and the dialogs and drawers on them, share `/designation/new` with `?id=` and `?step=`. Those steps are full screens, so they keep that one route. Gallery routes (`/`, `/ds`, `/ds/patterns`, `/tokens`, `/designation/shell`) are outside the designation flow.
 - Method locks when creation starts (Option A) and when the requirement is sent (Option B). `chooseMethod` is a no-op once `methodLocked` is set.
 - Designation name is checked only on Next: 3 to 60 characters, unique, case-insensitive. Next stays enabled. A passing Next creates the draft.
 - Sync Next stays off until the sync status is completed. `step=sync&outcome=failed` keeps it off until Retry sync.
